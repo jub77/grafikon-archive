@@ -140,7 +140,7 @@ public class LSVisitorBuilder implements LSVisitor {
         interval.setComment(lsInterval.getComment());
 
         // add interval to train
-        lastTrain.getTimeIntervalList().addIntervalLastForTrain(interval);
+        lastTrain.addInterval(interval);
 
         if (lsInterval.getAttributes() != null) {
             interval.setAttributes(lsInterval.getAttributes().convertToAttributes());

@@ -121,7 +121,7 @@ public class LSVisitorBuilder implements LSVisitor {
         interval.setComment(lsInterval.getComment());
 
         // add interval to train
-        lastTrain.getTimeIntervalList().addIntervalLastForTrain(interval);
+        lastTrain.addInterval(interval);
 
         // add backward compactibility - owner is a line - add first track from line
         if (part instanceof Line) {

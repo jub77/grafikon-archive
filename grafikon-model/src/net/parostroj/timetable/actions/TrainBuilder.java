@@ -38,7 +38,7 @@ public class TrainBuilder {
             interval.setTrain(train);
 
             // add interval
-            train.getTimeIntervalList().addIntervalLastForTrain(interval);
+            train.addInterval(interval);
         }
 
         // move to new time (automatically attaches the train to nodes and lines)

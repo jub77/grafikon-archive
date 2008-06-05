@@ -29,6 +29,7 @@ public class TrainDiagram implements AttributesHolder, ObjectWithId {
     private TrainsData trainsData;
     /** List of engine classes. */
     private List<EngineClass> engineClasses;
+    private GTListenerTrainDiagramImpl listener;
 
     /**
      * Default constructor.
@@ -43,6 +44,7 @@ public class TrainDiagram implements AttributesHolder, ObjectWithId {
         this.trainTypes = new LinkedList<TrainType>();
         this.attributes = new Attributes();
         this.trainsData = data;
+        this.listener = new GTListenerTrainDiagramImpl(this);
     }
 
     /**
@@ -91,6 +93,7 @@ public class TrainDiagram implements AttributesHolder, ObjectWithId {
     }
 
     public void addTrain(Train train) {
+        train.addListener(listener);
         train.attach();
         this.trains.add(train);
     }
@@ -98,6 +101,7 @@ public class TrainDiagram implements AttributesHolder, ObjectWithId {
     public void removeTrain(Train train) {
         train.detach();
         this.trains.remove(train);
+        train.removeListener(listener);
     }
 
     public Train getTrainById(String id) {

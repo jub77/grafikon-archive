@@ -53,8 +53,8 @@ public class NodeTimetablesList {
     }
     
     private void writeLine(Formatter f, Writer writer, TimeInterval i) throws IOException {
-        TimeInterval from = i.getTrain().getTimeIntervalList().getIntervalBefore(i);
-        TimeInterval to = i.getTrain().getTimeIntervalList().getIntervalAfter(i);
+        TimeInterval from = i.getTrain().getIntervalBefore(i);
+        TimeInterval to = i.getTrain().getIntervalAfter(i);
         
         String fromNodeName = TransformUtil.getFromAbbr(i);
         String toNodeName = TransformUtil.getToAbbr(i);
