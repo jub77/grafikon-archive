@@ -1,0 +1,10 @@
+  <tr style="font-size: 3.4mm; height: 5mm">
+    <td>&nbsp;</td>
+    <td>%1$s</td>
+    <td>%2$s</td>
+    <td align="right">%3$s&nbsp;</td>
+    <td align="center">%4$s</td>
+    <td align="right">%5$s&nbsp;</td>
+    <td>%6$s</td>
+    <td>%7$s</td>
+  </tr>
