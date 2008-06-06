@@ -194,7 +194,7 @@ abstract public class GTDraw {
     protected void paintTrainsOnLine(Line line, Graphics2D g, double timeStep, Stroke trainStroke) {
         g.setStroke(trainStroke);
         for (LineTrack track : line.getTracks()) {
-            for (TimeInterval interval : track.getIntervalList()) {
+            for (TimeInterval interval : track.getTimeIntervalList()) {
                 g.setColor(this.getTrainColor(interval.getTrain()));
 
                 Line2D line2D = this.createTrainLine(interval, timeStep);

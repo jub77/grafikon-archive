@@ -1,5 +1,8 @@
 package net.parostroj.timetable.model;
 
+import java.util.Collections;
+import java.util.List;
+
 /**
  * Track in the station.
  *
@@ -61,15 +64,8 @@ public abstract class Track implements AttributesHolder, ObjectWithId {
     /**
      * @return time interval list for this track
      */
-    public TimeIntervalList getIntervalList() {
-        return intervalList;
-    }
-
-    /**
-     * @param intervalList time interval list to be set
-     */
-    public void setIntervalList(TimeIntervalList intervalList) {
-        this.intervalList = intervalList;
+    public List<TimeInterval> getTimeIntervalList() {
+        return Collections.unmodifiableList(intervalList);
     }
 
     /**

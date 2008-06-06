@@ -31,7 +31,7 @@ public class GetLineTimetable {
         builder.append("Trat: ").append(ss.getName()).append('-').append(st.getName()).append('\n');
 
         for (LineTrack track : line.getTracks()) {
-            for (TimeInterval interval : track.getIntervalList()) {
+            for (TimeInterval interval : track.getTimeIntervalList()) {
                 Formatter f = new Formatter(builder);
                 f.format("%1$-20s", interval.getTrain().toString());
                 builder.append(TimeConverter.convertFromIntToTextWS(interval.getStart())).append(" ").append(TimeConverter.convertFromIntToTextWS(interval.getEnd())).append('\n');

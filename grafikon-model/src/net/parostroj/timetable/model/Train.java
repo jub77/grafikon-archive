@@ -96,7 +96,7 @@ public class Train implements AttributesHolder, ObjectWithId {
     public void setNumber(String number) {
         this.clearCachedData();
         this.number = number;
-        this.listenerSupport.fireEvent(new TrainEvent(this, "number", number));
+        this.listenerSupport.fireEvent(new TrainEvent(this, "number"));
     }
 
     /**
@@ -140,7 +140,7 @@ public class Train implements AttributesHolder, ObjectWithId {
     public void setDescription(String description) {
         this.clearCachedData();
         this.description = description;
-        this.listenerSupport.fireEvent(new TrainEvent(this, "description", description));
+        this.listenerSupport.fireEvent(new TrainEvent(this, "description"));
     }
 
     /**
@@ -155,7 +155,7 @@ public class Train implements AttributesHolder, ObjectWithId {
      */
     public void setTopSpeed(int topSpeed) {
         this.topSpeed = topSpeed;
-        this.listenerSupport.fireEvent(new TrainEvent(this, "topSpeed", topSpeed));
+        this.listenerSupport.fireEvent(new TrainEvent(this, "topSpeed"));
     }
 
     @Override
@@ -176,7 +176,7 @@ public class Train implements AttributesHolder, ObjectWithId {
     public void setType(TrainType type) {
         this.clearCachedData();
         this.type = type;
-        this.listenerSupport.fireEvent(new TrainEvent(this, "type", type));
+        this.listenerSupport.fireEvent(new TrainEvent(this, "type"));
     }
 
     /**
@@ -208,11 +208,13 @@ public class Train implements AttributesHolder, ObjectWithId {
     public void addCycle(TrainsCycleItem item) {
         TrainsCycleType cycleType = item.getCycle().getType();
         this.getCyclesIntern(cycleType).add(item);
+        this.listenerSupport.fireEvent(new TrainEvent(this, TrainEvent.Type.CYCLE));
     }
 
     public void removeCycle(TrainsCycleItem item) {
         TrainsCycleType cycleType = item.getCycle().getType();
         this.getCyclesIntern(cycleType).remove(item);
+        this.listenerSupport.fireEvent(new TrainEvent(this, TrainEvent.Type.CYCLE));
     }
 
     public Attributes getAttributes() {
@@ -238,7 +240,7 @@ public class Train implements AttributesHolder, ObjectWithId {
     public void setAttribute(String key, Object value) {
         this.clearCachedData();
         attributes.put(key, value);
-        this.listenerSupport.fireEvent(new TrainEvent(this, key, value));
+        this.listenerSupport.fireEvent(new TrainEvent(this, key));
     }
 
     // methods for testing/attaching/detaching trains in/to/from net
@@ -332,6 +334,7 @@ public class Train implements AttributesHolder, ObjectWithId {
      */
     public void shift(int timeShift) {
         timeIntervalList.shift(timeShift);
+        this.listenerSupport.fireEvent(new TrainEvent(this, TrainEvent.Type.TIME_INTERVAL_LIST));
     }
 
     /**
@@ -341,6 +344,7 @@ public class Train implements AttributesHolder, ObjectWithId {
      */
     public void move(int time) {
         timeIntervalList.move(time);
+        this.listenerSupport.fireEvent(new TrainEvent(this, TrainEvent.Type.TIME_INTERVAL_LIST));
     }
 
     /**
@@ -401,6 +405,7 @@ public class Train implements AttributesHolder, ObjectWithId {
             changed = false;
             nextStart = interval.getEnd();
         }
+        this.listenerSupport.fireEvent(new TrainEvent(this, TrainEvent.Type.TIME_INTERVAL_LIST));
     }
 
     /**
@@ -450,6 +455,7 @@ public class Train implements AttributesHolder, ObjectWithId {
                 moveNext = true;
             }
         }
+        this.listenerSupport.fireEvent(new TrainEvent(this, TrainEvent.Type.TIME_INTERVAL_LIST));
     }
 
     /**
@@ -479,6 +485,7 @@ public class Train implements AttributesHolder, ObjectWithId {
             interval.setTrack(nodeTrack);
             interval.addToOwner();
         }
+        this.listenerSupport.fireEvent(new TrainEvent(this, TrainEvent.Type.TIME_INTERVAL_LIST));
     }
 
     /**
@@ -494,6 +501,7 @@ public class Train implements AttributesHolder, ObjectWithId {
             interval.setTrack(lineTrack);
             interval.addToOwner();
         }
+        this.listenerSupport.fireEvent(new TrainEvent(this, TrainEvent.Type.TIME_INTERVAL_LIST));
     }
 
     /**
@@ -533,6 +541,7 @@ public class Train implements AttributesHolder, ObjectWithId {
             }
             nextStart = interval.getEnd();
         }
+        this.listenerSupport.fireEvent(new TrainEvent(this, TrainEvent.Type.TIME_INTERVAL_LIST));
     }
 
     /**
@@ -542,12 +551,21 @@ public class Train implements AttributesHolder, ObjectWithId {
      */
     public void addInterval(TimeInterval interval) {
         timeIntervalList.addIntervalLastForTrain(interval);
+        this.listenerSupport.fireEvent(new TrainEvent(this, TrainEvent.Type.TIME_INTERVAL_LIST));
     }
     
+    /**
+     * @param interval interval
+     * @return interval directly before given interval
+     */
     public TimeInterval getIntervalBefore(TimeInterval interval) {
         return timeIntervalList.getIntervalBefore(interval);
     }
     
+    /**
+     * @param interval interval
+     * @return interval directly after given interval
+     */
     public TimeInterval getIntervalAfter(TimeInterval interval) {
         return timeIntervalList.getIntervalAfter(interval);
     }

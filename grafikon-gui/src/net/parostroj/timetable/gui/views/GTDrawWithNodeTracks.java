@@ -130,7 +130,7 @@ public class GTDrawWithNodeTracks extends GTDraw {
     
     private void paintTrainsInStation(Node station, Graphics2D g, double timeStep) {
         for (NodeTrack nodeTrack : station.getTracks()) {
-            for (TimeInterval interval : nodeTrack.getIntervalList()) {
+            for (TimeInterval interval : nodeTrack.getTimeIntervalList()) {
                 int y = start.y + trackPositions.get(interval.getTrack());
                 int x1 = (int)(start.x + interval.getStart() * timeStep);
                 int x2 = (int)(start.x + interval.getEnd() * timeStep);

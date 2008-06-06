@@ -11,29 +11,23 @@ public class TrainEvent extends GTEvent<Train> {
 
     public enum Type {
 
-        ATTRIBUTE_CHANGED, TIME_CHANGED;
+        ATTRIBUTE, TIME_INTERVAL_LIST, CYCLE;
     }
     private Type type;
     private String attributeName;
-    private Object attributeValue;
 
     public TrainEvent(Train train, Type type) {
         super(train);
         this.type = type;
     }
-    
-    public TrainEvent(Train train, String attributeName, Object attributeValue) {
-        this(train, Type.ATTRIBUTE_CHANGED);
+
+    public TrainEvent(Train train, String attributeName) {
+        this(train, Type.ATTRIBUTE);
         this.attributeName = attributeName;
-        this.attributeValue = attributeValue;
     }
 
     public String getAttributeName() {
         return attributeName;
-    }
-
-    public Object getAttributeValue() {
-        return attributeValue;
     }
 
     @Override
@@ -41,8 +35,8 @@ public class TrainEvent extends GTEvent<Train> {
         StringBuilder builder = new StringBuilder("TrainEvent[");
         builder.append(getSource()).append(',');
         builder.append(type);
-        if (type == Type.ATTRIBUTE_CHANGED) {
-            builder.append(',').append(attributeName).append(',').append(attributeValue);
+        if (type == Type.ATTRIBUTE) {
+            builder.append(',').append(attributeName);
         }
         builder.append(']');
         return builder.toString();

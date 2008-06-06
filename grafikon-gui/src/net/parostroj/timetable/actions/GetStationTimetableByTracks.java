@@ -27,7 +27,7 @@ public class GetStationTimetableByTracks {
 
         for (NodeTrack track : tracks) {
             buffer.append("Kolej: " + track.getNumber()).append('\n');
-            for (TimeInterval interval : track.getIntervalList()) {
+            for (TimeInterval interval : track.getTimeIntervalList()) {
                 Formatter f = new Formatter(buffer);
                 f.format("%1$-20s", interval.getTrain().toString());
                 buffer.append(" ").append(TimeConverter.convertFromIntToTextWS(interval.getStart())).append(" ").append(TimeConverter.convertFromIntToTextWS(interval.getEnd())).append("\n");

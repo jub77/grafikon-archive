@@ -11,6 +11,7 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
+import javax.xml.transform.stream.StreamSource;
 import net.parostroj.timetable.model.ls.LSException;
 
 /**
@@ -54,10 +55,21 @@ public class LSSerializer {
         }
     }
 
-    public <T> T load(InputStream in) throws LSException {
+    public <T> T load(InputStream in, Class<T> clazz) throws LSException {
         try {
             Reader reader = new NoCloseAllowedReader(new InputStreamReader(in, "utf-8"));
-            return (T) unmarshaller.unmarshal(reader);
+            return unmarshaller.unmarshal(new StreamSource(reader), clazz).getValue();
+        } catch (UnsupportedEncodingException e) {
+            throw new LSException("Cannot save train diagram: Unsupported enconding.", e);
+        } catch (JAXBException e) {
+            throw new LSException("Cannot save train diagram: JAXB exception.", e);
+        }
+    }
+
+    public Object load(InputStream in) throws LSException {
+        try {
+            Reader reader = new NoCloseAllowedReader(new InputStreamReader(in, "utf-8"));
+            return unmarshaller.unmarshal(reader);
         } catch (UnsupportedEncodingException e) {
             throw new LSException("Cannot save train diagram: Unsupported enconding.", e);
         } catch (JAXBException e) {
