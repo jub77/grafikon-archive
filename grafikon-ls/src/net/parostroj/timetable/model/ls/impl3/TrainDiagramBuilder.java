@@ -42,14 +42,14 @@ public class TrainDiagramBuilder {
         // create nodes ...
         for (LSNode lsNode : lsNet.getNodes()) {
             Node node = lsNode.createNode();
-            net.addVertex(node);
+            net.addNode(node);
         }
         // create lines ...
         for (LSLine lsLine : lsNet.getLines()) {
             Line line = lsLine.createLine(diagram);
             Node from = net.getNodeById(lsLine.getFrom());
             Node to = net.getNodeById(lsLine.getTo());
-            net.addEdge(from, to, line);
+            net.addLine(from, to, line);
         }
     }
     

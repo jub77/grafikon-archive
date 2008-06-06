@@ -3,7 +3,6 @@
  *
  * Created on 24. srpen 2007, 9:09
  */
-
 package net.parostroj.timetable.gui.views;
 
 import java.awt.Rectangle;
@@ -105,11 +104,11 @@ public class NetView extends javax.swing.JPanel implements ApplicationModelListe
         jGraph.getSelectionModel().clearSelection();
         
         // initialize adapter
-        netAdapter = new JGraphModelAdapter<Node, Line>(net);
+        netAdapter = new JGraphModelAdapter<Node, Line>(net.getGraph());
         netAdapter.addGraphModelListener(this);
         jGraph.setModel(netAdapter);
         
-        for (Node point : net.vertexSet()) {
+        for (Node point : net.getNodes()) {
             this.positionVertexAt(point, point.getPositionX(), point.getPositionY());
         }
     }

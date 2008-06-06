@@ -77,7 +77,7 @@ public class LineListView extends javax.swing.JPanel implements ApplicationModel
     private void updateLineList() {
         DefaultListModel listModel = new DefaultListModel();
         if (model.getDiagram() != null) {
-            Collection<Line> lines = model.getDiagram().getNet().edgeSet();
+            Collection<Line> lines = model.getDiagram().getNet().getLines();
             for (Line l : lines) {
                 listModel.addElement(l);
             }
@@ -164,7 +164,7 @@ public class LineListView extends javax.swing.JPanel implements ApplicationModel
             if (!line.isEmpty()) {
                 JOptionPane.showMessageDialog(this, ResourceLoader.getString("nl.error.notempty"),ResourceLoader.getString("nl.error.title"),JOptionPane.ERROR_MESSAGE);
             } else {
-                model.getDiagram().getNet().removeEdge(line);
+                model.getDiagram().getNet().removeLine(line);
                 this.updateLineList();
             }
         }
@@ -197,7 +197,7 @@ public class LineListView extends javax.swing.JPanel implements ApplicationModel
             Line l = new Line(UUID.randomUUID().toString(), 1000, selected.first, selected.second, Line.UNLIMITED_SPEED);
             LineTrack track = new LineTrack(UUID.randomUUID().toString(), "1");
             l.addTrack(track);
-            model.getDiagram().getNet().addEdge(selected.first, selected.second, l);
+            model.getDiagram().getNet().addLine(selected.first, selected.second, l);
             
             model.fireEvent(new ApplicationModelEvent(ApplicationModelEventType.NEW_LINE, model, l));
             this.updateLineList();

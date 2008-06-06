@@ -216,7 +216,7 @@ public class TrainDiagram implements AttributesHolder, ObjectWithId {
 
     @Override
     public String toString() {
-        return "Trains: " + trains.size() + ", Nodes: " + net.vertexSet().size() + ", Lines: " + net.edgeSet().size();
+        return "Trains: " + trains.size() + ", Nodes: " + net.getNodes().size() + ", Lines: " + net.getLines().size();
     }
 
     @Override

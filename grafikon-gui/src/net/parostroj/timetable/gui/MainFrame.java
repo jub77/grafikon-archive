@@ -712,7 +712,7 @@ private void ecListMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GE
 
 private void nodeTimetableListMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nodeTimetableListMenuItemActionPerformed
     // write
-    final NodeTimetablesList list = new NodeTimetablesList(model.getDiagram().getNet().vertexSet());
+    final NodeTimetablesList list = new NodeTimetablesList(model.getDiagram().getNet().getNodes());
     HtmlAction action = new HtmlAction() {
             @Override
             public void write(Writer writer) throws Exception {
@@ -973,7 +973,7 @@ private void allHtmlMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//G
             public void run() {
                 try {
                     // node timetable
-                    NodeTimetablesList ll = new NodeTimetablesList((model.getDiagram().getNet().vertexSet()));
+                    NodeTimetablesList ll = new NodeTimetablesList((model.getDiagram().getNet().getNodes()));
                     Writer out = openFile(directory, ResourceLoader.getString("out.nodes") + ".html");
                     ll.writeTo(out);
                     out.close();

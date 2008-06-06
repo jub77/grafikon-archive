@@ -45,7 +45,7 @@ public class LSVisitorBuilder implements LSVisitor {
         ids.put(lsNode.getId(), node);
 
         // add to net
-        diagram.getNet().addVertex(node);
+        diagram.getNet().addNode(node);
         // set last station
         lastStation = node;
     }
@@ -86,7 +86,7 @@ public class LSVisitorBuilder implements LSVisitor {
 
         // add to net
         Net net = diagram.getNet();
-        net.addEdge(from, to, line);
+        net.addLine(from, to, line);
     }
 
     @Override

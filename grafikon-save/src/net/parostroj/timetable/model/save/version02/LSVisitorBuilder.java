@@ -52,7 +52,7 @@ public class LSVisitorBuilder implements LSVisitor {
         ids.put(lsNode.getId(), node);
 
         // add to net
-        diagram.getNet().addVertex(node);
+        diagram.getNet().addNode(node);
         // set last node
         lastNode = node;
     }
@@ -91,7 +91,7 @@ public class LSVisitorBuilder implements LSVisitor {
             line.setAttributes(lsLine.getAttributes().convertToAttributes());        // add to net
         }
         Net net = diagram.getNet();
-        net.addEdge(from, to, line);
+        net.addLine(from, to, line);
 
         // add as last line
         lastLine = line;

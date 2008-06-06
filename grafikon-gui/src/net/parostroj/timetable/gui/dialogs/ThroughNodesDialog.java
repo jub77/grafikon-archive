@@ -50,7 +50,7 @@ public class ThroughNodesDialog extends javax.swing.JDialog {
         
         // update values for nodes
         NodeSort sort = new NodeSort(NodeSort.Type.ASC);
-        List<Node> sorted = sort.sort(model.getDiagram().getNet().vertexSet());
+        List<Node> sorted = sort.sort(model.getDiagram().getNet().getNodes());
         nodeComboBox.removeAllItems();
         for (Node node : sorted) {
             nodeComboBox.addItem(node);

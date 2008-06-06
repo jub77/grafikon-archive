@@ -1,12 +1,9 @@
 package net.parostroj.timetable.actions;
 
 import java.util.Formatter;
-import net.parostroj.timetable.model.Net;
-import net.parostroj.timetable.model.Node;
-import net.parostroj.timetable.model.TimeInterval;
-import net.parostroj.timetable.model.Line;
-import net.parostroj.timetable.model.LineTrack;
+import net.parostroj.timetable.model.*;
 import net.parostroj.timetable.utils.TimeConverter;
+import net.parostroj.timetable.utils.Tuple;
 
 /**
  * Track occupancy.
@@ -24,8 +21,9 @@ public class GetLineTimetable {
      */
     public String getTextTimeTable(Line line, Net net) {
         // get end stations ...
-        Node ss = net.getEdgeSource(line);
-        Node st = net.getEdgeTarget(line);
+        Tuple<Node> ends = net.getNodes(line);
+        Node ss = ends.first;
+        Node st = ends.second;
 
         StringBuilder builder = new StringBuilder();
         builder.append("Trat: ").append(ss.getName()).append('-').append(st.getName()).append('\n');
