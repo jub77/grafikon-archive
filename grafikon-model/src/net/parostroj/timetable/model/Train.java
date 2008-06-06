@@ -74,7 +74,7 @@ public class Train implements AttributesHolder, ObjectWithId {
     public String getId() {
         return id;
     }
-    
+
     public void addListener(TrainListener listener) {
         listenerSupport.addListener(listener);
     }
@@ -82,7 +82,7 @@ public class Train implements AttributesHolder, ObjectWithId {
     public void removeListener(TrainListener listener) {
         listenerSupport.removeListener(listener);
     }
-    
+
     /**
      * @return number
      */
@@ -207,7 +207,33 @@ public class Train implements AttributesHolder, ObjectWithId {
 
     public void addCycle(TrainsCycleItem item) {
         TrainsCycleType cycleType = item.getCycle().getType();
-        this.getCyclesIntern(cycleType).add(item);
+        List<TrainsCycleItem> list = this.getCyclesIntern(cycleType);
+        ListIterator<TrainsCycleItem> i = list.listIterator();
+        Iterator<TimeInterval> tii = timeIntervalList.iterator();
+        boolean added = false;
+        Node from = item.getFromNode();
+        Node current = tii.next().getOwner().asNode();
+        Node currentInList = i.hasNext() ? i.next().getFromNode() : null;
+        while (!added) {
+            if (current == null) {
+                throw new IllegalArgumentException("Cannot insert cycle item with invalid ends.");
+            } else if (current == currentInList) {
+                currentInList = i.hasNext() ? i.next().getFromNode() : null;
+            } else if (from == current) {
+                if (currentInList != null) {
+                    i.previous();
+                }
+                i.add(item);
+                added = true;
+            } else {
+                if (tii.hasNext()) {
+                    tii.next();
+                    current = tii.next().getOwner().asNode();
+                } else {
+                    current = null;
+                }
+            }
+        }
         this.listenerSupport.fireEvent(new TrainEvent(this, TrainEvent.Type.CYCLE));
     }
 
@@ -553,7 +579,7 @@ public class Train implements AttributesHolder, ObjectWithId {
         timeIntervalList.addIntervalLastForTrain(interval);
         this.listenerSupport.fireEvent(new TrainEvent(this, TrainEvent.Type.TIME_INTERVAL_LIST));
     }
-    
+
     /**
      * @param interval interval
      * @return interval directly before given interval
@@ -561,7 +587,7 @@ public class Train implements AttributesHolder, ObjectWithId {
     public TimeInterval getIntervalBefore(TimeInterval interval) {
         return timeIntervalList.getIntervalBefore(interval);
     }
-    
+
     /**
      * @param interval interval
      * @return interval directly after given interval

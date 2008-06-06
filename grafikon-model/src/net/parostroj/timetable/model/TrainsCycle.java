@@ -81,20 +81,20 @@ public class TrainsCycle implements AttributesHolder, ObjectWithId, Iterable<Tra
         return hash;
     }
 
-    public List<Tuple<Train>> checkConflicts() {
-        List<Tuple<Train>> conflicts = null;
+    public List<Tuple<TrainsCycleItem>> checkConflicts() {
+        List<Tuple<TrainsCycleItem>> conflicts = null;
         Iterator<TrainsCycleItem> i = items.iterator();
-        Train last = null;
+        TrainsCycleItem last = null;
         if (i.hasNext()) {
-            last = i.next().getTrain();
+            last = i.next();
         }
         while (i.hasNext()) {
-            Train current = i.next().getTrain();
-            if (last.getEndNode() != current.getStartNode() || last.getEndTime() >= current.getStartTime()) {
+            TrainsCycleItem current = i.next();
+            if (last.getToNode() != current.getFromNode() || last.getEndTime() >= current.getStartTime()) {
                 if (conflicts == null) {
-                    conflicts = new LinkedList<Tuple<Train>>();
+                    conflicts = new LinkedList<Tuple<TrainsCycleItem>>();
                 }
-                conflicts.add(new Tuple<Train>(last, current));
+                conflicts.add(new Tuple<TrainsCycleItem>(last, current));
             }
             last = current;
         }

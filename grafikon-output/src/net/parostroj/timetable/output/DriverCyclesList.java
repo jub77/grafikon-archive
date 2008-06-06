@@ -69,14 +69,14 @@ public class DriverCyclesList {
         f.format(templates.getDcHeaderTrains(), templates.getString("column.train"), templates.getString("column.departure"),
                 templates.getString("column.from.to"), templates.getString("column.note"));
         
-        List<Tuple<Train>> conflicts = cycle.checkConflicts();
+        List<Tuple<TrainsCycleItem>> conflicts = cycle.checkConflicts();
         
         for (TrainsCycleItem item : cycle) {
             Train t = item.getTrain();
             f.format(templates.getDcLine(), t.getName(), TimeConverter.convertFromIntToText(t.getStartTime()), t.getStartNode().getAbbr(), t.getEndNode().getAbbr(), (item.getComment() != null) ? item.getComment() : "&nbsp;");
-            for (Tuple<Train> tuple : conflicts) {
-                if (tuple.first == t) {
-                    f.format(templates.getDcLineMove(), tuple.second.getStartNode().getName(), templates.getString("move.to.station"));
+            for (Tuple<TrainsCycleItem> tuple : conflicts) {
+                if (tuple.first.getTrain() == t) {
+                    f.format(templates.getDcLineMove(), tuple.second.getFromNode().getName(), templates.getString("move.to.station"));
                 }
             }
         }

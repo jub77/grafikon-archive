@@ -10,13 +10,8 @@ import javax.swing.JComponent;
 import net.parostroj.timetable.gui.ApplicationModel;
 import net.parostroj.timetable.gui.ApplicationModelEvent;
 import net.parostroj.timetable.gui.ApplicationModelEventType;
-import net.parostroj.timetable.gui.dialogs.TCDetailsViewDialog;
 import net.parostroj.timetable.gui.dialogs.TCDetailsViewDialogEngineClass;
-import net.parostroj.timetable.model.EngineClass;
-import net.parostroj.timetable.model.Train;
-import net.parostroj.timetable.model.TrainsCycle;
-import net.parostroj.timetable.model.TrainsCycleItem;
-import net.parostroj.timetable.model.TrainsCycleType;
+import net.parostroj.timetable.model.*;
 import net.parostroj.timetable.utils.ResourceLoader;
 import net.parostroj.timetable.utils.TimeConverter;
 import net.parostroj.timetable.utils.Tuple;
@@ -82,12 +77,12 @@ public class EngineCycleDelegate implements TCDelegate {
     @Override
     public String getTrainCycleErrors(TrainsCycle cycle) {
         StringBuilder result = new StringBuilder();
-        List<Tuple<Train>> conflicts = cycle.checkConflicts();
-        for (Tuple<Train> item : conflicts) {
-            if (item.first.getEndNode() != item.second.getStartNode())
-                result.append(String.format(ResourceLoader.getString("ec.problem.nodes"),item.first.getName(),item.first.getEndNode().getName(),item.second.getName(),item.second.getStartNode().getName()));
+        List<Tuple<TrainsCycleItem>> conflicts = cycle.checkConflicts();
+        for (Tuple<TrainsCycleItem> item : conflicts) {
+            if (item.first.getToNode() != item.second.getFromNode())
+                result.append(String.format(ResourceLoader.getString("ec.problem.nodes"),item.first.getTrain().getName(),item.first.getToNode().getName(),item.second.getTrain().getName(),item.second.getFromNode().getName()));
             else if (item.first.getEndTime() >= item.second.getStartTime())
-                result.append(String.format(ResourceLoader.getString("ec.problem.time"),item.first.getName(),TimeConverter.convertFromIntToText(item.first.getEndTime()),item.second.getName(),TimeConverter.convertFromIntToText(item.second.getStartTime())));
+                result.append(String.format(ResourceLoader.getString("ec.problem.time"),item.first.getTrain().getName(),TimeConverter.convertFromIntToText(item.first.getEndTime()),item.second.getTrain().getName(),TimeConverter.convertFromIntToText(item.second.getStartTime())));
             result.append("\n");
         }
         return result.toString();
