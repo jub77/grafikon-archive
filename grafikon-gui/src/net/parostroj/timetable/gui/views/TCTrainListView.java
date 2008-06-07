@@ -10,10 +10,7 @@ import java.util.List;
 import javax.swing.DefaultListModel;
 import net.parostroj.timetable.actions.TrainComparator;
 import net.parostroj.timetable.actions.TrainSort;
-import net.parostroj.timetable.gui.ApplicationModel;
-import net.parostroj.timetable.gui.ApplicationModelEvent;
-import net.parostroj.timetable.gui.ApplicationModelEventType;
-import net.parostroj.timetable.gui.ApplicationModelListener;
+import net.parostroj.timetable.gui.*;
 import net.parostroj.timetable.model.TrainsCycle;
 import net.parostroj.timetable.model.Train;
 import net.parostroj.timetable.model.TrainsCycleItem;
@@ -94,7 +91,7 @@ public class TCTrainListView extends javax.swing.JPanel implements ApplicationMo
             // get all trains (sort)
             List<Train> getTrains = new ArrayList<Train>();
             for (Train train : model.getDiagram().getTrains()) {
-                if (delegate.getTrainCycles(train).isEmpty())
+                if (!train.isCovered(delegate.getType()))
                     getTrains.add(train);
             }
             // sort them

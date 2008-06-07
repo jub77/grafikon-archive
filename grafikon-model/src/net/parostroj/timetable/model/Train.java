@@ -1,9 +1,11 @@
 package net.parostroj.timetable.model;
 
 import java.util.*;
+import net.parostroj.timetable.actions.TrainsCycleHelper;
 import net.parostroj.timetable.model.events.TrainEvent;
 import net.parostroj.timetable.model.events.TrainListener;
 import net.parostroj.timetable.utils.Pair;
+import net.parostroj.timetable.utils.Tuple;
 
 /**
  * Train.
@@ -690,8 +692,43 @@ public class Train implements AttributesHolder, ObjectWithId {
         listenerSupport.fireEvent(event);
     }
     
-    protected void sortTrainsCycleItems() {
-        // sorts trains cycle items ....
-        // TODO implementation
+    /**
+     * returns if the train is covered by this type of the trains cycle.
+     * 
+     * @param type trains cycle type
+     * @return covered
+     */
+    public boolean isCovered(TrainsCycleType type) {
+        return TrainsCycleHelper.getHelper(type).isTrainCovered(this, this.getCyclesIntern(type));
+    }
+    
+    /**
+     * returns pair of nodes that indicates first uncovered interval.
+     * 
+     * @param type trains cycle type
+     * @return interval
+     */
+    public Tuple<Node> getFirstUncoveredPart(TrainsCycleType type) {
+        return TrainsCycleHelper.getHelper(type).getFirstUncoveredPart(this, this.getCyclesIntern(type));
+    }
+    
+    /**
+     * returns all uncovered parts.
+     * 
+     * @param type trains cycle type
+     * @return list of intervals
+     */
+    public List<Tuple<Node>> getAllUncoveredParts(TrainsCycleType type) {
+        return TrainsCycleHelper.getHelper(type).getAllUncoveredParts(this, this.getCyclesIntern(type));
+    }
+    
+    /**
+     * returns all uncovered parts (as list of nodes).
+     * 
+     * @param type trains cycle type
+     * @return list of intervals (as list of nodes)
+     */
+    public List<List<Node>> getAllUncoveredLists(TrainsCycleType type) {
+        return TrainsCycleHelper.getHelper(type).getAllUncoveredLists(this, this.getCyclesIntern(type));
     }
 }
