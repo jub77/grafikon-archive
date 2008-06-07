@@ -679,4 +679,19 @@ public class Train implements AttributesHolder, ObjectWithId {
             interval.removeFromOwner();
         }
     }
+    
+    /**
+     * fires given train event for this train (Useful for TrainsCycleItem and
+     * TimeIntervalList).
+     * 
+     * @param event train event
+     */
+    protected void fireTrainEvent(TrainEvent event) {
+        listenerSupport.fireEvent(event);
+    }
+    
+    protected void sortTrainsCycleItems() {
+        // sorts trains cycle items ....
+        // TODO implementation
+    }
 }
