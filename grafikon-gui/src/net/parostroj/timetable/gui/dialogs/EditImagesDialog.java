@@ -3,13 +3,11 @@
  *
  * Created on 12. říjen 2007, 19:44
  */
-
 package net.parostroj.timetable.gui.dialogs;
 
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.nio.channels.FileChannel;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;

@@ -3,7 +3,6 @@
  *
  * Created on 12. září 2007, 13:33
  */
-
 package net.parostroj.timetable.gui.panes;
 
 import java.awt.Color;
@@ -16,6 +15,7 @@ import net.parostroj.timetable.gui.views.GraphicalTimetableView.TrainColors;
 import net.parostroj.timetable.gui.views.HighlightedTrains;
 import net.parostroj.timetable.gui.views.TCDelegate;
 import net.parostroj.timetable.gui.views.TrainColorChooser;
+import net.parostroj.timetable.gui.views.TrainSelector;
 import net.parostroj.timetable.model.Train;
 import net.parostroj.timetable.model.TrainsCycle;
 import net.parostroj.timetable.model.TrainsCycleItem;
@@ -26,65 +26,93 @@ import net.parostroj.timetable.model.TrainsCycleItem;
  * @author jub
  */
 public class TrainsCyclesPane extends javax.swing.JPanel {
-    
+
+    private TCDelegate delegate;
+
+    private class HighligterAndSelector implements HighlightedTrains, TrainSelector, TrainColorChooser {
+
+        private TrainColorChooser chooserDelegate;
+        private TrainSelector selectorDelegate;
+
+        public HighligterAndSelector(TrainColorChooser chooser, TrainSelector selector) {
+            this.chooserDelegate = chooser;
+            this.selectorDelegate = selector;
+        }
+        private Set<Train> set = Collections.emptySet();
+        private TrainsCycle last;
+
+        @Override
+        public Set<Train> getHighlighedTrains() {
+            return Collections.singleton(selectorDelegate.getSelectedTrain());
+        }
+
+        @Override
+        public void modelChanged(ApplicationModelEvent event) {
+            if (delegate.transformEventType(event.getType()) == TCDelegate.Action.SELECTED_CHANGED) {
+                last = delegate.getSelectedCycle(event.getModel());
+                set = this.createSet(last);
+                graphicalTimetableView.repaint();
+            } else if (delegate.transformEventType(event.getType()) == TCDelegate.Action.MODIFIED_CYCLE) {
+                if (event.getObject() == last) {
+                    set = this.createSet(last);
+                    graphicalTimetableView.repaint();
+                }
+            }
+        }
+
+        private Set<Train> createSet(TrainsCycle cycle) {
+            if (cycle == null) {
+                return Collections.emptySet();
+            }
+            Set<Train> result = new HashSet<Train>();
+            for (TrainsCycleItem item : cycle) {
+                result.add(item.getTrain());
+            }
+            return result;
+        }
+
+        @Override
+        public Color getColor() {
+            return Color.GREEN;
+        }
+
+        @Override
+        public void selectTrain(Train train) {
+            selectorDelegate.selectTrain(train);
+            graphicalTimetableView.repaint();
+        }
+
+        @Override
+        public Train getSelectedTrain() {
+            return selectorDelegate.getSelectedTrain();
+        }
+
+        @Override
+        public Color getColor(Train train) {
+            if (set.contains(train))
+                return Color.RED;
+            return chooserDelegate.getColor(train);
+        }
+    }
+
     /** Creates new form EngineCyclesPane */
     public TrainsCyclesPane() {
         initComponents();
     }
-    
+
     public void setModel(ApplicationModel model, final TCDelegate delegate, TrainColorChooser chooser) {
+        this.delegate = delegate;
+        HighligterAndSelector hts = new HighligterAndSelector(chooser, eCTrainListView);
         eCListView.setModel(model, delegate);
         eCDetailsView.setModel(model, delegate);
         eCTrainListView.setModel(model, delegate);
         graphicalTimetableView.setModel(model);
-        graphicalTimetableView.setTrainColors(TrainColors.BY_COLOR_CHOOSER,chooser);
-
-        HighlightedTrains ht = new HighlightedTrains() {
-            
-            private Set<Train> set = Collections.emptySet();
-            
-            private TrainsCycle last;
-
-            @Override
-            public Set<Train> getHighlighedTrains() {
-                return set;
-            }
-
-            @Override
-            public void modelChanged(ApplicationModelEvent event) {
-                if (delegate.transformEventType(event.getType()) == TCDelegate.Action.SELECTED_CHANGED) {
-                    last = delegate.getSelectedCycle(event.getModel());
-                    set = this.createSet(last);
-                    graphicalTimetableView.repaint();
-                } else if (delegate.transformEventType(event.getType()) == TCDelegate.Action.MODIFIED_CYCLE) {
-                    if (event.getObject() == last) {
-                        set = this.createSet(last);
-                        graphicalTimetableView.repaint();
-                    }
-                }
-            }
-            
-            private Set<Train> createSet(TrainsCycle cycle) {
-                if (cycle == null)
-                    return Collections.emptySet();
-                
-                Set<Train> result = new HashSet<Train>();
-                for (TrainsCycleItem item : cycle) {
-                    result.add(item.getTrain());
-                }
-                return result;
-            }
-
-            @Override
-            public Color getColor() {
-                return Color.RED;
-            }
-        };
-        model.addListener(ht);
-        graphicalTimetableView.setHTrains(ht);
-        graphicalTimetableView.setTrainSelector(eCTrainListView);
+        graphicalTimetableView.setTrainColors(TrainColors.BY_COLOR_CHOOSER, hts);
+        model.addListener(hts);
+        graphicalTimetableView.setHTrains(hts);
+        graphicalTimetableView.setTrainSelector(hts);
     }
-    
+
     /** This method is called from within the constructor to
      * initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is
@@ -143,8 +171,6 @@ public class TrainsCyclesPane extends javax.swing.JPanel {
                 .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents
-    
-    
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private net.parostroj.timetable.gui.views.TCDetailsView2 eCDetailsView;
     private net.parostroj.timetable.gui.views.TCListView eCListView;
@@ -152,5 +178,4 @@ public class TrainsCyclesPane extends javax.swing.JPanel {
     private net.parostroj.timetable.gui.views.GraphicalTimetableView graphicalTimetableView;
     private javax.swing.JScrollPane scrollPane;
     // End of variables declaration//GEN-END:variables
-    
 }
