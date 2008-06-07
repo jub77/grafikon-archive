@@ -3,24 +3,16 @@
  *
  * Created on 30. září 2007, 11:13
  */
-
 package net.parostroj.timetable.gui.dialogs;
 
 import java.awt.event.ItemEvent;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.DefaultListModel;
 import javax.swing.JOptionPane;
 import net.parostroj.timetable.gui.ApplicationModel;
-import net.parostroj.timetable.model.Line;
-import net.parostroj.timetable.model.LineClass;
-import net.parostroj.timetable.model.LineTrack;
-import net.parostroj.timetable.model.Node;
-import net.parostroj.timetable.model.NodeTrack;
+import net.parostroj.timetable.model.*;
 import net.parostroj.timetable.utils.ResourceLoader;
 import net.parostroj.timetable.utils.Tuple;
 

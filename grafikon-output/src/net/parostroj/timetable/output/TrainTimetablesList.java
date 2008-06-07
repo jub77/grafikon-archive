@@ -58,7 +58,7 @@ public class TrainTimetablesList {
         
         // go through all trains
         for (Train train : sorted) {
-            TrainTimetable timetable = new TrainTimetable(train, templates);
+            TrainTimetable timetable = new TrainTimetable(train, templates, diagram);
             if (!page.addTrainTimetable(timetable)) {
                 page = this.createNewPage();
                 page.addTrainTimetable(timetable);
