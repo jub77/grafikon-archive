@@ -207,39 +207,13 @@ public class Train implements AttributesHolder, ObjectWithId {
         return cycles.get(type);
     }
 
-    public void addCycle(TrainsCycleItem item) {
+    protected void addCycleItem(TrainsCycleItem item) {
         TrainsCycleType cycleType = item.getCycle().getType();
-        List<TrainsCycleItem> list = this.getCyclesIntern(cycleType);
-        ListIterator<TrainsCycleItem> i = list.listIterator();
-        Iterator<TimeInterval> tii = timeIntervalList.iterator();
-        boolean added = false;
-        Node from = item.getFromNode();
-        Node current = tii.next().getOwner().asNode();
-        Node currentInList = i.hasNext() ? i.next().getFromNode() : null;
-        while (!added) {
-            if (current == null) {
-                throw new IllegalArgumentException("Cannot insert cycle item with invalid ends.");
-            } else if (current == currentInList) {
-                currentInList = i.hasNext() ? i.next().getFromNode() : null;
-            } else if (from == current) {
-                if (currentInList != null) {
-                    i.previous();
-                }
-                i.add(item);
-                added = true;
-            } else {
-                if (tii.hasNext()) {
-                    tii.next();
-                    current = tii.next().getOwner().asNode();
-                } else {
-                    current = null;
-                }
-            }
-        }
+        TrainsCycleHelper.getHelper(cycleType).addCycleItem(this, this.getCyclesIntern(cycleType), item);
         this.listenerSupport.fireEvent(new TrainEvent(this, TrainEvent.Type.CYCLE));
     }
 
-    public void removeCycle(TrainsCycleItem item) {
+    protected void removeCycleItem(TrainsCycleItem item) {
         TrainsCycleType cycleType = item.getCycle().getType();
         this.getCyclesIntern(cycleType).remove(item);
         this.listenerSupport.fireEvent(new TrainEvent(this, TrainEvent.Type.CYCLE));
@@ -730,5 +704,37 @@ public class Train implements AttributesHolder, ObjectWithId {
      */
     public List<List<Node>> getAllUncoveredLists(TrainsCycleType type) {
         return TrainsCycleHelper.getHelper(type).getAllUncoveredLists(this, this.getCyclesIntern(type));
+    }
+    
+    public List<Pair<RouteSegment, Boolean>> getRouteCoverage(TrainsCycleType type) {
+        return TrainsCycleHelper.getHelper(type).getRouteCoverage(this, this.getCyclesIntern(type));
+    }
+    
+    /**
+     * returns list of nodes from from noded to to node.
+     * 
+     * @param from from node
+     * @param to to node
+     * @return list of nodes in route
+     */
+    public List<Node> convertToNodeList(Node from, Node to) {
+        List<Node> nodes = new LinkedList<Node>();
+        boolean collect = false;
+        for (TimeInterval interval : getTimeIntervalList()) {
+            if (interval.getOwner() instanceof Node) {
+                Node node = interval.getOwner().asNode();
+                if (from == node)
+                    collect = true;
+                if (collect)
+                    nodes.add(node);
+                if (to == node)
+                    collect = false;
+            }
+        }
+        return nodes;
+    }
+    
+    public boolean testAddCycle(TrainsCycleItem newItem, TrainsCycleItem ignoredItem) {
+        return TrainsCycleHelper.getHelper(newItem.getCycle().getType()).testAddCycle(this, getCyclesIntern(newItem.getCycle().getType()), newItem, ignoredItem);
     }
 }

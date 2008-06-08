@@ -113,7 +113,8 @@ public class TCListView extends javax.swing.JPanel implements ApplicationModelLi
         scrollPane.setPreferredSize(new java.awt.Dimension(0, 132));
 
         ecList.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
-        ecList.setPrototypeCellValue("mmmmmmmmmm");
+        ecList.setPrototypeCellValue("mmmmmmmmmmm");
+        ecList.setVisibleRowCount(3);
         scrollPane.setViewportView(ecList);
 
         newNameTextField.setColumns(10);
@@ -137,11 +138,11 @@ public class TCListView extends javax.swing.JPanel implements ApplicationModelLi
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addComponent(createButton, javax.swing.GroupLayout.DEFAULT_SIZE, 131, Short.MAX_VALUE)
+                .addComponent(createButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(deleteButton, javax.swing.GroupLayout.DEFAULT_SIZE, 123, Short.MAX_VALUE))
-            .addComponent(newNameTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 260, Short.MAX_VALUE)
-            .addComponent(scrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 260, Short.MAX_VALUE)
+                .addComponent(deleteButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addComponent(newNameTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 160, Short.MAX_VALUE)
+            .addComponent(scrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 160, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)

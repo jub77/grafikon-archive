@@ -1,18 +1,15 @@
 /*
- * EngineRun.java
+ * TrainsCycle.java
  * 
  * Created on 11.9.2007, 20:30:58
  */
 package net.parostroj.timetable.model;
 
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 import net.parostroj.timetable.utils.Tuple;
 
 /**
- * Run of engine through trains.
+ * Trains cycle.
  * 
  * @author jub
  */
@@ -129,19 +126,33 @@ public class TrainsCycle implements AttributesHolder, ObjectWithId, Iterable<Tra
     }
 
     public void addItem(TrainsCycleItem item) {
+        item.getTrain().addCycleItem(item);
         items.add(item);
     }
     
     public void removeItem(TrainsCycleItem item) {
+        item.getTrain().removeCycleItem(item);
         items.remove(item);
     }
     
     public void addItem(TrainsCycleItem item, int index) {
+        item.getTrain().addCycleItem(item);
         items.add(index, item);
     }
     
     public TrainsCycleItem removeItem(int index) {
-        return items.remove(index);
+        TrainsCycleItem item = items.remove(index);
+        item.getTrain().removeCycleItem(item);
+        return item;
+    }
+    
+    public void replaceItem(TrainsCycleItem newItem, TrainsCycleItem oldItem) {
+        if (newItem.getTrain() != oldItem.getTrain() || newItem.getCycle() != this || oldItem.getCycle() != this)
+            throw new IllegalArgumentException("Illegal argument.");
+        Train t = newItem.getTrain();
+        t.removeCycleItem(oldItem);
+        t.addCycleItem(newItem);
+        this.items.set(this.items.indexOf(oldItem), newItem);
     }
     
     public List<TrainsCycleItem> getItems() {
@@ -186,5 +197,11 @@ public class TrainsCycle implements AttributesHolder, ObjectWithId, Iterable<Tra
     
     public boolean isEmpty() {
         return items.isEmpty();
+    }
+    
+    public void clear() {
+        for (TrainsCycleItem item : items) {
+            item.getTrain().removeCycleItem(item);
+        }
     }
 }

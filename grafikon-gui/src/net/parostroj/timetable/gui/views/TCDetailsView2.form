@@ -20,11 +20,11 @@
                   <Component id="nameLabel" min="-2" max="-2" attributes="0"/>
                   <Component id="descriptionLabel" alignment="0" min="-2" max="-2" attributes="0"/>
               </Group>
-              <EmptySpace pref="39" max="32767" attributes="0"/>
+              <EmptySpace pref="56" max="32767" attributes="0"/>
           </Group>
-          <Component id="descriptionTextField" alignment="0" pref="69" max="32767" attributes="0"/>
-          <Component id="nameTextField" alignment="0" pref="69" max="32767" attributes="0"/>
-          <Component id="editButton" alignment="0" max="32767" attributes="0"/>
+          <Component id="descriptionTextField" alignment="0" max="32767" attributes="0"/>
+          <Component id="nameTextField" alignment="0" max="32767" attributes="0"/>
+          <Component id="editButton" alignment="0" pref="86" max="32767" attributes="0"/>
       </Group>
     </DimensionLayout>
     <DimensionLayout dim="1">
@@ -46,6 +46,7 @@
   <SubComponents>
     <Component class="javax.swing.JTextField" name="nameTextField">
       <Properties>
+        <Property name="columns" type="int" value="10"/>
         <Property name="editable" type="boolean" value="false"/>
       </Properties>
     </Component>
@@ -73,6 +74,7 @@
     </Component>
     <Component class="javax.swing.JTextField" name="descriptionTextField">
       <Properties>
+        <Property name="columns" type="int" value="10"/>
         <Property name="editable" type="boolean" value="false"/>
       </Properties>
     </Component>

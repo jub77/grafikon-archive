@@ -377,4 +377,20 @@ public class TimeInterval implements AttributesHolder {
     public Object removeAttribute(String key) {
         return attributes.remove(key);
     }
+    
+    public boolean isNodeOwner() {
+        return (owner instanceof Node);
+    }
+    
+    public boolean isLineOwner() {
+        return (owner instanceof Line);
+    }
+    
+    public Node getOwnerAsNode() {
+        return isNodeOwner() ? (Node)owner : null;
+    }
+    
+    public Line getOwnerAsLine() {
+        return isLineOwner() ? (Line)owner : null;
+    }
 }

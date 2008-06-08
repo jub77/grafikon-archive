@@ -3,7 +3,6 @@
  *
  * Created on 3. září 2007, 10:22
  */
-
 package net.parostroj.timetable.gui.panes;
 
 import java.awt.Color;
@@ -79,18 +78,21 @@ public class TrainsPane extends javax.swing.JPanel implements StorableGuiData {
                 model.setSelectedTrain(train);
             }
 
+            @Override
             public Train getSelectedTrain() {
                 return model.getSelectedTrain();
             }
         });
     }
     
+    @Override
     public void loadFromPreferences(AppPreferences prefs) {
         Integer dividerLoc = prefs.getInt("trains.divider");
         if (dividerLoc != null)
             splitPane.setDividerLocation(dividerLoc.intValue());
     }
     
+    @Override
     public void saveToPreferences(AppPreferences prefs) {
         prefs.setInt("trains.divider", splitPane.getDividerLocation());
     }
