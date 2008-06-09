@@ -22,7 +22,6 @@ import net.parostroj.timetable.utils.TimeConverter;
 public class NodeTimetablesList {
     
     private List<Node> nodes;
-    
     private NodeTimetablesListTemplates templates;
 
     public NodeTimetablesList(Collection<Node> aNodes) {
@@ -103,14 +102,16 @@ public class NodeTimetablesList {
                 // end
                 TrainsCycleItem itemNext = item.getCycle().getNextItem(item);
                 if (itemNext != null) {
+                    this.appendDelimiter(comment);
                     comment.append(templates.getString("engine.to"));
                     comment.append(' ').append(itemNext.getTrain().getName());
-                    comment.append(" (").append(TimeConverter.convertFromIntToText(itemNext.getTrain().getStartTime()));
+                    comment.append(" (").append(TimeConverter.convertFromIntToText(itemNext.getStartTime()));
                     comment.append(')');
                 }
             }
             if (item.getFromNode() == interval.getOwner()) {
                 // start
+                this.appendDelimiter(comment);
                 comment.append(templates.getString("engine")).append(": ");
                 comment.append(item.getCycle().getName()).append(" (");
                 comment.append(item.getCycle().getDescription()).append(')');
@@ -128,7 +129,7 @@ public class NodeTimetablesList {
                     this.appendDelimiter(comment);
                     comment.append(templates.getString("train.unit.to"));
                     comment.append(' ').append(itemNext.getTrain().getName());
-                    comment.append(" (").append(TimeConverter.convertFromIntToText(itemNext.getTrain().getStartTime()));
+                    comment.append(" (").append(TimeConverter.convertFromIntToText(itemNext.getStartTime()));
                     comment.append(')');
                 }
             }

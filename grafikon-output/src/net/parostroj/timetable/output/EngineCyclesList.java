@@ -1,5 +1,5 @@
 /*
- * NodeTimetablesList.java
+ * EngineCyclesList.java
  * 
  * Created on 11.9.2007, 19:33:20
  */
@@ -10,10 +10,7 @@ import java.io.Writer;
 import java.util.Formatter;
 import java.util.Iterator;
 import java.util.List;
-import net.parostroj.timetable.model.TrainsCycle;
-import net.parostroj.timetable.model.Train;
-import net.parostroj.timetable.model.TrainsCycleItem;
-import net.parostroj.timetable.model.TrainsCycleType;
+import net.parostroj.timetable.model.*;
 import net.parostroj.timetable.utils.TimeConverter;
 
 /**
@@ -69,7 +66,7 @@ public class EngineCyclesList {
                     writer.write(templates.getEcLineSep());
                 }
             }
-            f.format(templates.getEcLine(), t.getName(),TimeConverter.convertFromIntToText(t.getStartTime()),t.getStartNode().getAbbr(),t.getEndNode().getAbbr());
+            f.format(templates.getEcLine(), t.getName(),TimeConverter.convertFromIntToText(item.getStartTime()),item.getFromNode().getAbbr(),item.getToNode().getAbbr());
             lastTime = t.getEndTime();
         }
         

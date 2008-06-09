@@ -8,10 +8,7 @@ package net.parostroj.timetable.output;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.Formatter;
-import net.parostroj.timetable.model.TrainDiagram;
-import net.parostroj.timetable.model.TrainsCycle;
-import net.parostroj.timetable.model.TrainsCycleItem;
-import net.parostroj.timetable.model.TrainsCycleType;
+import net.parostroj.timetable.model.*;
 
 /**
  * List of starting positions.
@@ -38,7 +35,7 @@ public class StartingPositionsList {
         for (TrainsCycle ecCycle : diagram.getCycles(TrainsCycleType.ENGINE_CYCLE)) {
             if (!ecCycle.isEmpty()) {
                 TrainsCycleItem start = ecCycle.iterator().next();
-                String startName = start.getTrain().getStartNode().getName();
+                String startName = start.getFromNode().getName();
                 f.format(templates.getSpLine(), ecCycle.getName(), ecCycle.getDescription(), startName, start.getTrain().getName());
             }
         }
@@ -49,7 +46,7 @@ public class StartingPositionsList {
         for (TrainsCycle tucCycle : diagram.getCycles(TrainsCycleType.TRAIN_UNIT_CYCLE)) {
             if (!tucCycle.isEmpty()) {
                 TrainsCycleItem start = tucCycle.iterator().next();
-                String startName = start.getTrain().getStartNode().getName();
+                String startName = start.getFromNode().getName();
                 f.format(templates.getSpLine(), tucCycle.getName(), tucCycle.getDescription(), startName, start.getTrain().getName());
             }
         }

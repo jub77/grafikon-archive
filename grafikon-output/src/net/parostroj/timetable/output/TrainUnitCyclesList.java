@@ -1,5 +1,5 @@
 /*
- * NodeTimetablesList.java
+ * TrainUnitCyclesList.java
  * 
  * Created on 11.9.2007, 19:33:20
  */
@@ -51,7 +51,7 @@ public class TrainUnitCyclesList {
         
         for (TrainsCycleItem item : cycle) {
             Train t = item.getTrain();
-            f.format(templates.getTucLine(), t.getName(),TimeConverter.convertFromIntToText(t.getStartTime()),t.getStartNode().getAbbr(),t.getEndNode().getAbbr(), (item.getComment() != null) ? item.getComment() : "&nbsp;");
+            f.format(templates.getTucLine(), t.getName(),TimeConverter.convertFromIntToText(item.getStartTime()),item.getFromNode().getAbbr(),item.getToNode().getAbbr(), (item.getComment() != null) ? item.getComment() : "&nbsp;");
         }
         
         writer.write(templates.getTucFooter());
