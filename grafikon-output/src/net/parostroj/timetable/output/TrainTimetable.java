@@ -322,14 +322,14 @@ public class TrainTimetable {
             return "-";
         } else if (train.getCycles(TrainsCycleType.ENGINE_CYCLE).size() == 1) {
             TrainsCycleItem item = train.getCycles(TrainsCycleType.ENGINE_CYCLE).iterator().next();
-            return TrainTimetablesListTemplates.getString(((Boolean) train.getAttribute("diesel")) ? "diesel.unit" : "engine") + " " + item.getCycle().getDescription();
+            return TrainTimetablesListTemplates.getString(((Boolean) train.getAttribute("diesel")) ? "diesel.unit" : "engine") + " " + TransformUtil.getEngineCycleDescription(item.getCycle());
         } else {
             StringBuilder desc = new StringBuilder();
             for (TrainsCycleItem item : train.getCycles(TrainsCycleType.ENGINE_CYCLE)) {
                 if (desc.length() != 0) {
                     desc.append("<br>");
                 }
-                desc.append(TrainTimetablesListTemplates.getString(((Boolean) train.getAttribute("diesel")) ? "diesel.unit" : "engine") + " " + item.getCycle().getDescription());
+                desc.append(TrainTimetablesListTemplates.getString(((Boolean) train.getAttribute("diesel")) ? "diesel.unit" : "engine") + " " + TransformUtil.getEngineCycleDescription(item.getCycle()));
                 desc.append(" ");
                 desc.append(item.getFromNode().getName());
                 desc.append("-");

@@ -36,7 +36,7 @@ public class StartingPositionsList {
             if (!ecCycle.isEmpty()) {
                 TrainsCycleItem start = ecCycle.iterator().next();
                 String startName = start.getFromNode().getName();
-                f.format(templates.getSpLine(), ecCycle.getName(), ecCycle.getDescription(), startName, start.getTrain().getName());
+                f.format(templates.getSpLine(), ecCycle.getName(), TransformUtil.getEngineCycleDescription(ecCycle), startName, start.getTrain().getName());
             }
         }
         writer.write(templates.getSpSectionFooter());

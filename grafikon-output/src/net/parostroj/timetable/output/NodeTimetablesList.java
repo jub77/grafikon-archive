@@ -114,7 +114,7 @@ public class NodeTimetablesList {
                 this.appendDelimiter(comment);
                 comment.append(templates.getString("engine")).append(": ");
                 comment.append(item.getCycle().getName()).append(" (");
-                comment.append(item.getCycle().getDescription()).append(')');
+                comment.append(TransformUtil.getEngineCycleDescription(item.getCycle())).append(')');
             }
         }
     }

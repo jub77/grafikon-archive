@@ -12,6 +12,7 @@ import net.parostroj.timetable.gui.ApplicationModelEvent;
 import net.parostroj.timetable.gui.ApplicationModelEventType;
 import net.parostroj.timetable.gui.dialogs.TCDetailsViewDialogEngineClass;
 import net.parostroj.timetable.model.*;
+import net.parostroj.timetable.output.TransformUtil;
 import net.parostroj.timetable.utils.ResourceLoader;
 import net.parostroj.timetable.utils.TimeConverter;
 import net.parostroj.timetable.utils.Tuple;
@@ -110,14 +111,6 @@ public class EngineCycleDelegate implements TCDelegate {
     @Override
     public String getCycleDescription(ApplicationModel model) {
         TrainsCycle cycle = getSelectedCycle(model);
-        StringBuilder b = new StringBuilder();
-        if (cycle.getDescription() != null)
-            b.append(cycle.getDescription());
-        if (cycle.getAttribute("engine.class") != null) {
-            if (b.length() != 0)
-                b.append(' ');
-            b.append('[').append(((EngineClass)cycle.getAttribute("engine.class")).getName()).append(']');
-        }
-        return b.toString();
+        return TransformUtil.getEngineCycleDescription(cycle);
     }
 }

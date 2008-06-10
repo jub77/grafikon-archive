@@ -55,7 +55,7 @@ public class EngineCyclesList {
     }
     
     private void writeEngineCycle(Formatter f, Writer writer, TrainsCycle cycle) throws IOException {
-        f.format(templates.getEcHeader(), cycle.getName(),cycle.getDescription(),templates.getString("engine.cycle"),
+        f.format(templates.getEcHeader(), cycle.getName(),TransformUtil.getEngineCycleDescription(cycle),templates.getString("engine.cycle"),
                 templates.getString("column.train"),templates.getString("column.departure"),templates.getString("column.from.to"));
         
         int lastTime = -1;

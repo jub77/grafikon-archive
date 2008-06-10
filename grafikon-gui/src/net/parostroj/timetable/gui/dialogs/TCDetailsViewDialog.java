@@ -120,14 +120,14 @@ public class TCDetailsViewDialog extends javax.swing.JDialog {
 private void okButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_okButtonActionPerformed
     // write values back and close
     TrainsCycle cycle = delegate.getSelectedCycle(model);
-    if (nameTextField.getText() != null && !"".equals(nameTextField.getText()))
+    if (nameTextField.getText() != null && !"".equals(nameTextField.getText().trim()))
         cycle.setName(nameTextField.getText());
     else
         return;
-    if (descTextField.getText() == null || "".equals(descTextField.getText()))
+    if (descTextField.getText() == null || "".equals(descTextField.getText().trim()))
         cycle.setDescription(null);
     else
-        cycle.setDescription(descTextField.getText());
+        cycle.setDescription(descTextField.getText().trim());
     
     // event
     delegate.fireEvent(TCDelegate.Action.MODIFIED_CYCLE, model, cycle);

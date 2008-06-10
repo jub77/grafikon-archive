@@ -2,9 +2,12 @@ package net.parostroj.timetable.output;
 
 import java.util.List;
 import java.util.ListIterator;
+import net.parostroj.timetable.model.EngineClass;
 import net.parostroj.timetable.model.Node;
 import net.parostroj.timetable.model.NodeType;
 import net.parostroj.timetable.model.TimeInterval;
+import net.parostroj.timetable.model.TrainsCycle;
+import net.parostroj.timetable.model.TrainsCycleType;
 
 /**
  * Transformation of texts.
@@ -68,5 +71,21 @@ public class TransformUtil {
             return "&nbsp;";
         else
             return node.getAbbr();
+    }
+    
+    public static String getEngineCycleDescription(TrainsCycle ec) {
+        if (ec.getType() != TrainsCycleType.ENGINE_CYCLE)
+            throw new IllegalArgumentException("Engine cycle expected.");
+        
+        // TODO - implementation (for now it returns description with engine in brackets)
+        String result = (ec.getDescription() != null) ? ec.getDescription() : "";
+        if (ec.getAttribute("engine.class") != null) {
+            EngineClass cl = (EngineClass)ec.getAttribute("engine.class");
+            result = cl.getName();
+            if (ec.getDescription() != null && !"".equals(ec.getDescription())) {
+                result += " (" + ec.getDescription() + ")";
+            }
+        }
+        return result;
     }
 }

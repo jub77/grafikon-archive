@@ -1,5 +1,5 @@
 /*
- * TCDetailsViewDialog.java
+ * TCDetailsViewDialogEngineClass.java
  *
  * Created on 4. červen 2008, 12:30
  */
@@ -141,13 +141,13 @@ private void okButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRS
     // write values back and close
     TrainsCycle cycle = delegate.getSelectedCycle(model);
     if (nameTextField.getText() != null && !"".equals(nameTextField.getText()))
-        cycle.setName(nameTextField.getText());
+        cycle.setName(nameTextField.getText().trim());
     else
         return;
-    if (descTextField.getText() == null || "".equals(descTextField.getText()))
+    if (descTextField.getText() == null || "".equals(descTextField.getText().trim()))
         cycle.setDescription(null);
     else
-        cycle.setDescription(descTextField.getText());
+        cycle.setDescription(descTextField.getText().trim());
     
     // write back engine class
     if (engineClassComboBox.getSelectedItem() == noneEngineClass)
