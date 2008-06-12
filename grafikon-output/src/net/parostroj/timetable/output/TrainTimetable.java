@@ -273,7 +273,7 @@ public class TrainTimetable {
             if (note.equals("")) {
                 note = "&nbsp;";
             }
-            f.format(lineTemplate, stopName, note, this.convertLastRunningTime(lastRunningTime), fromTime, stopTime, toTime, speedStr, lineClassStr, column2a);
+            f.format(lineTemplate, stopName, note, this.convertLastRunningTime(lastRunningTime), fromTime, stopTime, toTime, speedStr, lineClassStr, column2a, trapezoidTrainsStr);
             if (lineInterval != null) {
                 lastRunningTime = lineInterval.getLength();
                 allRunningTime += lineInterval.getLength();
