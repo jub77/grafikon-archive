@@ -150,6 +150,7 @@ public class TrainTimetable {
         int lastHourFrom = -1;
         int lastHoutTo = -1;
         NodeTrack lastStraight = null;
+        LineClass lastLineClass = null;
         while (i.hasNext()) {
             TimeInterval nodeInterval = i.next();
             Node node = (Node) nodeInterval.getOwner();
@@ -202,15 +203,22 @@ public class TrainTimetable {
                 stopName = "<b>" + stopName + "</b>";
             }
 
-            String column8 = "&nbsp;";
+            String trapezoidTrainsStr = "&nbsp;";
             boolean trapezoid = false;
             if (d3 && Boolean.TRUE.equals(node.getAttribute("trapezoid.sign"))) {
-                String c8 = this.getTrapezoidTrains(nodeInterval, node);
-                if (c8 != null) {
-                    column8 = c8;
+                String trapezoidTrains = this.getTrapezoidTrains(nodeInterval, node);
+                if (trapezoidTrains != null) {
+                    trapezoidTrainsStr = trapezoidTrains;
                     trapezoid = true;
                 }
             }
+            
+            String lineClassStr = "&nbsp;";
+            LineClass currentLineClass = lineInterval != null ? (LineClass) lineInterval.getOwnerAsLine().getAttribute("line.class") : null;
+            if (lastLineClass != currentLineClass && currentLineClass != null) {
+                lineClassStr += currentLineClass.getName();
+            }
+            lastLineClass = currentLineClass;
 
             String note = "";
             if ("new.signals".equals(node.getAttribute("interlocking.plant"))) {
@@ -265,7 +273,7 @@ public class TrainTimetable {
             if (note.equals("")) {
                 note = "&nbsp;";
             }
-            f.format(lineTemplate, stopName, note, this.convertLastRunningTime(lastRunningTime), fromTime, stopTime, toTime, speedStr, column8, column2a);
+            f.format(lineTemplate, stopName, note, this.convertLastRunningTime(lastRunningTime), fromTime, stopTime, toTime, speedStr, lineClassStr, column2a);
             if (lineInterval != null) {
                 lastRunningTime = lineInterval.getLength();
                 allRunningTime += lineInterval.getLength();
