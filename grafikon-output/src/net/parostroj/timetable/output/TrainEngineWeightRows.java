@@ -41,11 +41,13 @@ public class TrainEngineWeightRows {
 
     private void processOld() {
         String weightStr = (String) train.getAttribute("weight.info");
+        if (weightStr != null && weightStr.trim().equals(""))
+            weightStr = null;
         for (TrainsCycleItem item : train.getCycles(TrainsCycleType.ENGINE_CYCLE)) {
             String name = TransformUtil.getEngineCycleDescription(item.getCycle());
             data.add(new TrainEWDataRow(train, name, item.getFromNode(), item.getToNode(), weightStr));
         }
-        if (data.size() == 0 && weightStr != null) {
+        if (data.size() == 0) {
             data.add(new TrainEWDataRow(train, null, null, null, weightStr));
         }
     }

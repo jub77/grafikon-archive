@@ -1,5 +1,6 @@
         <tr style="height: 4mm">
-          <td style="font-size: 3mm">%1$s</td>
-          <td style="font-size: 3mm">%2$s</td>
-          <td style="font-size: 3mm">%3$s</td>
+          <td>%1$s</td>
+          <td>%2$s</td>
+          <td>%3$s</td>
+          <td align="right">%4$s</td>
         </tr>

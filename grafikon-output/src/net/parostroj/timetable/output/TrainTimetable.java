@@ -296,9 +296,13 @@ public class TrainTimetable {
 
     private String createOneWeightLine(String template, TrainEWDataRow row) {
         String engineCycleDesc = this.createCommentWithEngineCycles(row.getEngine());
+        String weightDescStr = "";
+        if (row.getWeight() != null && row.getEngine() != null) {
+            weightDescStr = TrainTimetablesListTemplates.getString("norm.load") + ": &nbsp;";
+        }
         String path = (row.getFrom() != null) ? row.getFrom() + " - " + row.getTo() + " &nbsp;" : "";
-        String wString = (train.getAttribute("weight.info") == null || train.getAttribute("weight.info").equals("")) ? "" : (TrainTimetablesListTemplates.getString("norm.load") + " " + row.getWeight() + " " + TrainTimetablesListTemplates.getString("tons"));
-        return String.format(template, engineCycleDesc, path, wString);
+        String wString = (row.getWeight() == null) ? "" : (row.getWeight() + " " + TrainTimetablesListTemplates.getString("tons"));
+        return String.format(template, engineCycleDesc, weightDescStr, path, wString);
     }
     
     private String convertLastRunningTime(int time) {
@@ -346,6 +350,6 @@ public class TrainTimetable {
         if (engineCycleStr == null)
             return "";
         else
-            return TrainTimetablesListTemplates.getString(((Boolean) train.getAttribute("diesel")) ? "diesel.unit" : "engine") + " " + engineCycleStr + " &nbsp;";
+            return TrainTimetablesListTemplates.getString(((Boolean) train.getAttribute("diesel")) ? "diesel.unit" : "engine") + " " + engineCycleStr + ". &nbsp;";
     }
 }
