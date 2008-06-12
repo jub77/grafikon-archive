@@ -67,6 +67,20 @@
         padding: 0.3mm;
     }
 
+    table.wl {
+        background-color:yellow;
+    }
+
+    table.wl tr {
+        background-color:green;
+    }
+
+    table.wl tr td {
+        border: 0;
+        margin: 0;
+        padding: 0;
+    }
+
     table.tt tr td.tc-d3-1 { width: 40mm; border-right-width: 0.2mm; }
     table.tt tr td.tc-d3-2 { width: 8mm; border-right-width: 0.2mm; }
     table.tt tr td.tc-d3-2a { width: 5mm; border-right-width: 0.2mm; }

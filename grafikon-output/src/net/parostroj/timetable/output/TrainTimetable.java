@@ -27,12 +27,14 @@ public class TrainTimetable {
     private boolean d3;
     private TrainTimetablesListTemplates templates;
     private List<Pair<String, String>> comments;
+    private TrainEngineWeightRows weightRows;
 
     public TrainTimetable(Train train, TrainTimetablesListTemplates templates, TrainDiagram diagram) {
         this.train = train;
         this.diagram = diagram;
         this.templates = templates;
         d3 = train.oneLineHasAttribute("line.controlled", Boolean.TRUE);
+        weightRows = new TrainEngineWeightRows(train);
 
         this.computeLength();
     }
@@ -48,9 +50,8 @@ public class TrainTimetable {
 
     private void computeLength() {
         length = templates.getTimetableFooterHeight() + templates.getTimetableHeaderHeight();
-        length = length + templates.getTimetableLineHeight() * ((train.getTimeIntervalList().size() / 2) + 1);
-
-        // TODO include number of engine cycles to computation ...
+        length += templates.getTimetableLineHeight() * ((train.getTimeIntervalList().size() / 2) + 1);
+        length += templates.getTimetableHeaderWeightLineHeight() * weightRows.getData().size();
 
         // compute comments
         boolean lineEnd = false;
@@ -93,15 +94,11 @@ public class TrainTimetable {
 
     public void writeTo(Writer writer, Page page) throws IOException {
         comments = new LinkedList<Pair<String, String>>();
-
         Formatter f = new Formatter(writer);
-        String wString = (train.getAttribute("weight.info") == null || train.getAttribute("weight.info").equals("")) ? "" : (". " + TrainTimetablesListTemplates.getString("norm.load") + " " + train.getAttribute("weight.info") + " " + TrainTimetablesListTemplates.getString("tons"));
-        String trainLine = train.getCompleteName();
-        String engineCycleDesc = this.createCommentWithEngineCycles();
-        String rString = this.createRouteInfo();
-        String headerTemplate = d3 ? templates.getTimetableHeaderD3() : templates.getTimetableHeader();
-        f.format(headerTemplate, trainLine, engineCycleDesc, wString, rString);
+
+        this.writeHeader(f);
         this.writeLines(f);
+
         String allTimeStr = null;
         int allTime = allRunningTime + allStopTime;
         if (TimeConverter.getHours(allTime) == 0) {
@@ -275,7 +272,35 @@ public class TrainTimetable {
             }
         }
     }
+    
+    private void writeHeader(Formatter formatter) {
+        List<TrainEWDataRow> rows = weightRows.getData();
+        String weightRowTemplate = d3 ? templates.getTimetableHeaderWeightLineD3() : templates.getTimetableHeaderWeightLine();
+        String weightString = null;
+        if (rows.size() == 0) {
+            weightString = "";
+        } else if (rows.size() == 1 && rows.get(0).getFrom() == null) {
+            weightString = createOneWeightLine(weightRowTemplate, rows.get(0));
+        } else {
+            StringBuilder builder = new StringBuilder();
+            for (TrainEWDataRow row : rows) {
+                builder.append(createOneWeightLine(weightRowTemplate, row));
+            }
+            weightString = builder.toString();
+        }
+        String trainLine = train.getCompleteName();
+        String rString = this.createRouteInfo();
+        String headerTemplate = d3 ? templates.getTimetableHeaderD3() : templates.getTimetableHeader();
+        formatter.format(headerTemplate, trainLine, rString, weightString);
+    }
 
+    private String createOneWeightLine(String template, TrainEWDataRow row) {
+        String engineCycleDesc = this.createCommentWithEngineCycles(row.getEngine());
+        String path = (row.getFrom() != null) ? row.getFrom() + " - " + row.getTo() + " &nbsp;" : "";
+        String wString = (train.getAttribute("weight.info") == null || train.getAttribute("weight.info").equals("")) ? "" : (TrainTimetablesListTemplates.getString("norm.load") + " " + row.getWeight() + " " + TrainTimetablesListTemplates.getString("tons"));
+        return String.format(template, engineCycleDesc, path, wString);
+    }
+    
     private String convertLastRunningTime(int time) {
         if (time != 0) {
             return TimeConverter.convertAllMinutesToText(time);
@@ -317,25 +342,10 @@ public class TrainTimetable {
         }
     }
 
-    private String createCommentWithEngineCycles() {
-        if (train.getCycles(TrainsCycleType.ENGINE_CYCLE).isEmpty()) {
-            return "-";
-        } else if (train.getCycles(TrainsCycleType.ENGINE_CYCLE).size() == 1) {
-            TrainsCycleItem item = train.getCycles(TrainsCycleType.ENGINE_CYCLE).iterator().next();
-            return TrainTimetablesListTemplates.getString(((Boolean) train.getAttribute("diesel")) ? "diesel.unit" : "engine") + " " + TransformUtil.getEngineCycleDescription(item.getCycle());
-        } else {
-            StringBuilder desc = new StringBuilder();
-            for (TrainsCycleItem item : train.getCycles(TrainsCycleType.ENGINE_CYCLE)) {
-                if (desc.length() != 0) {
-                    desc.append("<br>");
-                }
-                desc.append(TrainTimetablesListTemplates.getString(((Boolean) train.getAttribute("diesel")) ? "diesel.unit" : "engine") + " " + TransformUtil.getEngineCycleDescription(item.getCycle()));
-                desc.append(" ");
-                desc.append(item.getFromNode().getName());
-                desc.append("-");
-                desc.append(item.getToNode().getName());
-            }
-            return desc.toString();
-        }
+    private String createCommentWithEngineCycles(String engineCycleStr) {
+        if (engineCycleStr == null)
+            return "";
+        else
+            return TrainTimetablesListTemplates.getString(((Boolean) train.getAttribute("diesel")) ? "diesel.unit" : "engine") + " " + engineCycleStr + " &nbsp;";
     }
 }
