@@ -1,5 +1,6 @@
 package net.parostroj.timetable.model.ls.impl3;
 
+import javax.xml.bind.annotation.XmlType;
 import net.parostroj.timetable.model.TimeInterval;
 
 /**
@@ -7,8 +8,10 @@ import net.parostroj.timetable.model.TimeInterval;
  * 
  * @author jub
  */
+@XmlType(propOrder = {"intervalId", "nodeId", "trackId", "stop"})
 public class LSTrainRoutePartNode {
 
+    private String intervalId;
     private String nodeId;
     private String trackId;
     private int stop;
@@ -17,6 +20,7 @@ public class LSTrainRoutePartNode {
     }
 
     public LSTrainRoutePartNode(TimeInterval interval) {
+        intervalId = interval.getId();
         nodeId = interval.getOwner().getId();
         trackId = interval.getTrack().getId();
         stop = interval.getLength();
@@ -44,5 +48,13 @@ public class LSTrainRoutePartNode {
 
     public void setTrackId(String trackId) {
         this.trackId = trackId;
+    }
+
+    public String getIntervalId() {
+        return intervalId;
+    }
+
+    public void setIntervalId(String intervalId) {
+        this.intervalId = intervalId;
     }
 }

@@ -370,7 +370,7 @@ private void addButtonActionPerformed(java.awt.event.ActionEvent evt) {
         Train t = selected.getTrain();
         TrainsCycle cycle = delegate.getSelectedCycle(model);
         if (cycle != null) {
-            Tuple<Node> tuple = t.getFirstUncoveredPart(delegate.getType());
+            Tuple<TimeInterval> tuple = t.getFirstUncoveredPart(delegate.getType());
             TrainsCycleItem item = new TrainsCycleItem(cycle, t, null, tuple.first, tuple.second);
             cycle.addItem(item);
             this.updateListAllTrains();
@@ -388,11 +388,11 @@ private void changeButtonActionPerformed(java.awt.event.ActionEvent evt) {
         TrainsCycleItem item = ((TrainsCycleItemWrapper) ecTrainsList.getSelectedValue()).getItem();
         Train train = item.getTrain();
         item.setComment(detailsTextField.getText());
-        Node from = (Node)fromComboBox.getSelectedItem();
-        Node to = (Node)toComboBox.getSelectedItem();
+        TimeInterval from = ((TimeIntervalWrapper)fromComboBox.getSelectedItem()).getInterval();
+        TimeInterval to = ((TimeIntervalWrapper)toComboBox.getSelectedItem()).getInterval();
         // new trains cycle item
         boolean oldCovered = train.isCovered(delegate.getType());
-        if (from != item.getFromNode() || to != item.getToNode()) {
+        if (from != item.getFromInterval() || to != item.getToInterval()) {
             TrainsCycleItem newItem = new TrainsCycleItem(item.getCycle(), train, item.getComment(), from, to);
             if (train.testAddCycle(newItem, item)) {
                 TrainsCycle cycle = item.getCycle();
@@ -433,22 +433,22 @@ private void ecTrainsListValueChanged(javax.swing.event.ListSelectionEvent evt) 
             coverageTextPane.setText("");
         } else {
             detailsTextField.setText(item.getComment());
-            List<Pair<RouteSegment, Boolean>> coverage = item.getTrain().getRouteCoverage(delegate.getType());
+            List<Pair<TimeInterval, Boolean>> coverage = item.getTrain().getRouteCoverage(delegate.getType());
             coverageTextPane.setText("");
-            for (Pair<RouteSegment, Boolean> pair : coverage) {
+            for (Pair<TimeInterval, Boolean> pair : coverage) {
                 this.appendSegment(coverageTextPane, pair);
             }
-            this.updateFromTo(item.getTrain().convertToNodeList(item.getTrain().getStartNode(), item.getTrain().getEndNode()), item.getFromNode(), item.getToNode());
+            this.updateFromTo(item.getTrain().getTimeIntervalList(), item.getFromInterval(), item.getToInterval());
         }
         
     }
 
-    private void appendSegment(ColorTextPane pane, Pair<RouteSegment, Boolean> segment) {
-        if (segment.first instanceof Node) {
+    private void appendSegment(ColorTextPane pane, Pair<TimeInterval, Boolean> segment) {
+        if (segment.first.isNodeOwner()) {
             if (!segment.second) {
-                pane.append(Color.BLACK, ((Node)segment.first).getName());
+                pane.append(Color.BLACK, segment.first.getOwnerAsNode().getName());
             } else {
-                pane.append(Color.RED, ((Node)segment.first).getName());
+                pane.append(Color.RED, segment.first.getOwnerAsNode().getName());
             }
         } else {
             if (!segment.second)
@@ -458,15 +458,18 @@ private void ecTrainsListValueChanged(javax.swing.event.ListSelectionEvent evt) 
         }
     }
 
-    private void updateFromTo(List<Node> nodes, Node from, Node to) {
+    private void updateFromTo(List<TimeInterval> intervals, TimeInterval from, TimeInterval to) {
         fromComboBox.removeAllItems();
         toComboBox.removeAllItems();
-        for (Node node : nodes) {
-            fromComboBox.addItem(node);
-            toComboBox.addItem(node);
+        for (TimeInterval interval : intervals) {
+            if (interval.isNodeOwner()) {
+                TimeIntervalWrapper w = new TimeIntervalWrapper(interval);
+                fromComboBox.addItem(w);
+                toComboBox.addItem(w);
+            }
         }
-        fromComboBox.setSelectedItem(from);
-        toComboBox.setSelectedItem(to);
+        fromComboBox.setSelectedItem(new TimeIntervalWrapper(from));
+        toComboBox.setSelectedItem(new TimeIntervalWrapper(to));
     }
 
 private void allTrainsListValueChanged(javax.swing.event.ListSelectionEvent evt) {                                           
@@ -493,4 +496,44 @@ private void allTrainsListValueChanged(javax.swing.event.ListSelectionEvent evt)
     private javax.swing.JComboBox toComboBox;
     private javax.swing.JButton upButton;
     // End of variables declaration                   
+}
+
+class TimeIntervalWrapper {
+    
+    private final TimeInterval interval;
+    
+    TimeIntervalWrapper(TimeInterval interval) {
+        this.interval = interval;
+    }
+
+    public TimeInterval getInterval() {
+        return interval;
+    }
+
+    @Override
+    public String toString() {
+        return interval.getOwner().toString();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final TimeIntervalWrapper other = (TimeIntervalWrapper) obj;
+        if (this.interval != other.interval && (this.interval == null || !this.interval.equals(other.interval))) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 5;
+        hash = 23 * hash + (this.interval != null ? this.interval.hashCode() : 0);
+        return hash;
+    }
 }

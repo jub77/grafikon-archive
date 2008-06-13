@@ -17,15 +17,15 @@ public class TrainsCycleItem {
     private Train train;
     private String comment;
     private final TrainsCycle cycle;
-    private final Node from;
-    private final Node to;
+    private final TimeInterval from;
+    private final TimeInterval to;
 
-    public TrainsCycleItem(TrainsCycle cycle, Train train, String comment, Node from, Node to) {
+    public TrainsCycleItem(TrainsCycle cycle, Train train, String comment, TimeInterval from, TimeInterval to) {
         this.cycle = cycle;
         this.train = train;
         this.comment = comment;
-        this.from = (train.getStartNode() != from) ? from : null;
-        this.to = (train.getEndNode() != to) ? to : null;
+        this.from = (train.getFirstInterval() != from) ? from : null;
+        this.to = (train.getLastInterval() != to) ? to : null;
     }
 
     public String getComment() {
@@ -46,73 +46,55 @@ public class TrainsCycleItem {
     }
 
     /**
-     * @return from node
+     * @return from time interval
      */
-    public Node getFrom() {
+    public TimeInterval getFrom() {
         return from;
     }
 
     /**
-     * @return to node
+     * @return to interval
      */
-    public Node getTo() {
+    public TimeInterval getTo() {
         return to;
     }
 
     /**
-     * @return always returns from node (if not specified then start node of the train)
+     * @return always returns from time interval (if not specified then firt interval of the train)
      */
-    public Node getFromNode() {
+    public TimeInterval getFromInterval() {
         if (from != null) {
             return from;
         } else {
-            return train.getStartNode();
+            return train.getFirstInterval();
         }
     }
 
     /**
-     * @return always returns to node (if not specified then end node of the train)
+     * @return always returns to interval (if not specified then last interval of the train)
      */
-    public Node getToNode() {
+    public TimeInterval getToInterval() {
         if (to != null) {
             return to;
         } else {
-            return train.getEndNode();
+            return train.getLastInterval();
         }
     }
 
     public int getStartTime() {
-        Node n = getFrom();
-        if (n == null) {
-            return train.getStartTime();
-        }
-        for (TimeInterval interval : train.getTimeIntervalList()) {
-            if (interval.getOwner() == n) {
-                return interval.getEnd();
-            }
-        }
-        return 0;
+        return this.getFromInterval().getEnd();
     }
 
     public int getEndTime() {
-        Node n = getTo();
-        if (n == null) {
-            return train.getEndTime();
-        }
-        for (TimeInterval interval : train.getTimeIntervalList()) {
-            if (interval.getOwner() == n) {
-                return interval.getStart();
-            }
-        }
-        return 0;
+        return this.getToInterval().getStart();
     }
 
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder("TrainsCycleItem[");
         builder.append(train).append(',');
-        builder.append(getFromNode()).append(',');
-        builder.append(getToNode()).append(']');
+        builder.append(getFromInterval().getOwner()).append(',');
+        builder.append(getToInterval().getOwner()).append(']');
         return builder.toString();
     }
 }

@@ -99,7 +99,7 @@ public class TrainsCycle implements AttributesHolder, ObjectWithId, Iterable<Tra
         }
         while (i.hasNext()) {
             TrainsCycleItem current = i.next();
-            if (last.getToNode() != current.getFromNode() || last.getEndTime() >= current.getStartTime()) {
+            if (last.getToInterval() != current.getFromInterval() || last.getEndTime() >= current.getStartTime()) {
                 if (conflicts == null) {
                     conflicts = new LinkedList<Tuple<TrainsCycleItem>>();
                 }

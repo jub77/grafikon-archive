@@ -18,7 +18,7 @@ public class TrainsCycleItemWrapper {
 
     @Override
     public String toString() {
-        return String.format("%s (%s[%s],%s[%s])", item.getTrain().getName(),item.getFromNode().getName(),TimeConverter.convertFromIntToText(item.getStartTime()),item.getToNode().getName(),TimeConverter.convertFromIntToText(item.getEndTime()));
+        return String.format("%s (%s[%s],%s[%s])", item.getTrain().getName(),item.getFromInterval().getOwnerAsNode().getName(),TimeConverter.convertFromIntToText(item.getStartTime()),item.getToInterval().getOwnerAsNode().getName(),TimeConverter.convertFromIntToText(item.getEndTime()));
     }
 
     public TrainsCycleItem getItem() {

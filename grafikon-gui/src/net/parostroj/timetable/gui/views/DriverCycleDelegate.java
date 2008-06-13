@@ -11,10 +11,7 @@ import net.parostroj.timetable.gui.ApplicationModel;
 import net.parostroj.timetable.gui.ApplicationModelEvent;
 import net.parostroj.timetable.gui.ApplicationModelEventType;
 import net.parostroj.timetable.gui.dialogs.TCDetailsViewDialog;
-import net.parostroj.timetable.model.Train;
-import net.parostroj.timetable.model.TrainsCycle;
-import net.parostroj.timetable.model.TrainsCycleItem;
-import net.parostroj.timetable.model.TrainsCycleType;
+import net.parostroj.timetable.model.*;
 import net.parostroj.timetable.utils.ResourceLoader;
 import net.parostroj.timetable.utils.TimeConverter;
 import net.parostroj.timetable.utils.Tuple;
@@ -82,8 +79,8 @@ public class DriverCycleDelegate implements TCDelegate {
         StringBuilder result = new StringBuilder();
         List<Tuple<TrainsCycleItem>> conflicts = cycle.checkConflicts();
         for (Tuple<TrainsCycleItem> item : conflicts) {
-            if (item.first.getToNode() != item.second.getFromNode()) {
-                result.append(String.format(ResourceLoader.getString("ec.move.nodes"),item.first.getTrain().getName(),item.first.getToNode().getName(),item.second.getTrain().getName(),item.second.getFromNode().getName()));
+            if (item.first.getToInterval().getOwnerAsNode() != item.second.getFromInterval().getOwnerAsNode()) {
+                result.append(String.format(ResourceLoader.getString("ec.move.nodes"),item.first.getTrain().getName(),item.first.getToInterval().getOwnerAsNode().getName(),item.second.getTrain().getName(),item.second.getFromInterval().getOwnerAsNode().getName()));
                 result.append("\n");
             }
             if (item.first.getEndTime() >= item.second.getStartTime()) {

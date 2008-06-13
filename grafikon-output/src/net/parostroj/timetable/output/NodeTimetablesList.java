@@ -98,7 +98,7 @@ public class NodeTimetablesList {
     private void generateCommentForEngineCycle(TimeInterval interval, StringBuilder comment) {
         Train train = interval.getTrain();
         for (TrainsCycleItem item : train.getCycles(TrainsCycleType.ENGINE_CYCLE)) {
-            if (item.getToNode() == interval.getOwner()) {
+            if (item.getToInterval() == interval) {
                 // end
                 TrainsCycleItem itemNext = item.getCycle().getNextItem(item);
                 if (itemNext != null) {
@@ -109,7 +109,7 @@ public class NodeTimetablesList {
                     comment.append(')');
                 }
             }
-            if (item.getFromNode() == interval.getOwner()) {
+            if (item.getFromInterval() == interval) {
                 // start
                 this.appendDelimiter(comment);
                 comment.append(templates.getString("engine")).append(": ");
@@ -123,7 +123,7 @@ public class NodeTimetablesList {
         Train train = interval.getTrain();
         for (TrainsCycleItem item : train.getCycles(TrainsCycleType.TRAIN_UNIT_CYCLE)) {
             // end
-            if (item.getToNode() == interval.getOwner()) {
+            if (item.getToInterval() == interval) {
                 TrainsCycleItem itemNext = item.getCycle().getNextItem(item);
                 if (itemNext != null) {
                     this.appendDelimiter(comment);
@@ -134,7 +134,7 @@ public class NodeTimetablesList {
                 }
             }
             // start
-            if (item.getFromNode() == interval.getOwner()) {
+            if (item.getFromInterval() == interval) {
                 this.appendDelimiter(comment);
                 comment.append(templates.getString("train.unit")).append(": ");
                 comment.append(item.getCycle().getName()).append(" (");

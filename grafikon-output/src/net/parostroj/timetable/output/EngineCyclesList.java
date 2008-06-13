@@ -66,7 +66,7 @@ public class EngineCyclesList {
                     writer.write(templates.getEcLineSep());
                 }
             }
-            f.format(templates.getEcLine(), t.getName(),TimeConverter.convertFromIntToText(item.getStartTime()),item.getFromNode().getAbbr(),item.getToNode().getAbbr());
+            f.format(templates.getEcLine(), t.getName(),TimeConverter.convertFromIntToText(item.getStartTime()),item.getFromInterval().getOwnerAsNode().getAbbr(),item.getToInterval().getOwnerAsNode().getAbbr());
             lastTime = t.getEndTime();
         }
         

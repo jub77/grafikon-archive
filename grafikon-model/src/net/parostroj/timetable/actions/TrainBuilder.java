@@ -1,5 +1,6 @@
 package net.parostroj.timetable.actions;
 
+import java.util.UUID;
 import net.parostroj.timetable.model.*;
 
 /**
@@ -33,7 +34,7 @@ public class TrainBuilder {
 
         // create copy of time intervals
         for (TimeInterval copiedInterval : copiedTrain.getTimeIntervalList()) {
-            TimeInterval interval = new TimeInterval(copiedInterval);
+            TimeInterval interval = new TimeInterval(UUID.randomUUID().toString(), copiedInterval);
             // redirect to a new train
             interval.setTrain(train);
 
@@ -114,11 +115,11 @@ public class TrainBuilder {
             }
             TimeInterval interval = null;
             if (part.asNode() != null) {
-                interval = part.asNode().createTimeInterval(train, time, diagram, type, nextStop);
+                interval = part.asNode().createTimeInterval(UUID.randomUUID().toString(), train, time, diagram, type, nextStop);
                 lastNode = part.asNode();
             } else {
                 TimeIntervalDirection direction = (part.asLine().getFrom() == lastNode) ? TimeIntervalDirection.FORWARD : TimeIntervalDirection.BACKWARD;
-                interval = part.asLine().createTimeInterval(train, time, diagram, type, direction, TimeInterval.NO_SPEED);
+                interval = part.asLine().createTimeInterval(UUID.randomUUID().toString(), train, time, diagram, type, direction, TimeInterval.NO_SPEED);
             }
             time = interval.getEnd();
             train.addInterval(interval);

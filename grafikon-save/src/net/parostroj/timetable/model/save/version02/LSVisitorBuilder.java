@@ -134,7 +134,7 @@ public class LSVisitorBuilder implements LSVisitor {
         // add to the last train
         RouteSegment part = (RouteSegment) ids.get(lsInterval.getOwnerId());
         TimeIntervalType type = TimeIntervalType.valueOf(lsInterval.getType());
-        TimeInterval interval = new TimeInterval(lastTrain, part, lsInterval.getStart(), lsInterval.getEnd(), lsInterval.getSpeed(), TimeIntervalDirection.toTimeIntervalDirection(lsInterval.getDirection()), type, track);
+        TimeInterval interval = new TimeInterval(UUID.randomUUID().toString(), lastTrain, part, lsInterval.getStart(), lsInterval.getEnd(), lsInterval.getSpeed(), TimeIntervalDirection.toTimeIntervalDirection(lsInterval.getDirection()), type, track);
         interval.setComment(lsInterval.getComment());
 
         // add interval to train
@@ -173,15 +173,7 @@ public class LSVisitorBuilder implements LSVisitor {
         if (lsCycle.getItems() != null) {
             for (LSTrainsCycleItem item : lsCycle.getItems()) {
                 Train train = (Train) ids.get(item.getTrainId());
-                Node fromNode = null;
-                Node toNode = null;
-                if (item.getSourceId() != null) {
-                    fromNode = (Node) ids.get(item.getSourceId());
-                }
-                if (item.getTargetId() != null) {
-                    toNode = (Node) ids.get(item.getTargetId());
-                }
-                TrainsCycleItem tcItem = new TrainsCycleItem(cycle, train, item.getComment(), fromNode, toNode);
+                TrainsCycleItem tcItem = new TrainsCycleItem(cycle, train, item.getComment(), null, null);
                 cycle.addItem(tcItem);
             }
         }

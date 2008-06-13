@@ -45,7 +45,7 @@ public class TrainEngineWeightRows {
             weightStr = null;
         for (TrainsCycleItem item : train.getCycles(TrainsCycleType.ENGINE_CYCLE)) {
             String name = TransformUtil.getEngineCycleDescription(item.getCycle());
-            data.add(new TrainEWDataRow(train, name, item.getFromNode(), item.getToNode(), weightStr));
+            data.add(new TrainEWDataRow(train, name, item.getFromInterval().getOwnerAsNode(), item.getToInterval().getOwnerAsNode(), weightStr));
         }
         if (data.size() == 0) {
             data.add(new TrainEWDataRow(train, null, null, null, weightStr));
@@ -59,13 +59,14 @@ public class TrainEngineWeightRows {
         TrainsCycleItem current = i.next();
         boolean in = false;
         for (Pair<TimeInterval, TrainsCycleItem> pair : lines) {
-            if (current != null && pair.first.getFrom() == current.getFromNode()) {
+            Train modelTrain = pair.first.getTrain();
+            if (current != null && modelTrain.getIntervalBefore(pair.first) == current.getFromInterval()) {
                 in = true;
             }
             if (in) {
                 pair.second = current;
             }
-            if (current != null && pair.first.getTo() == current.getToNode()) {
+            if (current != null && modelTrain.getIntervalAfter(pair.first) == current.getToInterval()) {
                 in = false;
                 current = i.hasNext() ? i.next() : null;
             }
@@ -83,11 +84,12 @@ public class TrainEngineWeightRows {
         while (iter.hasNext()) {
             currentPair = iter.next();
             TimeInterval currentInterval = currentPair.first;
+            Train currentTrain = currentInterval.getTrain();
             TrainsCycleItem currentCycleItem = currentPair.second;
             LineClass currentLineClass = (LineClass) currentInterval.getOwnerAsLine().getAttribute("line.class");
             Integer currentWeight = currentCycleItem == null ? null : ((EngineClass) currentCycleItem.getCycle().getAttribute("engine.class")).getWeightTableRowForSpeed(currentInterval.getSpeed()).getWeights().get(currentLineClass);
             boolean written = false;
-            if (currentCycleItem != null && currentInterval.getFrom() == currentCycleItem.getFromNode()) {
+            if (currentCycleItem != null && currentTrain.getIntervalBefore(currentInterval) == currentCycleItem.getFromInterval()) {
                 in = true;
                 from = currentInterval.getFrom();
             }
@@ -99,7 +101,7 @@ public class TrainEngineWeightRows {
                 written = true;
             }
 
-            if (in && currentInterval.getTo() == currentCycleItem.getToNode()) {
+            if (in && currentTrain.getIntervalAfter(currentInterval) == currentCycleItem.getToInterval()) {
                 in = false;
                 data.add(new TrainEWDataRow(lastWrittenItem == currentCycleItem ? null : currentCycleItem, from, currentInterval.getTo(), currentWeight));
                 currentCycleItem = null;

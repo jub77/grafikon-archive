@@ -35,7 +35,7 @@ public class StartingPositionsList {
         for (TrainsCycle ecCycle : diagram.getCycles(TrainsCycleType.ENGINE_CYCLE)) {
             if (!ecCycle.isEmpty()) {
                 TrainsCycleItem start = ecCycle.iterator().next();
-                String startName = start.getFromNode().getName();
+                String startName = start.getFromInterval().getOwnerAsNode().getName();
                 f.format(templates.getSpLine(), ecCycle.getName(), TransformUtil.getEngineCycleDescription(ecCycle), startName, start.getTrain().getName());
             }
         }
@@ -46,7 +46,7 @@ public class StartingPositionsList {
         for (TrainsCycle tucCycle : diagram.getCycles(TrainsCycleType.TRAIN_UNIT_CYCLE)) {
             if (!tucCycle.isEmpty()) {
                 TrainsCycleItem start = tucCycle.iterator().next();
-                String startName = start.getFromNode().getName();
+                String startName = start.getFromInterval().getOwnerAsNode().getName();
                 f.format(templates.getSpLine(), tucCycle.getName(), tucCycle.getDescription(), startName, start.getTrain().getName());
             }
         }

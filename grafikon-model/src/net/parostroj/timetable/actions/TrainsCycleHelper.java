@@ -35,10 +35,9 @@ public class TrainsCycleHelper {
         TrainsCycleItem current = getNext(i, null);
         for (TimeInterval interval : train.getTimeIntervalList()) {
             if (interval.isNodeOwner()) {
-                Node node = interval.getOwnerAsNode();
-                if (current != null && node == current.getFromNode())
+                if (current != null && interval == current.getFromInterval())
                     current = getNext(i, null);
-                if (current == null || node == item.getFromNode()) {
+                if (current == null || interval == item.getFromInterval()) {
                     if (current != null && i.hasPrevious())
                         i.previous();
                     i.add(item);
@@ -59,89 +58,88 @@ public class TrainsCycleHelper {
         Iterator<TrainsCycleItem> i = items.iterator();
         TrainsCycleItem fi = i.next();
         TrainsCycleItem si = fi;
-        if (train.getStartNode() != fi.getFromNode()) {
+        if (train.getFirstInterval() != fi.getFromInterval()) {
             return false;
         }
         while (i.hasNext()) {
             si = i.next();
-            if (fi.getToNode() != si.getFromNode()) {
+            if (fi.getToInterval() != si.getFromInterval()) {
                 return false;
             }
             fi = si;
         }
-        return si.getToNode() == train.getEndNode();
+        return si.getToInterval() == train.getLastInterval();
     }
 
-    public Tuple<Node> getFirstUncoveredPart(Train train, List<TrainsCycleItem> items) {
+    public Tuple<TimeInterval> getFirstUncoveredPart(Train train, List<TrainsCycleItem> items) {
         if (items == null) {
             throw new IllegalArgumentException("List cannot be null.");
         }
         if (items.isEmpty()) {
-            return new Tuple<Node>(train.getStartNode(), train.getEndNode());
+            return new Tuple<TimeInterval>(train.getFirstInterval(), train.getLastInterval());
         }
         Iterator<TrainsCycleItem> i = items.iterator();
         TrainsCycleItem fi = i.next();
         TrainsCycleItem si = fi;
-        if (fi.getFromNode() != train.getStartNode()) {
-            return new Tuple<Node>(train.getStartNode(), fi.getFromNode());
+        if (fi.getFromInterval() != train.getFirstInterval()) {
+            return new Tuple<TimeInterval>(train.getFirstInterval(), fi.getFromInterval());
         }
         while (i.hasNext()) {
             si = i.next();
-            if (fi.getToNode() != si.getFromNode()) {
-                return new Tuple<Node>(fi.getToNode(), si.getFromNode());
+            if (fi.getToInterval() != si.getFromInterval()) {
+                return new Tuple<TimeInterval>(fi.getToInterval(), si.getFromInterval());
             }
             fi = si;
         }
-        if (si.getToNode() != train.getEndNode()) {
-            return new Tuple<Node>(si.getTo(), train.getEndNode());
+        if (si.getToInterval() != train.getLastInterval()) {
+            return new Tuple<TimeInterval>(si.getToInterval(), train.getLastInterval());
         } else {
-            return new Tuple<Node>(null, null);
+            return new Tuple<TimeInterval>(null, null);
         }
     }
 
-    public List<Tuple<Node>> getAllUncoveredParts(Train train, List<TrainsCycleItem> items) {
+    public List<Tuple<TimeInterval>> getAllUncoveredParts(Train train, List<TrainsCycleItem> items) {
         if (items == null) {
             throw new IllegalArgumentException("List cannot be null.");
         }
         if (items.isEmpty()) {
-            return Collections.singletonList(new Tuple<Node>(train.getStartNode(), train.getEndNode()));
+            return Collections.singletonList(new Tuple<TimeInterval>(train.getFirstInterval(), train.getLastInterval()));
         }
-        List<Tuple<Node>> result = new LinkedList<Tuple<Node>>();
+        List<Tuple<TimeInterval>> result = new LinkedList<Tuple<TimeInterval>>();
         Iterator<TrainsCycleItem> i = items.iterator();
         TrainsCycleItem fi = i.next();
         TrainsCycleItem si = fi;
-        if (fi.getFromNode() != train.getStartNode()) {
-            result.add(new Tuple<Node>(train.getStartNode(), fi.getFromNode()));
+        if (fi.getFromInterval() != train.getFirstInterval()) {
+            result.add(new Tuple<TimeInterval>(train.getFirstInterval(), fi.getFromInterval()));
         }
         while (i.hasNext()) {
             si = i.next();
-            if (fi.getToNode() != si.getFromNode()) {
-                result.add(new Tuple<Node>(fi.getToNode(), si.getFromNode()));
+            if (fi.getToInterval() != si.getFromInterval()) {
+                result.add(new Tuple<TimeInterval>(fi.getToInterval(), si.getFromInterval()));
             }
             fi = si;
         }
-        if (si.getToNode() != train.getEndNode()) {
-            result.add(new Tuple<Node>(si.getTo(), train.getEndNode()));
+        if (si.getToInterval() != train.getLastInterval()) {
+            result.add(new Tuple<TimeInterval>(si.getToInterval(), train.getLastInterval()));
         }
         return result;
     }
 
-    public List<List<Node>> getAllUncoveredLists(Train train, List<TrainsCycleItem> items) {
-        List<Tuple<Node>> tuples = this.getAllUncoveredParts(train, items);
-        List<List<Node>> result = new LinkedList<List<Node>>();
-        for (Tuple<Node> tuple : tuples) {
-            List<Node> nodes = new LinkedList<Node>();
+    public List<List<TimeInterval>> getAllUncoveredLists(Train train, List<TrainsCycleItem> items) {
+        List<Tuple<TimeInterval>> tuples = this.getAllUncoveredParts(train, items);
+        List<List<TimeInterval>> result = new LinkedList<List<TimeInterval>>();
+        for (Tuple<TimeInterval> tuple : tuples) {
+            List<TimeInterval> nodes = new LinkedList<TimeInterval>();
             boolean collect = false;
             for (TimeInterval interval : train.getTimeIntervalList()) {
                 if (interval.getOwner() instanceof Node) {
-                    Node node = interval.getOwner().asNode();
-                    if (node == tuple.first) {
+                    if (interval == tuple.first) {
                         collect = true;
                     }
                     if (collect) {
-                        nodes.add(node);
+                        nodes.add(interval);
                     }
-                    if (node == tuple.second) {
+                    if (interval == tuple.second) {
                         collect = false;
                     }
                 }
@@ -151,24 +149,24 @@ public class TrainsCycleHelper {
         return result;
     }
 
-    public List<Pair<RouteSegment, Boolean>> getRouteCoverage(Train train, List<TrainsCycleItem> items) {
-        List<Pair<RouteSegment, Boolean>> result = new LinkedList<Pair<RouteSegment, Boolean>>();
+    public List<Pair<TimeInterval, Boolean>> getRouteCoverage(Train train, List<TrainsCycleItem> items) {
+        List<Pair<TimeInterval, Boolean>> result = new LinkedList<Pair<TimeInterval, Boolean>>();
         Iterator<TrainsCycleItem> i = items.iterator();
         TrainsCycleItem current = i.hasNext() ? i.next() : null;
         boolean in = false;
         for (TimeInterval interval : train.getTimeIntervalList()) {
-            Pair<RouteSegment, Boolean> pair = new Pair<RouteSegment, Boolean>(interval.getOwner(), Boolean.FALSE);
-            if (pair.first instanceof Node) {
-                if (current != null && pair.first == current.getFromNode()) {
+            Pair<TimeInterval, Boolean> pair = new Pair<TimeInterval, Boolean>(interval, Boolean.FALSE);
+            if (pair.first.isNodeOwner()) {
+                if (current != null && pair.first == current.getFromInterval()) {
                     in = true;
                 }
                 if (in) {
                     pair.second = true;
                 }
-                if (current != null && pair.first == current.getToNode()) {
+                if (current != null && pair.first == current.getToInterval()) {
                     in = false;
                     current = i.hasNext() ? i.next() : null;
-                    if (current != null && pair.first == current.getFromNode()) {
+                    if (current != null && pair.first == current.getFromInterval()) {
                         in = true;
                     }
                 }
@@ -195,21 +193,20 @@ public class TrainsCycleHelper {
             if (ftci == null) {
                 return true;
             }
-            if (interval.getOwner() instanceof Node) {
-                Node node = (Node) interval.getOwner();
-                if (ftci.getFromNode() == node) {
+            if (interval.isNodeOwner()) {
+                if (ftci.getFromInterval() == interval) {
                     occupied = true;
                 }
-                if (newItem.getFromNode() == node) {
+                if (newItem.getFromInterval() == interval) {
                     inserted = true;
                 }
-                if (newItem.getToNode() == node) {
+                if (newItem.getToInterval() == interval) {
                     inserted = false;
                 }
-                if (ftci.getToNode() == node) {
+                if (ftci.getToInterval() == interval) {
                     occupied = false;
                     ftci = getNext(i, ignoredItem);
-                    if (ftci != null && ftci.getFromNode() == node) {
+                    if (ftci != null && ftci.getFromInterval() == interval) {
                         occupied = true;
                     }
                 }
@@ -232,17 +229,16 @@ public class TrainsCycleHelper {
     }
 
     private boolean checkNodes(Train train, TrainsCycleItem item) {
-        if (item.getFromNode() == item.getToNode()) {
+        if (item.getFromInterval() == item.getToInterval()) {
             return false;
         }
         boolean in = false;
         for (TimeInterval interval : train.getTimeIntervalList()) {
             if (interval.isNodeOwner()) {
-                Node node = interval.getOwnerAsNode();
-                if (!in && (node == item.getFromNode())) {
+                if (!in && (interval == item.getFromInterval())) {
                     in = true;
                 }
-                if (node == item.getToNode()) {
+                if (interval == item.getToInterval()) {
                     return in;
                 }
             }

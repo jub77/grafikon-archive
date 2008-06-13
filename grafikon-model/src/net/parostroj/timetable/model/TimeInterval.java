@@ -8,8 +8,9 @@ import java.util.Set;
  *
  * @author jub
  */
-public class TimeInterval implements AttributesHolder {
+public class TimeInterval implements AttributesHolder, ObjectWithId {
 
+    private final String id;
     /** Start time. */
     private int start;
     /** End time. */
@@ -38,6 +39,7 @@ public class TimeInterval implements AttributesHolder {
     /**
      * creates instance of an time interval.
      *
+     * @param id id
      * @param train train
      * @param owner owner (node track, node, ...)
      * @param start start time
@@ -47,7 +49,7 @@ public class TimeInterval implements AttributesHolder {
      * @param type type of the interval
      * @param track track
      */
-    public TimeInterval(Train train, RouteSegment owner, int start, int end, int speed, TimeIntervalDirection direction, TimeIntervalType type, Track track) {
+    public TimeInterval(String id, Train train, RouteSegment owner, int start, int end, int speed, TimeIntervalDirection direction, TimeIntervalType type, Track track) {
         this.train = train;
         this.setOwner(owner);
         this.start = start;
@@ -56,12 +58,14 @@ public class TimeInterval implements AttributesHolder {
         this.speed = speed;
         this.direction = direction;
         this.track = track;
-        attributes = new Attributes();
+        this.attributes = new Attributes();
+        this.id = id;
     }
 
     /**
      * creates instance of time interval.
      * 
+     * @param id id
      * @param train train
      * @param owner time interval owner
      * @param start start time
@@ -69,8 +73,8 @@ public class TimeInterval implements AttributesHolder {
      * @param type type of the interval
      * @param track track
      */
-    public TimeInterval(Train train, RouteSegment owner, int start, int end, TimeIntervalType type, Track track) {
-        this(train, owner, start, end, NO_SPEED, null, type, track);
+    public TimeInterval(String id, Train train, RouteSegment owner, int start, int end, TimeIntervalType type, Track track) {
+        this(id, train, owner, start, end, NO_SPEED, null, type, track);
     }
 
     /**
@@ -78,8 +82,8 @@ public class TimeInterval implements AttributesHolder {
      * 
      * @param interval copied interval
      */
-    public TimeInterval(TimeInterval interval) {
-        this(interval.getTrain(), interval.getOwner(), interval.getStart(),
+    public TimeInterval(String id, TimeInterval interval) {
+        this(id, interval.getTrain(), interval.getOwner(), interval.getStart(),
                 interval.getEnd(), interval.getSpeed(), interval.getDirection(),
                 interval.getType(), interval.getTrack());
         this.setComment(interval.getComment());
@@ -392,5 +396,10 @@ public class TimeInterval implements AttributesHolder {
     
     public Line getOwnerAsLine() {
         return isLineOwner() ? (Line)owner : null;
+    }
+
+    @Override
+    public String getId() {
+        return id;
     }
 }

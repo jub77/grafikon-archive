@@ -51,7 +51,7 @@ public class TrainUnitCyclesList {
         
         for (TrainsCycleItem item : cycle) {
             Train t = item.getTrain();
-            f.format(templates.getTucLine(), t.getName(),TimeConverter.convertFromIntToText(item.getStartTime()),item.getFromNode().getAbbr(),item.getToNode().getAbbr(), (item.getComment() != null) ? item.getComment() : "&nbsp;");
+            f.format(templates.getTucLine(), t.getName(),TimeConverter.convertFromIntToText(item.getStartTime()),item.getFromInterval().getOwnerAsNode().getAbbr(),item.getToInterval().getOwnerAsNode().getAbbr(), (item.getComment() != null) ? item.getComment() : "&nbsp;");
         }
         
         writer.write(templates.getTucFooter());

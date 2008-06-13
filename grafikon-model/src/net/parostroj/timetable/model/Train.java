@@ -658,7 +658,7 @@ public class Train implements AttributesHolder, ObjectWithId {
      * @param type trains cycle type
      * @return interval
      */
-    public Tuple<Node> getFirstUncoveredPart(TrainsCycleType type) {
+    public Tuple<TimeInterval> getFirstUncoveredPart(TrainsCycleType type) {
         return TrainsCycleHelper.getHelper(type).getFirstUncoveredPart(this, this.getCyclesIntern(type));
     }
     
@@ -668,7 +668,7 @@ public class Train implements AttributesHolder, ObjectWithId {
      * @param type trains cycle type
      * @return list of intervals
      */
-    public List<Tuple<Node>> getAllUncoveredParts(TrainsCycleType type) {
+    public List<Tuple<TimeInterval>> getAllUncoveredParts(TrainsCycleType type) {
         return TrainsCycleHelper.getHelper(type).getAllUncoveredParts(this, this.getCyclesIntern(type));
     }
     
@@ -678,11 +678,11 @@ public class Train implements AttributesHolder, ObjectWithId {
      * @param type trains cycle type
      * @return list of intervals (as list of nodes)
      */
-    public List<List<Node>> getAllUncoveredLists(TrainsCycleType type) {
+    public List<List<TimeInterval>> getAllUncoveredLists(TrainsCycleType type) {
         return TrainsCycleHelper.getHelper(type).getAllUncoveredLists(this, this.getCyclesIntern(type));
     }
     
-    public List<Pair<RouteSegment, Boolean>> getRouteCoverage(TrainsCycleType type) {
+    public List<Pair<TimeInterval, Boolean>> getRouteCoverage(TrainsCycleType type) {
         return TrainsCycleHelper.getHelper(type).getRouteCoverage(this, this.getCyclesIntern(type));
     }
     
@@ -712,5 +712,21 @@ public class Train implements AttributesHolder, ObjectWithId {
     
     public boolean testAddCycle(TrainsCycleItem newItem, TrainsCycleItem ignoredItem) {
         return TrainsCycleHelper.getHelper(newItem.getCycle().getType()).testAddCycle(this, getCyclesIntern(newItem.getCycle().getType()), newItem, ignoredItem);
+    }
+    
+    public TimeInterval getFirstInterval() {
+        return timeIntervalList.get(0);
+    }
+    
+    public TimeInterval getLastInterval() {
+        return timeIntervalList.get(timeIntervalList.size() - 1);
+    }
+    
+    public TimeInterval getIntervalById(String id) {
+        for (TimeInterval interval : timeIntervalList) {
+            if (interval.getId().equals(id))
+                return interval;
+        }
+        return null;
     }
 }

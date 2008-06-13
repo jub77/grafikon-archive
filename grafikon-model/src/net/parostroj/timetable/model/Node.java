@@ -83,13 +83,13 @@ public class Node implements RouteSegment, AttributesHolder, ObjectWithId {
         return null;
     }
 
-    public TimeInterval createTimeInterval(Train train, int start, TrainDiagram diagram, TimeIntervalType type, int defaultStop) {
+    public TimeInterval createTimeInterval(String intervalId, Train train, int start, TrainDiagram diagram, TimeIntervalType type, int defaultStop) {
         int end = start + this.computeStopTime(train, diagram, type, defaultStop);
 
         boolean stop = type == TimeIntervalType.NODE_END || type == TimeIntervalType.NODE_START || type == TimeIntervalType.NODE_STOP;
 
         NodeTrack selectedTrack = null;
-        TimeInterval interval = new TimeInterval(train, this, start, end, type, null);
+        TimeInterval interval = new TimeInterval(null, train, this, start, end, type, null);
 
         // check which platform is free for adding
         for (NodeTrack nodeTrack : tracks) {
@@ -109,7 +109,7 @@ public class Node implements RouteSegment, AttributesHolder, ObjectWithId {
             selectedTrack = tracks.get(0);
         }
 
-        return new TimeInterval(train, this, start, end, type, selectedTrack);
+        return new TimeInterval(intervalId, train, this, start, end, type, selectedTrack);
     }
 
     /**
