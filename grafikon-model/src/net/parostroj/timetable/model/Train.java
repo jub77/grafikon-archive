@@ -354,11 +354,11 @@ public class Train implements AttributesHolder, ObjectWithId {
     /**
      * changes time for stop for specified node.
      * 
-     * @param node node
+     * @param nodeInterval node interval
      * @param length length of the stop
      * @param info model info
      */
-    public void changeStopTime(Node node, int length, TrainDiagram diagram) {
+    public void changeStopTime(TimeInterval nodeInterval, int length, TrainDiagram diagram) {
         // check time
         if (length < 0) {
             throw new IllegalArgumentException("Stop time cannot be negative.");        // change stop time and move others
@@ -366,32 +366,32 @@ public class Train implements AttributesHolder, ObjectWithId {
         int nextStart = timeIntervalList.get(0).getStart();
         boolean changed = false;
         for (TimeInterval interval : timeIntervalList) {
-            if ((interval.getTo() == node) && (length == 0) && (interval.getType().isNextStop())) {
+            if ((timeIntervalList.getIntervalAfter(interval) == nodeInterval) && (length == 0) && (interval.getType().isNextStop())) {
                 // change type of interval
                 interval.setLength(((Line) interval.getOwner()).computeRunningTime(this, interval.getSpeed(), diagram, interval.getType().changeToNextThrough()).first);
                 interval.setType(interval.getType().changeToNextThrough());
                 changed = true;
             }
-            if ((interval.getTo() == node) && (length != 0) && (!interval.getType().isNextStop())) {
+            if ((timeIntervalList.getIntervalAfter(interval) == nodeInterval) && (length != 0) && (!interval.getType().isNextStop())) {
                 // change type of interval
                 interval.setLength(((Line) interval.getOwner()).computeRunningTime(this, interval.getSpeed(), diagram, interval.getType().changeToNextStop()).first);
                 interval.setType(interval.getType().changeToNextStop());
                 changed = true;
             }
-            if ((interval.getFrom() == node) && (length == 0) && (interval.getType().isPreviousStop())) {
+            if ((timeIntervalList.getIntervalBefore(interval) == nodeInterval) && (length == 0) && (interval.getType().isPreviousStop())) {
                 // change type of interval
                 interval.setLength(((Line) interval.getOwner()).computeRunningTime(this, interval.getSpeed(), diagram, interval.getType().changeToPreviousThrough()).first);
                 interval.setType(interval.getType().changeToPreviousThrough());
                 changed = true;
             }
-            if ((interval.getFrom() == node) && (length != 0) && (!interval.getType().isPreviousStop())) {
+            if ((timeIntervalList.getIntervalBefore(interval) == nodeInterval) && (length != 0) && (!interval.getType().isPreviousStop())) {
                 // change type of interval
                 interval.setLength(((Line) interval.getOwner()).computeRunningTime(this, interval.getSpeed(), diagram, interval.getType().changeToPreviousStop()).first);
                 interval.setType(interval.getType().changeToPreviousStop());
                 changed = true;
             }
 
-            if (interval.getOwner() == node) {
+            if (interval == nodeInterval) {
                 if (length == 0) {
                     interval.setType(TimeIntervalType.NODE_THROUGH);
                 } else {
@@ -413,27 +413,13 @@ public class Train implements AttributesHolder, ObjectWithId {
     }
 
     /**
-     * changes time for stops.
-     * 
-     * @param interval time interval
-     * @param length length of the stop
-     * @param info model info
-     */
-    public void changeStopTime(TimeInterval interval, int length, TrainDiagram diagram) {
-        if (!(interval.getOwner() instanceof Node)) {
-            throw new IllegalArgumentException("Only applicalble to time interval with Node as owner.");
-        }
-        this.changeStopTime((Node) interval.getOwner(), length, diagram);
-    }
-
-    /**
      * changes velocity of the train on the specified line.
      * 
-     * @param line line
+     * @param lineInterval line interval
      * @param velocity velocity to be set
      * @param modelInfo model info
      */
-    public void changeVelocity(Line line, int velocity, TrainDiagram diagram) {
+    public void changeVelocity(TimeInterval lineInterval, int velocity, TrainDiagram diagram) {
         // change velocity
         boolean moveNext = false;
         int shift = 0;
@@ -444,9 +430,9 @@ public class Train implements AttributesHolder, ObjectWithId {
                 interval.addToOwner();
             }
 
-            if (line == interval.getOwner()) {
+            if (lineInterval == interval) {
                 // compute new speed
-                Pair<Integer, Integer> c = line.computeRunningTime(this, velocity, diagram, interval.getType());
+                Pair<Integer, Integer> c = lineInterval.getOwnerAsLine().computeRunningTime(this, velocity, diagram, interval.getType());
                 if (c.second == interval.getSpeed()) // do nothing
                 {
                     break;
@@ -463,31 +449,18 @@ public class Train implements AttributesHolder, ObjectWithId {
     }
 
     /**
-     * changes velocity of the train for specified time interval.
-     * 
-     * @param interval time interval
-     * @param velocity velocity to be set
-     * @param modelInfo model info
-     */
-    public void changeVelocity(TimeInterval interval, int velocity, TrainDiagram diagram) {
-        if (!(interval.getOwner() instanceof Line)) {
-            throw new IllegalArgumentException("Only applicalble to time interval with Line as owner.");
-        }
-        this.changeVelocity((Line) interval.getOwner(), velocity, diagram);
-    }
-
-    /**
      * changes node track.
      * 
-     * @param node node
+     * @param nodeInterval node interval
      * @param nodeTrack node track to be changed
      */
-    public void changeNodeTrack(Node node, NodeTrack nodeTrack) {
-        TimeInterval interval = timeIntervalList.getTimeInterval(node);
-        if (interval != null) {
-            interval.removeFromOwner();
-            interval.setTrack(nodeTrack);
-            interval.addToOwner();
+    public void changeNodeTrack(TimeInterval nodeInterval, NodeTrack nodeTrack) {
+        if (!nodeInterval.isNodeOwner())
+            throw new IllegalArgumentException("No node interval.");
+        if (nodeInterval != null) {
+            nodeInterval.removeFromOwner();
+            nodeInterval.setTrack(nodeTrack);
+            nodeInterval.addToOwner();
         }
         this.listenerSupport.fireEvent(new TrainEvent(this, TrainEvent.Type.TIME_INTERVAL_LIST));
     }
@@ -495,15 +468,16 @@ public class Train implements AttributesHolder, ObjectWithId {
     /**
      * changes line track.
      * 
-     * @param line line
+     * @param lineInterval line interval
      * @param lineTrack line track to be changed
      */
-    public void changeLineTrack(Line line, LineTrack lineTrack) {
-        TimeInterval interval = timeIntervalList.getTimeInterval(line);
-        if (interval != null) {
-            interval.removeFromOwner();
-            interval.setTrack(lineTrack);
-            interval.addToOwner();
+    public void changeLineTrack(TimeInterval lineInterval, LineTrack lineTrack) {
+        if (!lineInterval.isLineOwner())
+            throw new IllegalArgumentException("No line interval.");
+        if (lineInterval != null) {
+            lineInterval.removeFromOwner();
+            lineInterval.setTrack(lineTrack);
+            lineInterval.addToOwner();
         }
         this.listenerSupport.fireEvent(new TrainEvent(this, TrainEvent.Type.TIME_INTERVAL_LIST));
     }
