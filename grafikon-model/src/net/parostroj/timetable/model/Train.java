@@ -210,13 +210,13 @@ public class Train implements AttributesHolder, ObjectWithId {
     protected void addCycleItem(TrainsCycleItem item) {
         TrainsCycleType cycleType = item.getCycle().getType();
         TrainsCycleHelper.getHelper(cycleType).addCycleItem(this, this.getCyclesIntern(cycleType), item);
-        this.listenerSupport.fireEvent(new TrainEvent(this, TrainEvent.Type.CYCLE));
+        this.listenerSupport.fireEvent(new TrainEvent(this, TrainEvent.Type.CYCLE_ITEM));
     }
 
     protected void removeCycleItem(TrainsCycleItem item) {
         TrainsCycleType cycleType = item.getCycle().getType();
         this.getCyclesIntern(cycleType).remove(item);
-        this.listenerSupport.fireEvent(new TrainEvent(this, TrainEvent.Type.CYCLE));
+        this.listenerSupport.fireEvent(new TrainEvent(this, TrainEvent.Type.CYCLE_ITEM));
     }
 
     public Attributes getAttributes() {
@@ -235,7 +235,9 @@ public class Train implements AttributesHolder, ObjectWithId {
 
     @Override
     public Object removeAttribute(String key) {
-        return attributes.remove(key);
+        Object o = attributes.remove(key);
+        this.listenerSupport.fireEvent(new TrainEvent(this, key));
+        return o;
     }
 
     @Override

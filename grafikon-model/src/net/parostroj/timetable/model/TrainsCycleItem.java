@@ -5,6 +5,8 @@
  */
 package net.parostroj.timetable.model;
 
+import net.parostroj.timetable.model.events.TrainEvent;
+
 /**
  * Train cycle item.
  * 
@@ -32,6 +34,7 @@ public class TrainsCycleItem {
 
     public void setComment(String comment) {
         this.comment = comment;
+        train.fireTrainEvent(new TrainEvent(train, "trains.cycle.item.comment"));
     }
 
     public Train getTrain() {

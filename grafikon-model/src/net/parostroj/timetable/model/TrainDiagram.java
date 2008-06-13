@@ -126,12 +126,14 @@ public class TrainDiagram implements AttributesHolder, ObjectWithId {
     }
 
     public void addCycle(TrainsCycle cycle) {
+        cycle.addListener(listener);
         this.getCyclesIntern(cycle.getType()).add(cycle);
     }
 
     public void removeCycle(TrainsCycle cycle) {
         cycle.clear();
         this.getCyclesIntern(cycle.getType()).remove(cycle);
+        cycle.removeListener(listener);
     }
     
     public TrainsCycle getCycleById(String id) {

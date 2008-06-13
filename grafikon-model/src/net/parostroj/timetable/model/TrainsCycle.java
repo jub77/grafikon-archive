@@ -6,6 +6,8 @@
 package net.parostroj.timetable.model;
 
 import java.util.*;
+import net.parostroj.timetable.model.events.TrainsCycleEvent;
+import net.parostroj.timetable.model.events.TrainsCycleListener;
 import net.parostroj.timetable.utils.Tuple;
 
 /**
@@ -21,6 +23,7 @@ public class TrainsCycle implements AttributesHolder, ObjectWithId, Iterable<Tra
     private TrainsCycleType type;
     private Attributes attributes;
     private List<TrainsCycleItem> items;
+    private GTListenerSupport<TrainsCycleListener, TrainsCycleEvent> listenerSupport;
 
     /**
      * creates instance
@@ -36,6 +39,13 @@ public class TrainsCycle implements AttributesHolder, ObjectWithId, Iterable<Tra
         this.attributes = new Attributes();
         this.type = type;
         this.items = new LinkedList<TrainsCycleItem>();
+        listenerSupport = new GTListenerSupport<TrainsCycleListener, TrainsCycleEvent>(new GTEventSender<TrainsCycleListener, TrainsCycleEvent>() {
+
+            @Override
+            public void fireEvent(TrainsCycleListener listener, TrainsCycleEvent event) {
+                listener.trainsCycleChanged(event);
+            }
+        });
     }
 
     @Override
@@ -49,6 +59,7 @@ public class TrainsCycle implements AttributesHolder, ObjectWithId, Iterable<Tra
 
     public void setDescription(String description) {
         this.description = description;
+        this.listenerSupport.fireEvent(new TrainsCycleEvent(this, "description"));
     }
 
     public String getName() {
@@ -57,6 +68,7 @@ public class TrainsCycle implements AttributesHolder, ObjectWithId, Iterable<Tra
 
     public void setName(String name) {
         this.name = name;
+        this.listenerSupport.fireEvent(new TrainsCycleEvent(this, "name"));
     }
 
     @Override
@@ -175,11 +187,14 @@ public class TrainsCycle implements AttributesHolder, ObjectWithId, Iterable<Tra
     @Override
     public void setAttribute(String key, Object value) {
         attributes.put(key, value);
+        this.listenerSupport.fireEvent(new TrainsCycleEvent(this, key));
     }
 
     @Override
     public Object removeAttribute(String key) {
-        return attributes.remove(key);
+        Object o = attributes.remove(key);
+        this.listenerSupport.fireEvent(new TrainsCycleEvent(this, key));
+        return o;
     }
 
     public TrainsCycleType getType() {
@@ -188,6 +203,7 @@ public class TrainsCycle implements AttributesHolder, ObjectWithId, Iterable<Tra
 
     public void setType(TrainsCycleType type) {
         this.type = type;
+        this.listenerSupport.fireEvent(new TrainsCycleEvent(this, "type"));
     }
 
     @Override
@@ -203,5 +219,13 @@ public class TrainsCycle implements AttributesHolder, ObjectWithId, Iterable<Tra
         for (TrainsCycleItem item : items) {
             item.getTrain().removeCycleItem(item);
         }
+    }
+
+    public void addListener(TrainsCycleListener listener) {
+        listenerSupport.addListener(listener);
+    }
+
+    public void removeListener(TrainsCycleListener listener) {
+        listenerSupport.removeListener(listener);
     }
 }
