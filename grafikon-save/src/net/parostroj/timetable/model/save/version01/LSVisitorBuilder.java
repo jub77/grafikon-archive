@@ -31,8 +31,6 @@ public class LSVisitorBuilder implements LSVisitor {
         for (TrainType type : trainTypeList.getTrainTypeList()) {
             diagram.addTrainType(type);
         }
-        Net net = new Net();
-        diagram.setNet(net);
     }
 
     @Override
