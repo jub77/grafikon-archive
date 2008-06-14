@@ -49,16 +49,9 @@ public class TrainTimetable {
     }
 
     private void computeLength() {
-        String trainN = "617154";
         length = templates.getTimetableFooterHeight() + templates.getTimetableHeaderHeight();
-        if (train.getNumber().equals(trainN))
-            System.out.println("Length(1): " + length);
         length += templates.getTimetableLineHeight() * ((train.getTimeIntervalList().size() / 2) + 1);
-        if (train.getNumber().equals(trainN))
-            System.out.println("Length(2): " + length);
         length += templates.getTimetableHeaderWeightLineHeight() * weightRows.getData().size();
-        if (train.getNumber().equals(trainN))
-            System.out.println("Length(3): " + length);
 
         // compute comments
         boolean lineEnd = false;
@@ -82,8 +75,6 @@ public class TrainTimetable {
                 commentsCount++;
             }
         }
-        if (train.getNumber().equals(trainN))
-            System.out.println("Comments(3): " + commentsCount);
 
         if (lineEnd) {
             length += templates.getTimetableCommentHeight();
@@ -94,11 +85,7 @@ public class TrainTimetable {
         if (shunt) {
             length += templates.getTimetableCommentHeight();
         }
-        if (train.getNumber().equals(trainN))
-            System.out.println("Length(5): " + length);
         length += commentsCount * templates.getTimetableCommentHeight();
-        if (train.getNumber().equals(trainN))
-            System.out.println("Length(6): " + length);
     }
 
     public int getLength() {
