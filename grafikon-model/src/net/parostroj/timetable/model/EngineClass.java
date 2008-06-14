@@ -10,6 +10,7 @@ import java.util.*;
  */
 public class EngineClass implements ObjectWithId {
 
+    private static final WeightTableRow EMPTY_ROW = new WeightTableRow(TimeInterval.NO_SPEED);
     private final String id;
     private String name;
     private List<WeightTableRow> weightTable;
@@ -67,7 +68,8 @@ public class EngineClass implements ObjectWithId {
                 return row;
             }
         }
-        return null;
+        // return empty row for speed not in table
+        return EMPTY_ROW;
     }
 
     public WeightTableRow getWeightTableRowForSpeedExact(int speed) {
