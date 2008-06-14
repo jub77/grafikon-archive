@@ -46,17 +46,24 @@ public class TrainTimetablesPage implements Page {
         
     }
 
+    @Override
     public int getNumber() {
         return number;
     }
 
+    @Override
     public void setNumber(int number) {
         this.number = number;
     }
     
+    @Override
     public void writeTo(Writer writer) throws IOException {
+        boolean separator = false;
         for (TrainTimetable item : trains) {
+            if (separator)
+                writer.write(templates.getTimetableSeparator());
             item.writeTo(writer, this);
+            separator = true;
         }
     }
 }

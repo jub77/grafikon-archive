@@ -43,6 +43,8 @@ public class TrainTimetablesListTemplates extends Templates {
     private String timetableCommentD3;
     private String timetableLineD3;
     
+    private String timetableSeparator;
+    
     private String indexHeader;
     private String indexLine;
     private String indexFooter;
@@ -65,6 +67,7 @@ public class TrainTimetablesListTemplates extends Templates {
         timetableSummaryD3 = readTextFile(TEMPLATE_LOCATION + "/t_timetable_summary_d3.template");
         timetableCommentD3 = readTextFile(TEMPLATE_LOCATION + "/t_timetable_comment_d3.template");
         timetableFooterD3 = readTextFile(TEMPLATE_LOCATION + "/t_timetable_footer_d3.template");
+        timetableSeparator = readTextFile(TEMPLATE_LOCATION + "/t_timetable_separator.template");
         indexHeader = readTextFile(TEMPLATE_LOCATION + "/t_index_header.template");
         indexLine = readTextFile(TEMPLATE_LOCATION + "/t_index_line.template");
         indexFooter = readTextFile(TEMPLATE_LOCATION + "/t_index_footer.template");
@@ -139,7 +142,7 @@ public class TrainTimetablesListTemplates extends Templates {
     }
 
     public int getTimetableHeaderHeight() {
-        return 15;
+        return 17;
     }
     
     public int getTimetableHeaderWeightLineHeight() {
@@ -184,6 +187,10 @@ public class TrainTimetablesListTemplates extends Templates {
 
     public String getTimetableHeaderWeightLineD3() {
         return timetableHeaderWeightLineD3;
+    }
+
+    public String getTimetableSeparator() {
+        return timetableSeparator;
     }
 
     /**
