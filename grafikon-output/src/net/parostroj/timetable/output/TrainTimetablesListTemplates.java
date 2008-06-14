@@ -142,7 +142,11 @@ public class TrainTimetablesListTemplates extends Templates {
     }
 
     public int getTimetableHeaderHeight() {
-        return 17;
+        return 13;
+    }
+    
+    public int getTimetableHeaderRouteHeight() {
+        return 4;
     }
     
     public int getTimetableHeaderWeightLineHeight() {

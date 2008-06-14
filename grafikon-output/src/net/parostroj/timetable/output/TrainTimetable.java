@@ -52,6 +52,10 @@ public class TrainTimetable {
         length = templates.getTimetableFooterHeight() + templates.getTimetableHeaderHeight();
         length += templates.getTimetableLineHeight() * ((train.getTimeIntervalList().size() / 2) + 1);
         length += templates.getTimetableHeaderWeightLineHeight() * weightRows.getData().size();
+        
+        // route
+        if (train.getAttribute("route.info") != null && !((String)train.getAttribute("route.info")).trim().equals(""))
+            length += templates.getTimetableHeaderRouteHeight();
 
         // compute comments
         boolean lineEnd = false;
@@ -125,7 +129,7 @@ public class TrainTimetable {
     }
 
     private String createRouteInfo() {
-        if (train.getAttribute("route.info") == null || train.getAttribute("route.info").equals("")) {
+        if (train.getAttribute("route.info") == null || ((String)train.getAttribute("route.info")).trim().equals("")) {
             return "";
         }
         String result = (String) train.getAttribute("route.info");
