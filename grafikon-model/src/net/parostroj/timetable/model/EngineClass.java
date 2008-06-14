@@ -10,7 +10,28 @@ import java.util.*;
  */
 public class EngineClass implements ObjectWithId {
 
-    private static final WeightTableRow EMPTY_ROW = new WeightTableRow(TimeInterval.NO_SPEED);
+    private static final class EmptyWeightTableRow extends WeightTableRow {
+
+        public EmptyWeightTableRow() {
+            super(Line.UNLIMITED_SPEED);
+        }
+
+        @Override
+        public void removeWeightInfo(LineClass lineClass) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public void setSpeed(int speed) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public void setWeightInfo(LineClass lineClass, Integer weight) {
+            throw new UnsupportedOperationException();
+        }
+    }
+    private static final WeightTableRow EMPTY_ROW = new EmptyWeightTableRow();
     private final String id;
     private String name;
     private List<WeightTableRow> weightTable;
