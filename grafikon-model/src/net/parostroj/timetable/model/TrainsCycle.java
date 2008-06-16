@@ -1,18 +1,17 @@
 /*
- * EngineRun.java
+ * TrainsCycle.java
  * 
  * Created on 11.9.2007, 20:30:58
  */
 package net.parostroj.timetable.model;
 
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
+import net.parostroj.timetable.model.events.TrainsCycleEvent;
+import net.parostroj.timetable.model.events.TrainsCycleListener;
 import net.parostroj.timetable.utils.Tuple;
 
 /**
- * Run of engine through trains.
+ * Trains cycle.
  * 
  * @author jub
  */
@@ -24,6 +23,7 @@ public class TrainsCycle implements AttributesHolder, ObjectWithId, Iterable<Tra
     private TrainsCycleType type;
     private Attributes attributes;
     private List<TrainsCycleItem> items;
+    private GTListenerSupport<TrainsCycleListener, TrainsCycleEvent> listenerSupport;
 
     /**
      * creates instance
@@ -39,6 +39,13 @@ public class TrainsCycle implements AttributesHolder, ObjectWithId, Iterable<Tra
         this.attributes = new Attributes();
         this.type = type;
         this.items = new LinkedList<TrainsCycleItem>();
+        listenerSupport = new GTListenerSupport<TrainsCycleListener, TrainsCycleEvent>(new GTEventSender<TrainsCycleListener, TrainsCycleEvent>() {
+
+            @Override
+            public void fireEvent(TrainsCycleListener listener, TrainsCycleEvent event) {
+                listener.trainsCycleChanged(event);
+            }
+        });
     }
 
     @Override
@@ -52,6 +59,7 @@ public class TrainsCycle implements AttributesHolder, ObjectWithId, Iterable<Tra
 
     public void setDescription(String description) {
         this.description = description;
+        this.listenerSupport.fireEvent(new TrainsCycleEvent(this, "description"));
     }
 
     public String getName() {
@@ -60,6 +68,7 @@ public class TrainsCycle implements AttributesHolder, ObjectWithId, Iterable<Tra
 
     public void setName(String name) {
         this.name = name;
+        this.listenerSupport.fireEvent(new TrainsCycleEvent(this, "name"));
     }
 
     @Override
@@ -81,20 +90,20 @@ public class TrainsCycle implements AttributesHolder, ObjectWithId, Iterable<Tra
         return hash;
     }
 
-    public List<Tuple<Train>> checkConflicts() {
-        List<Tuple<Train>> conflicts = null;
+    public List<Tuple<TrainsCycleItem>> checkConflicts() {
+        List<Tuple<TrainsCycleItem>> conflicts = null;
         Iterator<TrainsCycleItem> i = items.iterator();
-        Train last = null;
+        TrainsCycleItem last = null;
         if (i.hasNext()) {
-            last = i.next().getTrain();
+            last = i.next();
         }
         while (i.hasNext()) {
-            Train current = i.next().getTrain();
-            if (last.getEndNode() != current.getStartNode() || last.getEndTime() >= current.getStartTime()) {
+            TrainsCycleItem current = i.next();
+            if (last.getToInterval() != current.getFromInterval() || last.getEndTime() >= current.getStartTime()) {
                 if (conflicts == null) {
-                    conflicts = new LinkedList<Tuple<Train>>();
+                    conflicts = new LinkedList<Tuple<TrainsCycleItem>>();
                 }
-                conflicts.add(new Tuple<Train>(last, current));
+                conflicts.add(new Tuple<TrainsCycleItem>(last, current));
             }
             last = current;
         }
@@ -129,19 +138,33 @@ public class TrainsCycle implements AttributesHolder, ObjectWithId, Iterable<Tra
     }
 
     public void addItem(TrainsCycleItem item) {
+        item.getTrain().addCycleItem(item);
         items.add(item);
     }
     
     public void removeItem(TrainsCycleItem item) {
+        item.getTrain().removeCycleItem(item);
         items.remove(item);
     }
     
     public void addItem(TrainsCycleItem item, int index) {
+        item.getTrain().addCycleItem(item);
         items.add(index, item);
     }
     
     public TrainsCycleItem removeItem(int index) {
-        return items.remove(index);
+        TrainsCycleItem item = items.remove(index);
+        item.getTrain().removeCycleItem(item);
+        return item;
+    }
+    
+    public void replaceItem(TrainsCycleItem newItem, TrainsCycleItem oldItem) {
+        if (newItem.getTrain() != oldItem.getTrain() || newItem.getCycle() != this || oldItem.getCycle() != this)
+            throw new IllegalArgumentException("Illegal argument.");
+        Train t = newItem.getTrain();
+        t.removeCycleItem(oldItem);
+        t.addCycleItem(newItem);
+        this.items.set(this.items.indexOf(oldItem), newItem);
     }
     
     public List<TrainsCycleItem> getItems() {
@@ -164,11 +187,14 @@ public class TrainsCycle implements AttributesHolder, ObjectWithId, Iterable<Tra
     @Override
     public void setAttribute(String key, Object value) {
         attributes.put(key, value);
+        this.listenerSupport.fireEvent(new TrainsCycleEvent(this, key));
     }
 
     @Override
     public Object removeAttribute(String key) {
-        return attributes.remove(key);
+        Object o = attributes.remove(key);
+        this.listenerSupport.fireEvent(new TrainsCycleEvent(this, key));
+        return o;
     }
 
     public TrainsCycleType getType() {
@@ -177,6 +203,7 @@ public class TrainsCycle implements AttributesHolder, ObjectWithId, Iterable<Tra
 
     public void setType(TrainsCycleType type) {
         this.type = type;
+        this.listenerSupport.fireEvent(new TrainsCycleEvent(this, "type"));
     }
 
     @Override
@@ -186,5 +213,19 @@ public class TrainsCycle implements AttributesHolder, ObjectWithId, Iterable<Tra
     
     public boolean isEmpty() {
         return items.isEmpty();
+    }
+    
+    public void clear() {
+        for (TrainsCycleItem item : items) {
+            item.getTrain().removeCycleItem(item);
+        }
+    }
+
+    public void addListener(TrainsCycleListener listener) {
+        listenerSupport.addListener(listener);
+    }
+
+    public void removeListener(TrainsCycleListener listener) {
+        listenerSupport.removeListener(listener);
     }
 }

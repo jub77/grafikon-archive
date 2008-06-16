@@ -1,6 +1,8 @@
 package net.parostroj.timetable.model;
 
 import java.util.*;
+import net.parostroj.timetable.model.events.TrainDiagramEvent;
+import net.parostroj.timetable.model.events.TrainDiagramListener;
 
 /**
  * Collection of all parts of graphical timetable.
@@ -29,6 +31,8 @@ public class TrainDiagram implements AttributesHolder, ObjectWithId {
     private TrainsData trainsData;
     /** List of engine classes. */
     private List<EngineClass> engineClasses;
+    private GTListenerTrainDiagramImpl listener;
+    private GTListenerSupport<TrainDiagramListener, TrainDiagramEvent> listenerSupport;
 
     /**
      * Default constructor.
@@ -40,9 +44,18 @@ public class TrainDiagram implements AttributesHolder, ObjectWithId {
         cycles = new EnumMap<TrainsCycleType, List<TrainsCycle>>(TrainsCycleType.class);
         images = new LinkedList<TimetableImage>();
         engineClasses = new LinkedList<EngineClass>();
+        net = new Net();
         this.trainTypes = new LinkedList<TrainType>();
         this.attributes = new Attributes();
         this.trainsData = data;
+        this.listener = new GTListenerTrainDiagramImpl(this);
+        this.listenerSupport = new GTListenerSupport<TrainDiagramListener, TrainDiagramEvent>(new GTEventSender<TrainDiagramListener, TrainDiagramEvent>() {
+
+            @Override
+            public void fireEvent(TrainDiagramListener listener, TrainDiagramEvent event) {
+                listener.trainDiagramChanged(event);
+            }
+        });
     }
 
     /**
@@ -50,13 +63,6 @@ public class TrainDiagram implements AttributesHolder, ObjectWithId {
      */
     public Net getNet() {
         return net;
-    }
-
-    /**
-     * @param net net to be set
-     */
-    public void setNet(Net net) {
-        this.net = net;
     }
 
     /**
@@ -91,6 +97,7 @@ public class TrainDiagram implements AttributesHolder, ObjectWithId {
     }
 
     public void addTrain(Train train) {
+        train.addListener(listener);
         train.attach();
         this.trains.add(train);
     }
@@ -98,6 +105,7 @@ public class TrainDiagram implements AttributesHolder, ObjectWithId {
     public void removeTrain(Train train) {
         train.detach();
         this.trains.remove(train);
+        train.removeListener(listener);
     }
 
     public Train getTrainById(String id) {
@@ -122,19 +130,14 @@ public class TrainDiagram implements AttributesHolder, ObjectWithId {
     }
 
     public void addCycle(TrainsCycle cycle) {
-        // attach to trains
-        for (TrainsCycleItem item : cycle) {
-            item.getTrain().addCycle(item);
-        }
+        cycle.addListener(listener);
         this.getCyclesIntern(cycle.getType()).add(cycle);
     }
 
     public void removeCycle(TrainsCycle cycle) {
-        // detach from trains
-        for (TrainsCycleItem item : cycle) {
-            item.getTrain().removeCycle(item);
-        }
+        cycle.clear();
         this.getCyclesIntern(cycle.getType()).remove(cycle);
+        cycle.removeListener(listener);
     }
     
     public TrainsCycle getCycleById(String id) {
@@ -212,7 +215,7 @@ public class TrainDiagram implements AttributesHolder, ObjectWithId {
 
     @Override
     public String toString() {
-        return "Trains: " + trains.size() + ", Nodes: " + net.vertexSet().size() + ", Lines: " + net.edgeSet().size();
+        return "Trains: " + trains.size() + ", Nodes: " + net.getNodes().size() + ", Lines: " + net.getLines().size();
     }
 
     @Override
@@ -273,5 +276,13 @@ public class TrainDiagram implements AttributesHolder, ObjectWithId {
     @Override
     public String getId() {
         return id;
+    }
+    
+    public void addListener(TrainDiagramListener listener) {
+        listenerSupport.addListener(listener);
+    }
+    
+    public void removeListener(TrainDiagramListener listener) {
+        listenerSupport.removeListener(listener);
     }
 }

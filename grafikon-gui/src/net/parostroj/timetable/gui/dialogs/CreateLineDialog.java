@@ -42,7 +42,7 @@ public class CreateLineDialog extends javax.swing.JDialog {
     
     public void updateNodes() {
         if (model.getDiagram() != null) {
-            Collection<Node> nodes = model.getDiagram().getNet().vertexSet();
+            Collection<Node> nodes = model.getDiagram().getNet().getNodes();
             NodeSort sort = new NodeSort(NodeSort.Type.ASC);
             List<Node> sorted = sort.sort(nodes);
             fromComboBox.removeAllItems();

@@ -1,6 +1,7 @@
 package net.parostroj.timetable.model.ls.impl3;
 
 import javax.xml.bind.annotation.XmlType;
+import net.parostroj.timetable.model.Train;
 import net.parostroj.timetable.model.TrainDiagram;
 import net.parostroj.timetable.model.TrainsCycle;
 import net.parostroj.timetable.model.TrainsCycleItem;
@@ -65,8 +66,9 @@ public class LSTrainsCycleItem {
     }
     
     public TrainsCycleItem createTrainsCycleItem(TrainsCycle cycle, TrainDiagram diagram) {
-        TrainsCycleItem item = new TrainsCycleItem(cycle, diagram.getTrainById(train),
-                comment, diagram.getNet().getNodeById(from), diagram.getNet().getNodeById(to));
+        Train modelTrain = diagram.getTrainById(train);
+        TrainsCycleItem item = new TrainsCycleItem(cycle, modelTrain,
+                comment, modelTrain.getIntervalById(from), modelTrain.getIntervalById(to));
         return item;
     }
 }

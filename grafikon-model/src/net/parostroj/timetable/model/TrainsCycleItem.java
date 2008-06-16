@@ -5,33 +5,27 @@
  */
 package net.parostroj.timetable.model;
 
+import net.parostroj.timetable.model.events.TrainEvent;
+
 /**
  * Train cycle item.
  * 
  * @author jub
  */
 public class TrainsCycleItem {
-    
+
     private Train train;
-    
     private String comment;
-    
     private final TrainsCycle cycle;
-    
-    private Node from;
-    
-    private Node to;
+    private final TimeInterval from;
+    private final TimeInterval to;
 
-    public TrainsCycleItem(TrainsCycle cycle, Train train, String comment, Node from, Node to) {
-        this(cycle, train, comment);
-        this.from = from;
-        this.to = to;
-    }
-
-    public TrainsCycleItem(TrainsCycle cycle, Train train, String comment) {
+    public TrainsCycleItem(TrainsCycle cycle, Train train, String comment, TimeInterval from, TimeInterval to) {
+        this.cycle = cycle;
         this.train = train;
         this.comment = comment;
-        this.cycle = cycle;
+        this.from = (train.getFirstInterval() != from) ? from : null;
+        this.to = (train.getLastInterval() != to) ? to : null;
     }
 
     public String getComment() {
@@ -40,84 +34,67 @@ public class TrainsCycleItem {
 
     public void setComment(String comment) {
         this.comment = comment;
+        train.fireTrainEvent(new TrainEvent(train, "trains.cycle.item.comment"));
     }
 
     public Train getTrain() {
         return train;
     }
 
-    public void setTrain(Train train) {
-        this.train = train;
-    }
-
     public TrainsCycle getCycle() {
         return cycle;
     }
 
-    public Node getFrom() {
+    /**
+     * @return from time interval
+     */
+    public TimeInterval getFrom() {
         return from;
     }
 
-    public void setFrom(Node from) {
-        this.from = from;
-    }
-
-    public Node getTo() {
+    /**
+     * @return to interval
+     */
+    public TimeInterval getTo() {
         return to;
     }
 
-    public void setTo(Node to) {
-        this.to = to;
-    }
-    
-    public Node getFromNode() {
-        if (from != null)
+    /**
+     * @return always returns from time interval (if not specified then firt interval of the train)
+     */
+    public TimeInterval getFromInterval() {
+        if (from != null) {
             return from;
-        else
-            return train.getStartNode();
+        } else {
+            return train.getFirstInterval();
+        }
     }
-    
-    public Node getToNode() {
-        if (to != null)
+
+    /**
+     * @return always returns to interval (if not specified then last interval of the train)
+     */
+    public TimeInterval getToInterval() {
+        if (to != null) {
             return to;
-        else
-            return train.getEndNode();
+        } else {
+            return train.getLastInterval();
+        }
+    }
+
+    public int getStartTime() {
+        return this.getFromInterval().getEnd();
+    }
+
+    public int getEndTime() {
+        return this.getToInterval().getStart();
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        final TrainsCycleItem other = (TrainsCycleItem) obj;
-        if (this.train != other.train && (this.train == null || !this.train.equals(other.train))) {
-            return false;
-        }
-        if (this.comment != other.comment && (this.comment == null || !this.comment.equals(other.comment))) {
-            return false;
-        }
-        if (this.cycle != other.cycle && (this.cycle == null || !this.cycle.equals(other.cycle))) {
-            return false;
-        }
-        if (this.from != other.from && (this.from == null || !this.from.equals(other.from))) {
-            return false;
-        }
-        if (this.to != other.to && (this.to == null || !this.to.equals(other.to))) {
-            return false;
-        }
-        return true;
+    public String toString() {
+        StringBuilder builder = new StringBuilder("TrainsCycleItem[");
+        builder.append(train).append(',');
+        builder.append(getFromInterval().getOwner()).append(',');
+        builder.append(getToInterval().getOwner()).append(']');
+        return builder.toString();
     }
-
-    @Override
-    public int hashCode() {
-        int hash = 7;
-        hash = 23 * hash + (this.train != null ? this.train.hashCode() : 0);
-        hash = 23 * hash + (this.comment != null ? this.comment.hashCode() : 0);
-        return hash;
-    }
-    
-    
 }

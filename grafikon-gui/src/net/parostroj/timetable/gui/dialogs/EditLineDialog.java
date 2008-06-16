@@ -3,24 +3,16 @@
  *
  * Created on 30. září 2007, 11:13
  */
-
 package net.parostroj.timetable.gui.dialogs;
 
 import java.awt.event.ItemEvent;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.DefaultListModel;
 import javax.swing.JOptionPane;
 import net.parostroj.timetable.gui.ApplicationModel;
-import net.parostroj.timetable.model.Line;
-import net.parostroj.timetable.model.LineClass;
-import net.parostroj.timetable.model.LineTrack;
-import net.parostroj.timetable.model.Node;
-import net.parostroj.timetable.model.NodeTrack;
+import net.parostroj.timetable.model.*;
 import net.parostroj.timetable.utils.ResourceLoader;
 import net.parostroj.timetable.utils.Tuple;
 
@@ -49,10 +41,6 @@ public class EditLineDialog extends javax.swing.JDialog {
     public EditLineDialog(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
-        
-        for (String item : ResourceLoader.getString("editline.type.list").split(";")) {
-            typeComboBox.addItem(item);
-        }
     }
     
     public void setModel(ApplicationModel model) {
@@ -100,7 +88,7 @@ public class EditLineDialog extends javax.swing.JDialog {
         
         lengthTextField.setText(Integer.toString(line.getLength()));
         
-        typeComboBox.setSelectedItem(line.getAttribute("line.type"));
+        controlledCheckBox.setSelected(Boolean.TRUE.equals(line.getAttribute("line.controlled")));
         
         // update line class combo box
         List<LineClass> classes = model.getDiagram().getNet().getLineClasses();
@@ -185,7 +173,7 @@ public class EditLineDialog extends javax.swing.JDialog {
                 track.setToStraightTrack(connections.get(track).second);
             }
             
-            line.setAttribute("line.type", typeComboBox.getSelectedItem());
+            line.setAttribute("line.controlled", controlledCheckBox.isSelected());
             
             // set line class
             if (lineClassComboBox.getSelectedItem() == noneLineClass)
@@ -213,9 +201,9 @@ public class EditLineDialog extends javax.swing.JDialog {
         lengthTextField = new javax.swing.JTextField();
         unlimitedSpeedCheckBox = new javax.swing.JCheckBox();
         speedTextField = new javax.swing.JTextField();
+        controlledCheckBox = new javax.swing.JCheckBox();
         javax.swing.JLabel jLabel2 = new javax.swing.JLabel();
         javax.swing.JLabel jLabel3 = new javax.swing.JLabel();
-        typeComboBox = new javax.swing.JComboBox();
         fromDirectTrackComboBox = new javax.swing.JComboBox();
         toDirectTrackComboBox = new javax.swing.JComboBox();
         javax.swing.JLabel jLabel4 = new javax.swing.JLabel();
@@ -229,13 +217,13 @@ public class EditLineDialog extends javax.swing.JDialog {
         javax.swing.JLabel jLabel6 = new javax.swing.JLabel();
         lineClassComboBox = new javax.swing.JComboBox();
         javax.swing.JLabel jLabel7 = new javax.swing.JLabel();
+        javax.swing.JLabel jLabel8 = new javax.swing.JLabel();
 
         setTitle(ResourceLoader.getString("editline.title")); // NOI18N
         setResizable(false);
 
         jLabel1.setText(ResourceLoader.getString("editline.length.mm")); // NOI18N
 
-        unlimitedSpeedCheckBox.setText(ResourceLoader.getString("editline.speed.unlimited")); // NOI18N
         unlimitedSpeedCheckBox.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 unlimitedSpeedCheckBoxActionPerformed(evt);
@@ -298,9 +286,11 @@ public class EditLineDialog extends javax.swing.JDialog {
 
         jLabel5.setText(ResourceLoader.getString("editline.tracks")); // NOI18N
 
-        jLabel6.setText(ResourceLoader.getString("editline.type")); // NOI18N
+        jLabel6.setText(ResourceLoader.getString("editline.type.controlled") + ": "); // NOI18N
 
         jLabel7.setText(ResourceLoader.getString("editline.lineclass")); // NOI18N
+
+        jLabel8.setText(ResourceLoader.getString("editline.speed.unlimited") + ": "); // NOI18N
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -310,29 +300,31 @@ public class EditLineDialog extends javax.swing.JDialog {
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jLabel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jLabel6)
-                            .addComponent(jLabel7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                .addComponent(jLabel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(jLabel6)
+                                .addComponent(jLabel7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addComponent(jLabel8))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(controlledCheckBox)
                             .addComponent(unlimitedSpeedCheckBox)
-                            .addComponent(lengthTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 184, Short.MAX_VALUE)
-                            .addComponent(speedTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 184, Short.MAX_VALUE)
-                            .addComponent(fromDirectTrackComboBox, 0, 184, Short.MAX_VALUE)
-                            .addComponent(toDirectTrackComboBox, 0, 184, Short.MAX_VALUE)
+                            .addComponent(lengthTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 178, Short.MAX_VALUE)
+                            .addComponent(speedTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 178, Short.MAX_VALUE)
+                            .addComponent(fromDirectTrackComboBox, 0, 178, Short.MAX_VALUE)
+                            .addComponent(toDirectTrackComboBox, 0, 178, Short.MAX_VALUE)
                             .addGroup(layout.createSequentialGroup()
-                                .addComponent(scrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 97, Short.MAX_VALUE)
+                                .addComponent(scrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 91, Short.MAX_VALUE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(deleteTrackButton, javax.swing.GroupLayout.DEFAULT_SIZE, 81, Short.MAX_VALUE)
                                     .addComponent(newTrackButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                            .addComponent(typeComboBox, 0, 184, Short.MAX_VALUE)
-                            .addComponent(lineClassComboBox, 0, 184, Short.MAX_VALUE)))
+                            .addComponent(lineClassComboBox, 0, 178, Short.MAX_VALUE)))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addComponent(okButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -347,14 +339,16 @@ public class EditLineDialog extends javax.swing.JDialog {
                     .addComponent(jLabel1)
                     .addComponent(lengthTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(unlimitedSpeedCheckBox)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
+                    .addComponent(unlimitedSpeedCheckBox)
+                    .addComponent(jLabel8))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(speedTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel2))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(typeComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
+                    .addComponent(controlledCheckBox)
                     .addComponent(jLabel6))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -372,7 +366,7 @@ public class EditLineDialog extends javax.swing.JDialog {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(scrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 52, Short.MAX_VALUE)
+                            .addComponent(scrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 61, Short.MAX_VALUE)
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(newTrackButton)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -460,6 +454,7 @@ public class EditLineDialog extends javax.swing.JDialog {
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton cancelButton;
+    private javax.swing.JCheckBox controlledCheckBox;
     private javax.swing.JButton deleteTrackButton;
     private javax.swing.JComboBox fromDirectTrackComboBox;
     private javax.swing.JTextField lengthTextField;
@@ -469,7 +464,6 @@ public class EditLineDialog extends javax.swing.JDialog {
     private javax.swing.JTextField speedTextField;
     private javax.swing.JComboBox toDirectTrackComboBox;
     private javax.swing.JList trackList;
-    private javax.swing.JComboBox typeComboBox;
     private javax.swing.JCheckBox unlimitedSpeedCheckBox;
     // End of variables declaration//GEN-END:variables
     

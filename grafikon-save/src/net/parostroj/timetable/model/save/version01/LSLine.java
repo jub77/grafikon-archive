@@ -2,6 +2,8 @@ package net.parostroj.timetable.model.save.version01;
 
 import net.parostroj.timetable.model.Net;
 import net.parostroj.timetable.model.Line;
+import net.parostroj.timetable.model.Node;
+import net.parostroj.timetable.utils.Tuple;
 
 public class LSLine {
 
@@ -26,8 +28,9 @@ public class LSLine {
         id = data.getId();
         data.addObjectWithId(line, id);
 
-        sourceId = data.getIdForObject(net.getEdgeSource(line));
-        targetId = data.getIdForObject(net.getEdgeTarget(line));
+        Tuple<Node> ends = net.getNodes(line);
+        sourceId = data.getIdForObject(ends.first);
+        targetId = data.getIdForObject(ends.second);
         
         sourceTrackId = data.getIdForObject(line.getTracks().get(0).getFromStraightTrack());
         targetTrackId = data.getIdForObject(line.getTracks().get(0).getToStraightTrack());

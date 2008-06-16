@@ -7,7 +7,6 @@ import net.parostroj.timetable.model.ls.LSFileFactory;
 import net.parostroj.timetable.model.ls.ModelVersion;
 import net.parostroj.timetable.model.ls.impl3.FileLoadSaveImpl;
 import net.parostroj.timetable.model.save.LoadSave;
-import net.parostroj.timetable.model.templates.TemplatesLoader;
 
 /**
  * Class with main method.
@@ -26,8 +25,6 @@ public class Main {
         factory.registerLS(new ModelVersion(1, 0), LoadSave.class);
         factory.registerLS(new ModelVersion(2, 0), LoadSave.class);
         factory.registerLS(new ModelVersion(3,0), FileLoadSaveImpl.class);
-
-//        System.out.println((new TemplatesLoader()).getTemplate(TemplatesLoader.getTemplates().get(0).getName()));
 
         UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         ApplicationStarter starter = new ApplicationStarter(MainFrame.class, 310, 110, Main.class.getResource("/images/splashscreen.png"));

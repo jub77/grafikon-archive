@@ -223,7 +223,7 @@ class TrainTableModel implements TableModel {
                 Node node = (Node)interval.getOwner();
                 NodeTrack newTrack = node.getNodeTrackByNumber(platform);
                 if (newTrack != null) {
-                    train.changeNodeTrack(node, newTrack);
+                    train.changeNodeTrack(interval, newTrack);
                     this.fireEvent(new TableModelEvent(this,rowIndex,rowIndex));
                     model.fireEvent(new ApplicationModelEvent(ApplicationModelEventType.MODIFIED_TRAIN, model, train));
                 }
@@ -231,7 +231,7 @@ class TrainTableModel implements TableModel {
                 Line line = (Line)interval.getOwner();
                 LineTrack newTrack = line.getLineTrackByNumber(platform);
                 if (newTrack != null) {
-                    train.changeLineTrack(line, newTrack);
+                    train.changeLineTrack(interval, newTrack);
                     this.fireEvent(new TableModelEvent(this, rowIndex, rowIndex));
                     model.fireEvent(new ApplicationModelEvent(ApplicationModelEventType.MODIFIED_TRAIN, model, train));
                 }

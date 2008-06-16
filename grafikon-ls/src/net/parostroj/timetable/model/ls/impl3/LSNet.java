@@ -26,11 +26,11 @@ public class LSNet {
 
     public LSNet(Net net) {
         this.nodes = new LinkedList<LSNode>();
-        for (Node node : net.vertexSet()) {
+        for (Node node : net.getNodes()) {
             this.nodes.add(new LSNode(node));
         }
         this.lines = new LinkedList<LSLine>();
-        for (Line line : net.edgeSet()) {
+        for (Line line : net.getLines()) {
             this.lines.add(new LSLine(line));
         }
         this.lineClasses = new LinkedList<LSLineClass>();

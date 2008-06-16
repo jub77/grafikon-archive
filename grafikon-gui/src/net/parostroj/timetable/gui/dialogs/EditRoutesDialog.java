@@ -53,7 +53,7 @@ public class EditRoutesDialog extends javax.swing.JDialog {
         fromComboBox.removeAllItems();
         toComboBox.removeAllItems();
         if (model.getDiagram() != null) {
-            List<Node> nodes = sort.sort(model.getDiagram().getNet().vertexSet());
+            List<Node> nodes = sort.sort(model.getDiagram().getNet().getNodes());
             for (Node n : nodes) {
                 if (n.getType() != NodeType.SIGNAL) {
                     fromComboBox.addItem(n);

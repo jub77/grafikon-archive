@@ -31,7 +31,7 @@ public class GetStationTimetable {
         List<Pair<TimeInterval, String>> list = new LinkedList<Pair<TimeInterval, String>>();
 
         for (NodeTrack track : tracks) {
-            for (TimeInterval interval : track.getIntervalList()) {
+            for (TimeInterval interval : track.getTimeIntervalList()) {
                 this.addTimeInterval(list, interval, track.getNumber());
             }
         }

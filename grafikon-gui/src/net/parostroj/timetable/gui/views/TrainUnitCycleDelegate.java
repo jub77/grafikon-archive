@@ -77,13 +77,12 @@ public class TrainUnitCycleDelegate implements TCDelegate {
     @Override
     public String getTrainCycleErrors(TrainsCycle cycle) {
         StringBuilder result = new StringBuilder();
-        List<Tuple<Train>> conflicts = cycle.checkConflicts();
-        for (Tuple<Train> item : conflicts) {
-            if (item.first.getEndNode() != item.second.getStartNode())
-                result.append(String.format(ResourceLoader.getString("ec.problem.nodes"),item.first.getName(),item.first.getEndNode().getName(),item.second.getName(),item.second.getStartNode().getName()));
+        List<Tuple<TrainsCycleItem>> conflicts = cycle.checkConflicts();
+        for (Tuple<TrainsCycleItem> item : conflicts) {
+            if (item.first.getToInterval().getOwnerAsNode() != item.second.getFromInterval().getOwnerAsNode())
+                result.append(String.format(ResourceLoader.getString("ec.problem.nodes"),item.first.getTrain().getName(),item.first.getToInterval().getOwnerAsNode().getName(),item.second.getTrain().getName(),item.second.getFromInterval().getOwnerAsNode().getName())).append("\n");
             else if (item.first.getEndTime() >= item.second.getStartTime())
-                result.append(String.format(ResourceLoader.getString("ec.problem.time"),item.first.getName(),TimeConverter.convertFromIntToText(item.first.getEndTime()),item.second.getName(),TimeConverter.convertFromIntToText(item.second.getStartTime())));
-            result.append("\n");
+                result.append(String.format(ResourceLoader.getString("ec.problem.time"),item.first.getTrain().getName(),TimeConverter.convertFromIntToText(item.first.getEndTime()),item.second.getTrain().getName(),TimeConverter.convertFromIntToText(item.second.getStartTime()))).append("\n");
         }
         return result.toString();
     }

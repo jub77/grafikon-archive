@@ -67,17 +67,31 @@
         padding: 0.3mm;
     }
 
-    table.tt tr td.tc-d3-1 { width: 40mm; border-right-width: 0.2mm; }
-    table.tt tr td.tc-d3-2 { width: 8mm; border-right-width: 0.2mm; }
-    table.tt tr td.tc-d3-2a { width: 5mm; border-right-width: 0.2mm; }
-    table.tt tr td.tc-d3-3 { width: 8mm; border-right-width: 0.2mm; }
-    table.tt tr td.tc-d3-4 { width: 16mm; border-right-width: 0.2mm; }
-    table.tt tr td.tc-d3-5 { width: 8mm; border-right-width: 0.2mm; }
-    table.tt tr td.tc-d3-6 { width: 16mm; border-right-width: 0.2mm; }
-    table.tt tr td.tc-d3-7 { width: 8mm; border-right-width: 0.2mm; }
-    table.tt tr td.tc-d3-8 { width: 21mm; }
+    table.wl {
+    }
 
-    table.tt tr td.tc-1 { width: 40mm; border-right-width: 0.2mm; }
+    table.wl tr {
+    }
+
+    table.wl tr td {
+        border: 0;
+        margin: 0;
+        padding: 0;
+        font-size: 3mm;
+    }
+
+    table.tt tr td.tc-d3-1 { width: 39mm; border-right-width: 0.2mm; }
+    table.tt tr td.tc-d3-2 { width: 7mm; border-right-width: 0.2mm; }
+    table.tt tr td.tc-d3-2a { width: 4mm; border-right-width: 0.2mm; }
+    table.tt tr td.tc-d3-3 { width: 7mm; border-right-width: 0.2mm; }
+    table.tt tr td.tc-d3-4 { width: 13mm; border-right-width: 0.2mm; }
+    table.tt tr td.tc-d3-5 { width: 7mm; border-right-width: 0.2mm; }
+    table.tt tr td.tc-d3-6 { width: 13mm; border-right-width: 0.2mm; }
+    table.tt tr td.tc-d3-7 { width: 7mm; border-right-width: 0.2mm; }
+    table.tt tr td.tc-d3-8 { width: 7mm; border-right-width: 0.2mm; }
+    table.tt tr td.tc-d3-9 { width: 20mm; }
+
+    table.tt tr td.tc-1 { width: 39mm; border-right-width: 0.2mm; }
     table.tt tr td.tc-2 { width: 8mm; border-right-width: 0.2mm; }
     table.tt tr td.tc-3 { width: 8mm; border-right-width: 0.2mm; }
     table.tt tr td.tc-4 { width: 16mm; border-right-width: 0.2mm; }
@@ -95,6 +109,7 @@
     table.tt tr td.tc-m-6 { text-align: right; font-size: 4mm; }
     table.tt tr td.tc-m-7 { text-align: center; font-size: 3.5mm; }
     table.tt tr td.tc-m-8 { font-size: 3mm; padding-left: 1mm;}
+    table.tt tr td.tc-m-9 { font-size: 3mm; padding-left: 1mm;}
 
     table.tt tr td.tc-delim-1 {
         border-top-width: 0.7mm;

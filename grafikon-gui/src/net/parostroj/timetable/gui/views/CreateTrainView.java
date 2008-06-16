@@ -58,7 +58,7 @@ public class CreateTrainView extends javax.swing.JPanel {
         DefaultComboBoxModel fromModel = new DefaultComboBoxModel();
         DefaultComboBoxModel toModel = new DefaultComboBoxModel();
         
-        Collection<Node> v = model.getDiagram().getNet().vertexSet();
+        Collection<Node> v = model.getDiagram().getNet().getNodes();
         NodeSort sort = new NodeSort(NodeSort.Type.ASC);
         List<Node> list = sort.sort(v);
         

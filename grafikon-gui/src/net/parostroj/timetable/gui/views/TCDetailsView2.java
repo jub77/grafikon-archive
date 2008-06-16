@@ -72,12 +72,14 @@ public class TCDetailsView2 extends javax.swing.JPanel implements ApplicationMod
         descriptionTextField = new javax.swing.JTextField();
         editButton = new javax.swing.JButton();
 
+        nameTextField.setColumns(10);
         nameTextField.setEditable(false);
 
         nameLabel.setText(ResourceLoader.getString("ec.details.name")); // NOI18N
 
         descriptionLabel.setText(ResourceLoader.getString("ec.details.description")); // NOI18N
 
+        descriptionTextField.setColumns(10);
         descriptionTextField.setEditable(false);
 
         editButton.setText(ResourceLoader.getString("button.edit") + " ..."); // NOI18N
@@ -95,10 +97,10 @@ public class TCDetailsView2 extends javax.swing.JPanel implements ApplicationMod
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(nameLabel)
                     .addComponent(descriptionLabel))
-                .addContainerGap(39, Short.MAX_VALUE))
-            .addComponent(descriptionTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 69, Short.MAX_VALUE)
-            .addComponent(nameTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 69, Short.MAX_VALUE)
-            .addComponent(editButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap(56, Short.MAX_VALUE))
+            .addComponent(descriptionTextField)
+            .addComponent(nameTextField)
+            .addComponent(editButton, javax.swing.GroupLayout.DEFAULT_SIZE, 86, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)

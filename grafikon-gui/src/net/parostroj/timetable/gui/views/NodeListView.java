@@ -72,7 +72,7 @@ public class NodeListView extends javax.swing.JPanel implements ApplicationModel
     private void updateNodeList() {
         DefaultListModel listModel = new DefaultListModel();
         if (model.getDiagram() != null) {
-            Collection<Node> nodes = model.getDiagram().getNet().vertexSet();
+            Collection<Node> nodes = model.getDiagram().getNet().getNodes();
             NodeSort sort = new NodeSort(NodeSort.Type.ASC);
             List<Node> sorted = sort.sort(nodes);
             for (Node n : sorted) {
@@ -158,10 +158,10 @@ public class NodeListView extends javax.swing.JPanel implements ApplicationModel
     private void deleteButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteButtonActionPerformed
         if (nodeList.getSelectedIndex() != -1) {
             Node n = (Node)nodeList.getSelectedValue();
-            if (!n.isEmpty() || !model.getDiagram().getNet().edgesOf(n).isEmpty()) {
+            if (!n.isEmpty() || !model.getDiagram().getNet().getLinesOf(n).isEmpty()) {
                 JOptionPane.showMessageDialog(this, ResourceLoader.getString("nl.error.notempty"),ResourceLoader.getString("nl.error.title"),JOptionPane.ERROR_MESSAGE);
             } else {
-                model.getDiagram().getNet().removeVertex(n);
+                model.getDiagram().getNet().removeNode(n);
                 this.updateNodeList();
             }
         }
@@ -191,7 +191,7 @@ public class NodeListView extends javax.swing.JPanel implements ApplicationModel
             Node n = new Node(UUID.randomUUID().toString(), NodeType.STATION, result, result);
             NodeTrack track = new NodeTrack(UUID.randomUUID().toString(), "1");
             n.addTrack(track);
-            model.getDiagram().getNet().addVertex(n);
+            model.getDiagram().getNet().addNode(n);
             this.updateNodeList();
             model.fireEvent(new ApplicationModelEvent(ApplicationModelEventType.NEW_NODE,model,n));
         }

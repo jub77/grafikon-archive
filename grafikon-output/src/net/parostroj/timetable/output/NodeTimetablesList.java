@@ -22,7 +22,6 @@ import net.parostroj.timetable.utils.TimeConverter;
 public class NodeTimetablesList {
     
     private List<Node> nodes;
-    
     private NodeTimetablesListTemplates templates;
 
     public NodeTimetablesList(Collection<Node> aNodes) {
@@ -53,8 +52,8 @@ public class NodeTimetablesList {
     }
     
     private void writeLine(Formatter f, Writer writer, TimeInterval i) throws IOException {
-        TimeInterval from = i.getTrain().getTimeIntervalList().getIntervalBefore(i);
-        TimeInterval to = i.getTrain().getTimeIntervalList().getIntervalAfter(i);
+        TimeInterval from = i.getTrain().getIntervalBefore(i);
+        TimeInterval to = i.getTrain().getIntervalAfter(i);
         
         String fromNodeName = TransformUtil.getFromAbbr(i);
         String toNodeName = TransformUtil.getToAbbr(i);
@@ -70,7 +69,7 @@ public class NodeTimetablesList {
     private TimeIntervalList collectIntervals(Node node) {
         TimeIntervalList list = new TimeIntervalList();
         for (NodeTrack track : node.getTracks()) {
-            for (TimeInterval i : track.getIntervalList()) {
+            for (TimeInterval i : track.getTimeIntervalList()) {
                 list.addIntervalByStartTime(i);
             }
         }
@@ -99,21 +98,23 @@ public class NodeTimetablesList {
     private void generateCommentForEngineCycle(TimeInterval interval, StringBuilder comment) {
         Train train = interval.getTrain();
         for (TrainsCycleItem item : train.getCycles(TrainsCycleType.ENGINE_CYCLE)) {
-            if (item.getToNode() == interval.getOwner()) {
+            if (item.getToInterval() == interval) {
                 // end
                 TrainsCycleItem itemNext = item.getCycle().getNextItem(item);
                 if (itemNext != null) {
+                    this.appendDelimiter(comment);
                     comment.append(templates.getString("engine.to"));
                     comment.append(' ').append(itemNext.getTrain().getName());
-                    comment.append(" (").append(TimeConverter.convertFromIntToText(itemNext.getTrain().getStartTime()));
+                    comment.append(" (").append(TimeConverter.convertFromIntToText(itemNext.getStartTime()));
                     comment.append(')');
                 }
             }
-            if (item.getFromNode() == interval.getOwner()) {
+            if (item.getFromInterval() == interval) {
                 // start
+                this.appendDelimiter(comment);
                 comment.append(templates.getString("engine")).append(": ");
                 comment.append(item.getCycle().getName()).append(" (");
-                comment.append(item.getCycle().getDescription()).append(')');
+                comment.append(TransformUtil.getEngineCycleDescription(item.getCycle())).append(')');
             }
         }
     }
@@ -122,18 +123,18 @@ public class NodeTimetablesList {
         Train train = interval.getTrain();
         for (TrainsCycleItem item : train.getCycles(TrainsCycleType.TRAIN_UNIT_CYCLE)) {
             // end
-            if (item.getToNode() == interval.getOwner()) {
+            if (item.getToInterval() == interval) {
                 TrainsCycleItem itemNext = item.getCycle().getNextItem(item);
                 if (itemNext != null) {
                     this.appendDelimiter(comment);
                     comment.append(templates.getString("train.unit.to"));
                     comment.append(' ').append(itemNext.getTrain().getName());
-                    comment.append(" (").append(TimeConverter.convertFromIntToText(itemNext.getTrain().getStartTime()));
+                    comment.append(" (").append(TimeConverter.convertFromIntToText(itemNext.getStartTime()));
                     comment.append(')');
                 }
             }
             // start
-            if (item.getFromNode() == interval.getOwner()) {
+            if (item.getFromInterval() == interval) {
                 this.appendDelimiter(comment);
                 comment.append(templates.getString("train.unit")).append(": ");
                 comment.append(item.getCycle().getName()).append(" (");

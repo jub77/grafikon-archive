@@ -31,8 +31,6 @@ public class LSVisitorBuilder implements LSVisitor {
         for (TrainType type : trainTypeList.getTrainTypeList()) {
             diagram.addTrainType(type);
         }
-        Net net = new Net();
-        diagram.setNet(net);
     }
 
     @Override
@@ -45,7 +43,7 @@ public class LSVisitorBuilder implements LSVisitor {
         ids.put(lsNode.getId(), node);
 
         // add to net
-        diagram.getNet().addVertex(node);
+        diagram.getNet().addNode(node);
         // set last station
         lastStation = node;
     }
@@ -86,7 +84,7 @@ public class LSVisitorBuilder implements LSVisitor {
 
         // add to net
         Net net = diagram.getNet();
-        net.addEdge(from, to, line);
+        net.addLine(from, to, line);
     }
 
     @Override
@@ -117,11 +115,11 @@ public class LSVisitorBuilder implements LSVisitor {
         // add to the last train
         RouteSegment part = (RouteSegment) ids.get(lsInterval.getRoutePartId());
         TimeIntervalType type = TimeIntervalType.valueOf(lsInterval.getType());
-        TimeInterval interval = new TimeInterval(lastTrain, part, lsInterval.getStart(), lsInterval.getEnd(), lsInterval.getSpeed(), TimeIntervalDirection.toTimeIntervalDirection(lsInterval.getDirection()), type, track);
+        TimeInterval interval = new TimeInterval(createId(), lastTrain, part, lsInterval.getStart(), lsInterval.getEnd(), lsInterval.getSpeed(), TimeIntervalDirection.toTimeIntervalDirection(lsInterval.getDirection()), type, track);
         interval.setComment(lsInterval.getComment());
 
         // add interval to train
-        lastTrain.getTimeIntervalList().addIntervalLastForTrain(interval);
+        lastTrain.addInterval(interval);
 
         // add backward compactibility - owner is a line - add first track from line
         if (part instanceof Line) {
@@ -156,7 +154,7 @@ public class LSVisitorBuilder implements LSVisitor {
         if (lsCycle.getItems() != null) {
             for (LSTrainsCycleItem item : lsCycle.getItems()) {
                 Train train = (Train) ids.get(item.getTrainId());
-                TrainsCycleItem tcItem = new TrainsCycleItem(cycle, train, item.getComment());
+                TrainsCycleItem tcItem = new TrainsCycleItem(cycle, train, item.getComment(), null, null);
                 cycle.addItem(tcItem);
             }
         }

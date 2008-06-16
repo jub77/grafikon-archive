@@ -1,9 +1,12 @@
 <table class="tt" cellspacing="0" cellpadding="0">
   <tr style="height: 6mm" align="center">
-    <td style="font-size: 5mm" colspan="9"><b>%1$s</b>%4$s</td>
+    <td style="font-size: 5mm" colspan="10"><b>%1$s</b>%2$s</td>
   </tr>
-  <tr style="height: 4mm">
-    <td style="font-size: 3mm" colspan="9">%2$s%3$s</td>
+  <tr>
+    <td colspan="10">
+      <table cellpadding="0" cellspacing="0" class="wl">
+%3$s      </table>
+    </td>
   </tr>
   <tr style="height: 4mm; text-align: center;">
     <td class="tc-d3-1 tc-delim-1">1</td>
@@ -15,6 +18,7 @@
     <td class="tc-d3-6 tc-delim-1">6</td>
     <td class="tc-d3-7 tc-delim-1">7</td>
     <td class="tc-d3-8 tc-delim-1">8</td>
+    <td class="tc-d3-9 tc-delim-1">9</td>
   </tr>
   <tr style="height: 4mm; text-align: center;">
     <td class="tc-d3-1">&nbsp;</td>
@@ -26,4 +30,5 @@
     <td class="tc-d3-6">&nbsp;</td>
     <td class="tc-d3-7">&nbsp;</td>
     <td class="tc-d3-8">&nbsp;</td>
+    <td class="tc-d3-9">&nbsp;</td>
   </tr>

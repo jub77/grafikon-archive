@@ -4,7 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.ListIterator;
 import net.parostroj.timetable.model.*;
-import org.jgrapht.alg.DijkstraShortestPath;
+import net.parostroj.timetable.utils.Tuple;
 
 /**
  * Builder for creating routes. It uses Dijkstra algorithm for finding
@@ -65,16 +65,15 @@ public class RouteBuilder {
      * @return route
      */
     private Route createRouteInternal(String id, Net net, Node from, Node to) {
-        List<Line> lines = DijkstraShortestPath.findPathBetween(net, from, to);
+        List<Line> lines = net.getRoute(from, to);
         // create route
         Route route = new Route(id);
         // last route point
         Node lastNode = from;
         for (Line line : lines) {
-            Node node1 = net.getEdgeSource(line);
-            Node node2 = net.getEdgeTarget(line);
-            Node fromNode = (lastNode == node1) ? node1 : node2;
-            Node toNode = (lastNode == node1) ? node2 : node1;
+            Tuple<Node> ends = net.getNodes(line);
+            Node fromNode = (lastNode == ends.first) ? ends.first : ends.second;
+            Node toNode = (lastNode == ends.first) ? ends.second : ends.first;
             route.getSegments().add(fromNode);
             route.getSegments().add(line);
             lastNode = toNode;

@@ -10,10 +10,7 @@ import java.io.Writer;
 import java.util.Formatter;
 import java.util.List;
 import java.util.ListIterator;
-import net.parostroj.timetable.model.Attributes;
-import net.parostroj.timetable.model.TrainsCycle;
-import net.parostroj.timetable.model.Train;
-import net.parostroj.timetable.model.TrainsCycleItem;
+import net.parostroj.timetable.model.*;
 import net.parostroj.timetable.utils.TimeConverter;
 import net.parostroj.timetable.utils.Tuple;
 
@@ -23,11 +20,9 @@ import net.parostroj.timetable.utils.Tuple;
  * @author jub
  */
 public class DriverCyclesList {
-    
+
     private List<TrainsCycle> driverCycles;
-    
     private Attributes infos;
-    
     private DriverCyclesListTemplates templates;
 
     public DriverCyclesList(List<TrainsCycle> driverCycles, Attributes infos) {
@@ -38,7 +33,7 @@ public class DriverCyclesList {
 
     public void writeTo(Writer writer) throws IOException {
         Formatter f = new Formatter(writer);
-        writer.write(String.format(templates.getHtmlHeader(),templates.getString("driver.cycles")));
+        writer.write(String.format(templates.getHtmlHeader(), templates.getString("driver.cycles")));
         ListIterator<TrainsCycle> i = driverCycles.listIterator();
         // first pages
         while (i.hasNext()) {
@@ -50,37 +45,37 @@ public class DriverCyclesList {
         }
         writer.write(templates.getHtmlFooter());
     }
-    
+
     private void writeDriverCycleFirstPage(Formatter f, Writer writer, TrainsCycle cycle) throws IOException {
-        String number = (String)infos.get("route.numbers");
+        String number = (String) infos.get("route.numbers");
         number = (number != null) ? number.replace("\n", "<br>") : "";
-        String validity = (String)infos.get("route.validity");
+        String validity = (String) infos.get("route.validity");
         validity = (validity != null) ? validity : "";
-        String routes = (String)infos.get("route.nodes");
+        String routes = (String) infos.get("route.nodes");
         routes = (routes != null) ? routes.replace("\n", "<br>") : "";
-        
+
         f.format(templates.getDcHeader(), cycle.getName(), number, routes, validity, templates.getString("company"),
                 templates.getString("company.part"), templates.getString("train.timetable"), templates.getString("validity.from"),
                 templates.getString("driver.cycle"), templates.getString("for.line"));
         writer.write(String.format(templates.getDcFooter(), templates.getString("publisher")));
-    }    
+    }
 
     private void writeDriverCycleSecondPage(Formatter f, Writer writer, TrainsCycle cycle) throws IOException {
         f.format(templates.getDcHeaderTrains(), templates.getString("column.train"), templates.getString("column.departure"),
                 templates.getString("column.from.to"), templates.getString("column.note"));
-        
-        List<Tuple<Train>> conflicts = cycle.checkConflicts();
-        
+
+        List<Tuple<TrainsCycleItem>> conflicts = cycle.checkConflicts();
+
         for (TrainsCycleItem item : cycle) {
             Train t = item.getTrain();
-            f.format(templates.getDcLine(), t.getName(), TimeConverter.convertFromIntToText(t.getStartTime()), t.getStartNode().getAbbr(), t.getEndNode().getAbbr(), (item.getComment() != null) ? item.getComment() : "&nbsp;");
-            for (Tuple<Train> tuple : conflicts) {
-                if (tuple.first == t) {
-                    f.format(templates.getDcLineMove(), tuple.second.getStartNode().getName(), templates.getString("move.to.station"));
+            f.format(templates.getDcLine(), t.getName(), TimeConverter.convertFromIntToText(item.getStartTime()), item.getFromInterval().getOwnerAsNode().getAbbr(), item.getToInterval().getOwnerAsNode().getAbbr(), (item.getComment() != null) ? item.getComment() : "&nbsp;");
+            for (Tuple<TrainsCycleItem> tuple : conflicts) {
+                if (tuple.first.getTrain() == t) {
+                    f.format(templates.getDcLineMove(), tuple.second.getFromInterval().getOwnerAsNode().getName(), templates.getString("move.to.station"));
                 }
             }
         }
-        
+
         writer.write(templates.getDcFooterTrains());
-    }    
+    }
 }

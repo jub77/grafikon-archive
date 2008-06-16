@@ -103,12 +103,12 @@ public class Line implements RouteSegment, AttributesHolder {
         return null;
     }
 
-    public TimeInterval createTimeInterval(Train train, int start, TrainDiagram diagram, TimeIntervalType type, TimeIntervalDirection direction, int prefferedSpeed) {
+    public TimeInterval createTimeInterval(String intervalId, Train train, int start, TrainDiagram diagram, TimeIntervalType type, TimeIntervalDirection direction, int prefferedSpeed) {
         Pair<Integer, Integer> computed = this.computeRunningTime(train, prefferedSpeed, diagram, type);
         int end = start + computed.first;
 
         LineTrack selectedTrack = null;
-        TimeInterval interval = new TimeInterval(train, this, start, end, computed.second, direction, type, null);
+        TimeInterval interval = new TimeInterval(null, train, this, start, end, computed.second, direction, type, null);
 
         // check which track is free for adding
         for (LineTrack lineTrack : tracks) {
@@ -124,7 +124,7 @@ public class Line implements RouteSegment, AttributesHolder {
             selectedTrack = tracks.get(0);
         }
 
-        return new TimeInterval(train, this, start, end, computed.second, direction, type, selectedTrack);
+        return new TimeInterval(intervalId, train, this, start, end, computed.second, direction, type, selectedTrack);
     }
 
     /**

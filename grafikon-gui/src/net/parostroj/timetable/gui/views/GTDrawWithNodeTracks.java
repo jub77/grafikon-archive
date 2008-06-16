@@ -121,8 +121,8 @@ public class GTDrawWithNodeTracks extends GTDraw {
     protected Line2D createTrainLine(TimeInterval interval, double timeStep) {
         int x1 = (int)(start.x + interval.getStart() * timeStep);
         int x2 = (int)(start.x + interval.getEnd() * timeStep);
-        int y1 = start.y + trackPositions.get(interval.getFrom().getTimeInterval(interval.getTrain()).getTrack());
-        int y2 = start.y + trackPositions.get(interval.getTo().getTimeInterval(interval.getTrain()).getTrack());
+        int y1 = start.y + trackPositions.get(interval.getTrain().getIntervalBefore(interval).getTrack());
+        int y2 = start.y + trackPositions.get(interval.getTrain().getIntervalAfter(interval).getTrack());
 
         Line2D line2D = new Line2D.Float(x1, y1, x2, y2);
         return line2D;
@@ -130,7 +130,7 @@ public class GTDrawWithNodeTracks extends GTDraw {
     
     private void paintTrainsInStation(Node station, Graphics2D g, double timeStep) {
         for (NodeTrack nodeTrack : station.getTracks()) {
-            for (TimeInterval interval : nodeTrack.getIntervalList()) {
+            for (TimeInterval interval : nodeTrack.getTimeIntervalList()) {
                 int y = start.y + trackPositions.get(interval.getTrack());
                 int x1 = (int)(start.x + interval.getStart() * timeStep);
                 int x2 = (int)(start.x + interval.getEnd() * timeStep);

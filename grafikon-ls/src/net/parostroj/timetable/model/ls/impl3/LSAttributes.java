@@ -25,7 +25,7 @@ public class LSAttributes {
     }
 
     public LSAttributes(Attributes attributes) {
-        this.attributes = new LinkedList();
+        this.attributes = new LinkedList<LSAttributesItem>();
         for (Map.Entry<String, Object> entry : attributes.entrySet()) {
             if (entry.getValue() != null) {
                 LSAttributesItem lItem = new LSAttributesItem(entry.getKey(), entry.getValue());

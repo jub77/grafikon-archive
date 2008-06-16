@@ -77,27 +77,27 @@ public class FileLoadSaveImpl implements FileLoadSave {
                     // skip metadata
                     continue;
                 if (entry.getName().equals(DATA_TRAIN_DIAGRAM)) {
-                    LSTrainDiagram lstd = lss.<LSTrainDiagram>load(zipInput);
+                    LSTrainDiagram lstd = lss.load(zipInput, LSTrainDiagram.class);
                     builder = new TrainDiagramBuilder(lstd);
                 }
                 // test diagram
                 if (builder == null)
                     throw new LSException("Train diagram builder has to be first entry: " + entry.getName());
                 if (entry.getName().equals(DATA_NET)) {
-                    builder.setNet(lss.<LSNet>load(zipInput));
+                    builder.setNet(lss.load(zipInput, LSNet.class));
                 } else if (entry.getName().startsWith(DATA_ROUTES)) {
-                    builder.setRoute(lss.<LSRoute>load(zipInput));
+                    builder.setRoute(lss.load(zipInput, LSRoute.class));
                 } else if (entry.getName().startsWith(DATA_TRAIN_TYPES)) {
-                    builder.setTrainType(lss.<LSTrainType>load(zipInput));
+                    builder.setTrainType(lss.load(zipInput, LSTrainType.class));
                 } else if (entry.getName().startsWith(DATA_TRAINS)) {
-                    builder.setTrain(lss.<LSTrain>load(zipInput));
+                    builder.setTrain(lss.load(zipInput, LSTrain.class));
                 } else if (entry.getName().startsWith(DATA_ENGINE_CLASSES)) {
-                    builder.setEngineClass(lss.<LSEngineClass>load(zipInput));
+                    builder.setEngineClass(lss.load(zipInput, LSEngineClass.class));
                 } else if (entry.getName().startsWith(DATA_TRAINS_CYCLES)) {
-                    builder.setTrainsCycle(lss.<LSTrainsCycle>load(zipInput));
+                    builder.setTrainsCycle(lss.load(zipInput, LSTrainsCycle.class));
                 } else if (entry.getName().startsWith(DATA_IMAGES)) {
                     if (entry.getName().endsWith(".xml"))
-                        builder.addImage(lss.<LSImage>load(zipInput));
+                        builder.addImage(lss.load(zipInput, LSImage.class));
                     else
                         builder.addImageFile(new File(entry.getName()).getName(), loadImages.loadTimetableImage(zipInput, entry));
                 }

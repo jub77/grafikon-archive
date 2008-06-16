@@ -23,6 +23,11 @@ public class WeightTableRow {
         return Collections.unmodifiableMap(weights);
     }
     
+    public Integer getWeight(LineClass lineClass) {
+        Integer w =  weights.get(lineClass);
+        return w == null ? Integer.valueOf(0) : w;
+    }
+    
     public void setWeightInfo(LineClass lineClass, Integer weight) {
         weights.put(lineClass, weight);
     }
