@@ -184,27 +184,32 @@ public class TimeIntervalList extends ArrayList<TimeInterval> {
     }
     
     /**
-     * shifts the whole list of time intervals. Can be user only for train time
+     * shifts the whole list of time intervals. Can be used only for train time
      * interval list.
      * 
      * @param timeShift amount of time to be shifted
+     * @param attached if the train is in attached state
      */
-    public void shift(int timeShift) {
+    public void shift(int timeShift, boolean attached) {
         for (TimeInterval item : this) {
-            item.getOwner().removeTimeInterval(item);
+            if (attached)
+                item.getOwner().removeTimeInterval(item);
             item.shift(timeShift);
-            item.getOwner().addTimeInterval(item);
+            if (attached)
+                item.getOwner().addTimeInterval(item);
         }
     }
     
     /**
-     * moves the whole list to specified starting point.
+     * moves the whole list to specified starting point. Can be used only for train's time
+     * interval list.
      * 
      * @param time new starting time
+     * @param attached if the train is in attached state
      */
-    public void move(int time) {
+    public void move(int time, boolean attached) {
         TimeInterval first = this.get(0);
         int shift = time - first.getEnd();
-        this.shift(shift);
+        this.shift(shift, attached);
     }
 }

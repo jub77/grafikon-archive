@@ -133,6 +133,9 @@ public class CopyTrainDialog extends javax.swing.JDialog {
         int time = TimeConverter.convertFromTextToInt(timeTextField.getText());
         TrainBuilder builder = new TrainBuilder();
         Train newTrain = builder.createTrain(UUID.randomUUID().toString(), nameTextField.getText(), time, train);
+
+        // add train to diagram
+        model.getDiagram().addTrain(newTrain);
         
         // inform model about new train
         model.fireEvent(new ApplicationModelEvent(ApplicationModelEventType.NEW_TRAIN, model, newTrain));

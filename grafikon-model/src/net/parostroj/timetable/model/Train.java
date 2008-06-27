@@ -36,6 +36,7 @@ public class Train implements AttributesHolder, ObjectWithId {
     private String _cachedName;
     private String _cachedCompleteName;
     private GTListenerSupport<TrainListener, TrainEvent> listenerSupport;
+    private boolean attached;
 
     /**
      * Constructor.
@@ -54,6 +55,7 @@ public class Train implements AttributesHolder, ObjectWithId {
                 listener.trainChanged(event);
             }
         });
+        attached = false;
     }
 
     /**
@@ -337,7 +339,7 @@ public class Train implements AttributesHolder, ObjectWithId {
      * @param timeShift time
      */
     public void shift(int timeShift) {
-        timeIntervalList.shift(timeShift);
+        timeIntervalList.shift(timeShift, isAttached());
         this.listenerSupport.fireEvent(new TrainEvent(this, TrainEvent.Type.TIME_INTERVAL_LIST));
     }
 
@@ -347,7 +349,7 @@ public class Train implements AttributesHolder, ObjectWithId {
      * @param time starting time
      */
     public void move(int time) {
-        timeIntervalList.move(time);
+        timeIntervalList.move(time, isAttached());
         this.listenerSupport.fireEvent(new TrainEvent(this, TrainEvent.Type.TIME_INTERVAL_LIST));
     }
 
@@ -401,9 +403,11 @@ public class Train implements AttributesHolder, ObjectWithId {
                 changed = true;
             }
             if (changed || interval.getStart() != nextStart) {
-                interval.removeFromOwner();
+                if (isAttached())
+                    interval.removeFromOwner();
                 interval.move(nextStart);
-                interval.addToOwner();
+                if (isAttached())
+                    interval.addToOwner();
             }
 
             changed = false;
@@ -425,9 +429,11 @@ public class Train implements AttributesHolder, ObjectWithId {
         int shift = 0;
         for (TimeInterval interval : timeIntervalList) {
             if (moveNext) {
-                interval.removeFromOwner();
+                if (isAttached())
+                    interval.removeFromOwner();
                 interval.shift(shift);
-                interval.addToOwner();
+                if (isAttached())
+                    interval.addToOwner();
             }
 
             if (lineInterval == interval) {
@@ -438,10 +444,12 @@ public class Train implements AttributesHolder, ObjectWithId {
                     break;
                 }
                 shift = c.first - interval.getLength();
-                interval.removeFromOwner();
+                if (isAttached())
+                    interval.removeFromOwner();
                 interval.setLength(c.first);
                 interval.setSpeed(c.second);
-                interval.addToOwner();
+                if (isAttached())
+                    interval.addToOwner();
                 moveNext = true;
             }
         }
@@ -458,9 +466,11 @@ public class Train implements AttributesHolder, ObjectWithId {
         if (!nodeInterval.isNodeOwner())
             throw new IllegalArgumentException("No node interval.");
         if (nodeInterval != null) {
-            nodeInterval.removeFromOwner();
+            if (isAttached())
+                nodeInterval.removeFromOwner();
             nodeInterval.setTrack(nodeTrack);
-            nodeInterval.addToOwner();
+            if (isAttached())
+                nodeInterval.addToOwner();
         }
         this.listenerSupport.fireEvent(new TrainEvent(this, TrainEvent.Type.TIME_INTERVAL_LIST));
     }
@@ -475,9 +485,11 @@ public class Train implements AttributesHolder, ObjectWithId {
         if (!lineInterval.isLineOwner())
             throw new IllegalArgumentException("No line interval.");
         if (lineInterval != null) {
-            lineInterval.removeFromOwner();
+            if (isAttached())
+                lineInterval.removeFromOwner();
             lineInterval.setTrack(lineTrack);
-            lineInterval.addToOwner();
+            if (isAttached())
+                lineInterval.addToOwner();
         }
         this.listenerSupport.fireEvent(new TrainEvent(this, TrainEvent.Type.TIME_INTERVAL_LIST));
     }
@@ -512,9 +524,11 @@ public class Train implements AttributesHolder, ObjectWithId {
                 changed = true;
             }
             if (changed || nextStart != interval.getStart()) {
-                interval.removeFromOwner();
+                if (isAttached())
+                    interval.removeFromOwner();
                 interval.move(nextStart);
-                interval.addToOwner();
+                if (isAttached())
+                    interval.addToOwner();
                 changed = false;
             }
             nextStart = interval.getEnd();
@@ -621,15 +635,21 @@ public class Train implements AttributesHolder, ObjectWithId {
     }
 
     protected void attach() {
+        if (attached)
+            throw new IllegalStateException("Train already attached.");
         for (TimeInterval interval : timeIntervalList) {
             interval.addToOwner();
         }
+        attached = true;
     }
 
     protected void detach() {
+        if (!attached)
+            throw new IllegalStateException("Train already detached.");
         for (TimeInterval interval : timeIntervalList) {
             interval.removeFromOwner();
         }
+        attached = false;
     }
     
     /**
@@ -728,5 +748,9 @@ public class Train implements AttributesHolder, ObjectWithId {
                 return interval;
         }
         return null;
+    }
+
+    public boolean isAttached() {
+        return attached;
     }
 }
