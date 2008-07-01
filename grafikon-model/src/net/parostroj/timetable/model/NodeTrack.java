@@ -9,6 +9,9 @@ public class NodeTrack extends Track {
 
     /** Platform. */
     private boolean platform;
+    
+    // node reference
+    Node node;
 
     /**
      * Constructor.
@@ -46,5 +49,12 @@ public class NodeTrack extends Track {
      */
     public void setPlatform(boolean platform) {
         this.platform = platform;
+        this.fireAttributeChanged("platform");
+    }
+
+    @Override
+    void fireAttributeChanged(String attributeName) {
+        if (node != null)
+            node.fireTrackAttributeChanged(attributeName, this);
     }
 }

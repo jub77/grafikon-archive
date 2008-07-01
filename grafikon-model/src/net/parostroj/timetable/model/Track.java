@@ -59,6 +59,7 @@ public abstract class Track implements AttributesHolder, ObjectWithId {
      */
     public void setNumber(String number) {
         this.number = number;
+        this.fireAttributeChanged("number");
     }
 
     /**
@@ -73,7 +74,7 @@ public abstract class Track implements AttributesHolder, ObjectWithId {
      *
      * @param interval time interval
      */
-    public void removeTimeInterval(TimeInterval interval) {
+    void removeTimeInterval(TimeInterval interval) {
         intervalList.removeIntervalForRouteSegment(interval);
     }
 
@@ -82,7 +83,7 @@ public abstract class Track implements AttributesHolder, ObjectWithId {
      *
      * @param interval time interval
      */
-    public void addTimeInterval(TimeInterval interval) {
+    void addTimeInterval(TimeInterval interval) {
         interval.setTrack(this);
         intervalList.addIntervalForRouteSegment(interval);
     }
@@ -93,7 +94,7 @@ public abstract class Track implements AttributesHolder, ObjectWithId {
      * @param interval time interval
      * @return result
      */
-    public TimeIntervalResult testTimeInterval(TimeInterval interval) {
+    TimeIntervalResult testTimeInterval(TimeInterval interval) {
         return intervalList.testIntervalForRouteSegment(interval);
     }
     
@@ -103,7 +104,7 @@ public abstract class Track implements AttributesHolder, ObjectWithId {
      * @param interval time interval
      * @return result
      */
-    public TimeIntervalResult testTimeIntervalOI(TimeInterval interval) {
+    TimeIntervalResult testTimeIntervalOI(TimeInterval interval) {
         return intervalList.testIntervalForRouteSegmentOI(interval);
     }
 
@@ -131,11 +132,16 @@ public abstract class Track implements AttributesHolder, ObjectWithId {
 
     @Override
     public Object removeAttribute(String key) {
-        return attributes.remove(key);
+        Object returnValue = attributes.remove(key);
+        this.fireAttributeChanged(key);
+        return returnValue;
     }
 
     @Override
     public void setAttribute(String key, Object value) {
         attributes.put(key, value);
+        this.fireAttributeChanged(key);
     }
+    
+    abstract void fireAttributeChanged(String attributeName);
 }

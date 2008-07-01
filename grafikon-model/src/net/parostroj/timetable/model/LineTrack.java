@@ -9,6 +9,9 @@ public class LineTrack extends Track {
 
     private NodeTrack fromStraightTrack;
     private NodeTrack toStraightTrack;
+    
+    // reference to line
+    Line line;
 
     /**
      * Constructor.
@@ -35,6 +38,7 @@ public class LineTrack extends Track {
 
     public void setFromStraightTrack(NodeTrack fromStraightTrack) {
         this.fromStraightTrack = fromStraightTrack;
+        this.fireAttributeChanged("fromStraightTrack");
     }
 
     public NodeTrack getToStraightTrack() {
@@ -43,6 +47,7 @@ public class LineTrack extends Track {
 
     public void setToStraightTrack(NodeTrack toStraightTrack) {
         this.toStraightTrack = toStraightTrack;
+        this.fireAttributeChanged("toStraightTrack");
     }
 
     public NodeTrack getFromStraightTrack(TimeIntervalDirection direction) {
@@ -51,5 +56,11 @@ public class LineTrack extends Track {
 
     public NodeTrack getToStraightTrack(TimeIntervalDirection direction) {
         return (direction == TimeIntervalDirection.FORWARD) ? toStraightTrack : fromStraightTrack;
+    }
+
+    @Override
+    void fireAttributeChanged(String attributeName) {
+        if (line != null)
+            line.fireTrackAttributeChanged(attributeName, this);
     }
 }

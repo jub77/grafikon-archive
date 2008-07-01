@@ -127,21 +127,27 @@ public class Node implements RouteSegment, AttributesHolder, ObjectWithId {
     }
 
     public void addTrack(NodeTrack track) {
+        track.node = this;
         tracks.add(track);
         this.listenerSupport.fireEvent(new NodeEvent(this, NodeEvent.Type.TRACK_ADDED));
     }
 
     public void addTrack(NodeTrack track, int position) {
+        track.node = this;
         tracks.add(position, track);
         this.listenerSupport.fireEvent(new NodeEvent(this, NodeEvent.Type.TRACK_ADDED));
     }
 
     public void removeTrack(NodeTrack track) {
+        track.node = null;
         tracks.remove(track);
         this.listenerSupport.fireEvent(new NodeEvent(this, NodeEvent.Type.TRACK_REMOVED));
     }
 
     public void removeAllTracks() {
+        for (NodeTrack track : tracks) {
+            track.node = null;
+        }
         tracks.clear();
         this.listenerSupport.fireEvent(new NodeEvent(this, NodeEvent.Type.TRACK_REMOVED));
     }
@@ -320,5 +326,9 @@ public class Node implements RouteSegment, AttributesHolder, ObjectWithId {
             }
         }
         return null;
+    }
+
+    void fireTrackAttributeChanged(String attributeName, NodeTrack track) {
+        
     }
 }

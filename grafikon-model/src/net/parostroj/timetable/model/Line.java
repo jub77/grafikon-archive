@@ -136,21 +136,27 @@ public class Line implements RouteSegment, AttributesHolder {
     }
 
     public void addTrack(LineTrack track) {
+        track.line = this;
         tracks.add(track);
         this.listenerSupport.fireEvent(new LineEvent(this, LineEvent.Type.TRACK_ADDED));
     }
 
     public void addTrack(LineTrack track, int position) {
+        track.line = this;
         tracks.add(position, track);
         this.listenerSupport.fireEvent(new LineEvent(this, LineEvent.Type.TRACK_ADDED));
     }
 
     public void removeTrack(LineTrack track) {
+        track.line = null;
         tracks.remove(track);
         this.listenerSupport.fireEvent(new LineEvent(this, LineEvent.Type.TRACK_REMOVED));
     }
 
     public void removeAllTracks() {
+        for (LineTrack track : tracks) {
+            track.line = null;
+        }
         tracks.clear();
         this.listenerSupport.fireEvent(new LineEvent(this, LineEvent.Type.TRACK_REMOVED));
     }
@@ -318,5 +324,9 @@ public class Line implements RouteSegment, AttributesHolder {
     
     public void removeListener(LineListener listener) {
         this.listenerSupport.removeListener(listener);
+    }
+    
+    void fireTrackAttributeChanged(String attributeName, LineTrack track) {
+        
     }
 }
