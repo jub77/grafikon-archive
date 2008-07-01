@@ -89,20 +89,6 @@ public class Node implements RouteSegment, AttributesHolder, ObjectWithId {
         return id;
     }
 
-    /* (non-Javadoc)
-     * @see net.parostroj.timetable.model.RoutePoint#getTimeInterval(net.parostroj.timetable.model.Train)
-     */
-    @Override
-    public TimeInterval getTimeInterval(Train train) {
-        for (NodeTrack stationTrack : tracks) {
-            TimeInterval interval = stationTrack.getTimeInterval(train);
-            if (interval != null) {
-                return interval;
-            }
-        }
-        return null;
-    }
-
     public TimeInterval createTimeInterval(String intervalId, Train train, int start, TrainDiagram diagram, TimeIntervalType type, int defaultStop) {
         int end = start + this.computeStopTime(train, diagram, type, defaultStop);
 

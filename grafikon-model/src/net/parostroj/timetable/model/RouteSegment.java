@@ -22,8 +22,6 @@ public interface RouteSegment {
 
     public void removeTimeInterval(TimeInterval interval);
 
-    public TimeInterval getTimeInterval(Train train);
-
     public List<? extends Track> getTracks();
 
     public boolean isEmpty();

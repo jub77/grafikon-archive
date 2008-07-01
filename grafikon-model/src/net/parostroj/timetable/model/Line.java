@@ -92,17 +92,6 @@ public class Line implements RouteSegment, AttributesHolder {
         this.length = length;
     }
 
-    @Override
-    public TimeInterval getTimeInterval(Train train) {
-        for (LineTrack track : tracks) {
-            TimeInterval interval = track.getTimeInterval(train);
-            if (interval != null) {
-                return interval;
-            }
-        }
-        return null;
-    }
-
     public TimeInterval createTimeInterval(String intervalId, Train train, int start, TrainDiagram diagram, TimeIntervalType type, TimeIntervalDirection direction, int prefferedSpeed) {
         Pair<Integer, Integer> computed = this.computeRunningTime(train, prefferedSpeed, diagram, type);
         int end = start + computed.first;
