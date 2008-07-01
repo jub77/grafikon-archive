@@ -213,9 +213,7 @@ public class Line implements RouteSegment, AttributesHolder {
 
     @Override
     public void removeTimeInterval(TimeInterval interval) {
-        for (LineTrack track : tracks) {
-            track.removeTimeInterval(interval);
-        }
+        interval.getTrack().removeTimeInterval(interval);
     }
 
     @Override

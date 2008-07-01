@@ -1,28 +1,29 @@
 package net.parostroj.timetable.model.events;
 
-import net.parostroj.timetable.model.Train;
+import net.parostroj.timetable.model.Node;
 
 /**
- * Train event.
+ * Node event.
  * 
  * @author jub
  */
-public class TrainEvent extends GTEvent<Train> {
+public class NodeEvent extends GTEvent<Node> {
 
     public enum Type {
-
-        ATTRIBUTE, TIME_INTERVAL_LIST, CYCLE_ITEM;
+        ATTRIBUTE, TRACK_ADDED, TRACK_REMOVED, TIME_INTERVAL_ADDED, TIME_INTERVAL_REMOVED
     }
-    private Type type;
-    private String attributeName;
+    private final Type type;
+    private final String attributeName;
 
-    public TrainEvent(Train train, Type type) {
-        super(train);
+    public NodeEvent(Node node, Type type) {
+        super(node);
         this.type = type;
+        this.attributeName = null;
     }
-
-    public TrainEvent(Train train, String attributeName) {
-        this(train, Type.ATTRIBUTE);
+    
+    public NodeEvent(Node node, String attributeName) {
+        super(node);
+        this.type = Type.ATTRIBUTE;
         this.attributeName = attributeName;
     }
 
@@ -36,7 +37,7 @@ public class TrainEvent extends GTEvent<Train> {
 
     @Override
     public String toString() {
-        StringBuilder builder = new StringBuilder("TrainEvent[");
+        StringBuilder builder = new StringBuilder("NodeEvent[");
         builder.append(getSource()).append(',');
         builder.append(type);
         if (type == Type.ATTRIBUTE) {

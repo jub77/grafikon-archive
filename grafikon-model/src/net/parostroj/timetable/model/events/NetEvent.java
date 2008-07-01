@@ -13,11 +13,15 @@ public class NetEvent extends GTEvent<Net> {
 
         NODE_ADDED, NODE_REMOVED, LINE_ADDED, LINE_REMOVED, LINE_CLASS_ADDED, LINE_CLASS_REMOVED
     }
-    private Type type;
+    private final Type type;
 
     public NetEvent(Net net, Type type) {
         super(net);
         this.type = type;
+    }
+
+    public Type getType() {
+        return type;
     }
 
     @Override

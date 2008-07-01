@@ -1,9 +1,11 @@
 package net.parostroj.timetable.model;
 
 import java.util.*;
+import net.parostroj.timetable.model.events.NodeEvent;
+import net.parostroj.timetable.model.events.NodeListener;
 
 /**
- * Station consists of several tracks. Each tracks provides its own list
+ * Node that can consist of several tracks. Each tracks provides its own list
  * of time intervals.
  *
  * @author jub
@@ -22,8 +24,11 @@ public class Node implements RouteSegment, AttributesHolder, ObjectWithId {
     private List<NodeTrack> tracks;
     /** Node type. */
     private NodeType type;
+    /** X position in gui. */
     private int positionX;
+    /** Y position in gui. */
     private int positionY;
+    private GTListenerSupport<NodeListener, NodeEvent> listenerSupport;
 
     /**
      * Initialization.
@@ -31,6 +36,13 @@ public class Node implements RouteSegment, AttributesHolder, ObjectWithId {
     private void init() {
         tracks = new LinkedList<NodeTrack>();
         attributes = new Attributes();
+        listenerSupport = new GTListenerSupport<NodeListener, NodeEvent>(new GTEventSender<NodeListener, NodeEvent>() {
+
+            @Override
+            public void fireEvent(NodeListener listener, NodeEvent event) {
+                listener.nodeChanged(event);
+            }
+        });
     }
 
     /**
@@ -59,6 +71,14 @@ public class Node implements RouteSegment, AttributesHolder, ObjectWithId {
         this.type = type;
         this.abbr = abbr;
         init();
+    }
+    
+    public void addListener(NodeListener listener) {
+        this.listenerSupport.addListener(listener);
+    }
+    
+    public void removeListener(NodeListener listener) {
+        this.listenerSupport.removeListener(listener);
     }
 
     /**
@@ -122,18 +142,22 @@ public class Node implements RouteSegment, AttributesHolder, ObjectWithId {
 
     public void addTrack(NodeTrack track) {
         tracks.add(track);
+        this.listenerSupport.fireEvent(new NodeEvent(this, NodeEvent.Type.TRACK_ADDED));
     }
 
     public void addTrack(NodeTrack track, int position) {
         tracks.add(position, track);
+        this.listenerSupport.fireEvent(new NodeEvent(this, NodeEvent.Type.TRACK_ADDED));
     }
 
     public void removeTrack(NodeTrack track) {
         tracks.remove(track);
+        this.listenerSupport.fireEvent(new NodeEvent(this, NodeEvent.Type.TRACK_REMOVED));
     }
 
     public void removeAllTracks() {
         tracks.clear();
+        this.listenerSupport.fireEvent(new NodeEvent(this, NodeEvent.Type.TRACK_REMOVED));
     }
 
     /**
@@ -159,6 +183,7 @@ public class Node implements RouteSegment, AttributesHolder, ObjectWithId {
 
     public void setName(String name) {
         this.name = name;
+        this.listenerSupport.fireEvent(new NodeEvent(this, "name"));
     }
 
     public String getAbbr() {
@@ -167,6 +192,7 @@ public class Node implements RouteSegment, AttributesHolder, ObjectWithId {
 
     public void setAbbr(String abbr) {
         this.abbr = abbr;
+        this.listenerSupport.fireEvent(new NodeEvent(this, "abbr"));
     }
 
     public NodeType getType() {
@@ -175,6 +201,7 @@ public class Node implements RouteSegment, AttributesHolder, ObjectWithId {
 
     public void setType(NodeType type) {
         this.type = type;
+        this.listenerSupport.fireEvent(new NodeEvent(this, "type"));
     }
 
     public int getPositionX() {
@@ -183,6 +210,7 @@ public class Node implements RouteSegment, AttributesHolder, ObjectWithId {
 
     public void setPositionX(int positionX) {
         this.positionX = positionX;
+        this.listenerSupport.fireEvent(new NodeEvent(this, "positionX"));
     }
 
     public int getPositionY() {
@@ -191,6 +219,7 @@ public class Node implements RouteSegment, AttributesHolder, ObjectWithId {
 
     public void setPositionY(int positionY) {
         this.positionY = positionY;
+        this.listenerSupport.fireEvent(new NodeEvent(this, "positionY"));
     }
 
     public Attributes getAttributes() {
@@ -203,7 +232,9 @@ public class Node implements RouteSegment, AttributesHolder, ObjectWithId {
 
     @Override
     public Object removeAttribute(String key) {
-        return this.attributes.remove(key);
+        Object returnValue = this.attributes.remove(key);
+        this.listenerSupport.fireEvent(new NodeEvent(this, key));
+        return returnValue;
     }
 
     @Override
@@ -214,6 +245,7 @@ public class Node implements RouteSegment, AttributesHolder, ObjectWithId {
     @Override
     public void setAttribute(String key, Object value) {
         attributes.put(key, value);
+        this.listenerSupport.fireEvent(new NodeEvent(this, key));
     }
 
     @Override
@@ -223,14 +255,14 @@ public class Node implements RouteSegment, AttributesHolder, ObjectWithId {
 
     @Override
     public void removeTimeInterval(TimeInterval interval) {
-        for (NodeTrack track : tracks) {
-            track.removeTimeInterval(interval);
-        }
+        interval.getTrack().removeTimeInterval(interval);
+        this.listenerSupport.fireEvent(new NodeEvent(this, NodeEvent.Type.TIME_INTERVAL_REMOVED));
     }
 
     @Override
     public void addTimeInterval(TimeInterval interval) {
         interval.getTrack().addTimeInterval(interval);
+        this.listenerSupport.fireEvent(new NodeEvent(this, NodeEvent.Type.TIME_INTERVAL_ADDED));
     }
 
     @Override
