@@ -3,6 +3,8 @@ package net.parostroj.timetable.model;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import net.parostroj.timetable.model.events.LineEvent;
+import net.parostroj.timetable.model.events.LineListener;
 import net.parostroj.timetable.utils.Pair;
 
 /**
@@ -26,18 +28,11 @@ public class Line implements RouteSegment, AttributesHolder {
     public static final int NO_SPEED = UNLIMITED_SPEED;
     /** Attributes. */
     private Attributes attributes;
-
-    public Attributes getAttributes() {
-        return attributes;
-    }
-
-    public void setAttributes(Attributes attributes) {
-        this.attributes = attributes;
-    }
     /** Starting point. */
     private Node from;
     /** Ending point. */
     private Node to;
+    private GTListenerSupport<LineListener, LineEvent> listenerSupport;
 
     /**
      * creates track with specified length.
@@ -54,6 +49,13 @@ public class Line implements RouteSegment, AttributesHolder {
         this.from = from;
         this.to = to;
         this.id = id;
+        this.listenerSupport = new GTListenerSupport<LineListener, LineEvent>(new GTEventSender<LineListener, LineEvent>() {
+
+            @Override
+            public void fireEvent(LineListener listener, LineEvent event) {
+                listener.lineChanged(event);
+            }
+        });
     }
 
     /**
@@ -68,6 +70,14 @@ public class Line implements RouteSegment, AttributesHolder {
     public Line(String id, int length, Node from, Node to, int topSpeed) {
         this(id, length, from, to);
         this.topSpeed = topSpeed;
+    }
+
+    public Attributes getAttributes() {
+        return attributes;
+    }
+
+    public void setAttributes(Attributes attributes) {
+        this.attributes = attributes;
     }
 
     /**
@@ -90,6 +100,7 @@ public class Line implements RouteSegment, AttributesHolder {
      */
     public void setLength(int length) {
         this.length = length;
+        this.listenerSupport.fireEvent(new LineEvent(this, "length"));
     }
 
     public TimeInterval createTimeInterval(String intervalId, Train train, int start, TrainDiagram diagram, TimeIntervalType type, TimeIntervalDirection direction, int prefferedSpeed) {
@@ -126,18 +137,22 @@ public class Line implements RouteSegment, AttributesHolder {
 
     public void addTrack(LineTrack track) {
         tracks.add(track);
+        this.listenerSupport.fireEvent(new LineEvent(this, LineEvent.Type.TRACK_ADDED));
     }
 
     public void addTrack(LineTrack track, int position) {
         tracks.add(position, track);
+        this.listenerSupport.fireEvent(new LineEvent(this, LineEvent.Type.TRACK_ADDED));
     }
 
     public void removeTrack(LineTrack track) {
         tracks.remove(track);
+        this.listenerSupport.fireEvent(new LineEvent(this, LineEvent.Type.TRACK_REMOVED));
     }
 
     public void removeAllTracks() {
         tracks.clear();
+        this.listenerSupport.fireEvent(new LineEvent(this, LineEvent.Type.TRACK_REMOVED));
     }
 
     /**
@@ -155,6 +170,7 @@ public class Line implements RouteSegment, AttributesHolder {
             throw new IllegalArgumentException("Top speed should be positive number.");
         }
         this.topSpeed = topSpeed;
+        this.listenerSupport.fireEvent(new LineEvent(this, "topSpeed"));
     }
 
     /**
@@ -203,6 +219,7 @@ public class Line implements RouteSegment, AttributesHolder {
     @Override
     public void removeTimeInterval(TimeInterval interval) {
         interval.getTrack().removeTimeInterval(interval);
+        this.listenerSupport.fireEvent(new LineEvent(this, LineEvent.Type.TIME_INTERVAL_REMOVED));
     }
 
     @Override
@@ -213,6 +230,7 @@ public class Line implements RouteSegment, AttributesHolder {
     @Override
     public void addTimeInterval(TimeInterval interval) {
         interval.getTrack().addTimeInterval(interval);
+        this.listenerSupport.fireEvent(new LineEvent(this, LineEvent.Type.TIME_INTERVAL_ADDED));
     }
 
     @Override
@@ -274,11 +292,14 @@ public class Line implements RouteSegment, AttributesHolder {
     @Override
     public void setAttribute(String key, Object value) {
         attributes.put(key, value);
+        this.listenerSupport.fireEvent(new LineEvent(this, key));
     }
 
     @Override
     public Object removeAttribute(String key) {
-        return attributes.remove(key);
+        Object returnValue = attributes.remove(key);
+        this.listenerSupport.fireEvent(new LineEvent(this, key));
+        return returnValue;
     }
 
     @Override
@@ -289,5 +310,13 @@ public class Line implements RouteSegment, AttributesHolder {
             }
         }
         return null;
+    }
+    
+    public void addListener(LineListener listener) {
+        this.listenerSupport.addListener(listener);
+    }
+    
+    public void removeListener(LineListener listener) {
+        this.listenerSupport.removeListener(listener);
     }
 }

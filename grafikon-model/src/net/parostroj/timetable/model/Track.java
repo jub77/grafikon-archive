@@ -69,16 +69,6 @@ public abstract class Track implements AttributesHolder, ObjectWithId {
     }
 
     /**
-     * returns time interval for specified train.
-     *
-     * @param train train
-     * @return time interval
-     */
-    public TimeInterval getTimeInterval(Train train) {
-        return intervalList.getTimeInterval(train);
-    }
-
-    /**
      * removes time interval for specified train.
      *
      * @param interval time interval
