@@ -4,6 +4,8 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import net.parostroj.timetable.model.events.NetEvent;
+import net.parostroj.timetable.model.events.NetListener;
 import net.parostroj.timetable.utils.Tuple;
 import org.jgrapht.Graph;
 import org.jgrapht.alg.DijkstraShortestPath;
@@ -17,7 +19,8 @@ import org.jgrapht.graph.ListenableUndirectedGraph;
 public class Net {
     
     private List<LineClass> lineClasses;
-    ListenableUndirectedGraph<Node, Line> netDelegate;
+    private ListenableUndirectedGraph<Node, Line> netDelegate;
+    private GTListenerSupport<NetListener, NetEvent> listenerSupport;
 
     /**
      * Constructor.
@@ -25,6 +28,13 @@ public class Net {
     public Net() {
         netDelegate = new ListenableUndirectedGraph<Node, Line>(Line.class);
         lineClasses = new LinkedList<LineClass>();
+        listenerSupport = new GTListenerSupport<NetListener, NetEvent>(new GTEventSender<NetListener, NetEvent>() {
+
+            @Override
+            public void fireEvent(NetListener listener, NetEvent event) {
+                listener.netChanged(event);
+            }
+        });
     }
     
     public Tuple<Node> getNodes(Line track) {
@@ -37,10 +47,12 @@ public class Net {
     
     public void addNode(Node node) {
         netDelegate.addVertex(node);
+        this.listenerSupport.fireEvent(new NetEvent(this, NetEvent.Type.NODE_ADDED));
     }
     
     public void removeNode(Node node) {
         netDelegate.removeVertex(node);
+        this.listenerSupport.fireEvent(new NetEvent(this, NetEvent.Type.NODE_REMOVED));
     }
     
     public Set<Line> getLines() {
@@ -53,10 +65,12 @@ public class Net {
     
     public void addLine(Node from, Node to, Line line) {
         netDelegate.addEdge(from, to, line);
+        this.listenerSupport.fireEvent(new NetEvent(this, NetEvent.Type.LINE_ADDED));
     }
     
     public void removeLine(Line line) {
         netDelegate.removeEdge(line);
+        this.listenerSupport.fireEvent(new NetEvent(this, NetEvent.Type.LINE_REMOVED));
     }
     
     public List<Line> getRoute(Node from, Node to) {
@@ -69,14 +83,17 @@ public class Net {
     
     public void addLineClass(LineClass lineClass) {
         lineClasses.add(lineClass);
+        this.listenerSupport.fireEvent(new NetEvent(this, NetEvent.Type.LINE_CLASS_ADDED));
     }
     
     public void addLineClass(LineClass lineClass, int position) {
         lineClasses.add(position, lineClass);
+        this.listenerSupport.fireEvent(new NetEvent(this, NetEvent.Type.LINE_CLASS_ADDED));
     }
     
     public void removeLineClass(LineClass lineClass) {
         lineClasses.remove(lineClass);
+        this.listenerSupport.fireEvent(new NetEvent(this, NetEvent.Type.LINE_CLASS_REMOVED));
     }
     
     public Node getNodeById(String id) {
@@ -105,5 +122,13 @@ public class Net {
     
     public Graph<Node, Line> getGraph() {
         return netDelegate;
+    }
+    
+    public void addListener(NetListener listener) {
+        this.listenerSupport.addListener(listener);
+    }
+    
+    public void removeListener(NetListener listener) {
+        this.listenerSupport.removeListener(listener);
     }
 }

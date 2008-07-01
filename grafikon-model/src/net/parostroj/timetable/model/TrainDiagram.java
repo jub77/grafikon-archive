@@ -39,12 +39,12 @@ public class TrainDiagram implements AttributesHolder, ObjectWithId {
      */
     public TrainDiagram(String id, TrainsData data) {
         this.id = id;
-        routes = new ArrayList<Route>();
-        trains = new ArrayList<Train>();
-        cycles = new EnumMap<TrainsCycleType, List<TrainsCycle>>(TrainsCycleType.class);
-        images = new LinkedList<TimetableImage>();
-        engineClasses = new LinkedList<EngineClass>();
-        net = new Net();
+        this.routes = new ArrayList<Route>();
+        this.trains = new ArrayList<Train>();
+        this.cycles = new EnumMap<TrainsCycleType, List<TrainsCycle>>(TrainsCycleType.class);
+        this.images = new LinkedList<TimetableImage>();
+        this.engineClasses = new LinkedList<EngineClass>();
+        this.net = new Net();
         this.trainTypes = new LinkedList<TrainType>();
         this.attributes = new Attributes();
         this.trainsData = data;
@@ -56,6 +56,7 @@ public class TrainDiagram implements AttributesHolder, ObjectWithId {
                 listener.trainDiagramChanged(event);
             }
         });
+        this.net.addListener(listener);
     }
 
     /**

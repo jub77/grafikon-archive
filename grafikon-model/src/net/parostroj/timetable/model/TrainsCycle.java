@@ -140,21 +140,25 @@ public class TrainsCycle implements AttributesHolder, ObjectWithId, Iterable<Tra
     public void addItem(TrainsCycleItem item) {
         item.getTrain().addCycleItem(item);
         items.add(item);
+        this.listenerSupport.fireEvent(new TrainsCycleEvent(this, TrainsCycleEvent.Type.CYCLE_ITEM));
     }
     
     public void removeItem(TrainsCycleItem item) {
         item.getTrain().removeCycleItem(item);
         items.remove(item);
+        this.listenerSupport.fireEvent(new TrainsCycleEvent(this, TrainsCycleEvent.Type.CYCLE_ITEM));
     }
     
     public void addItem(TrainsCycleItem item, int index) {
         item.getTrain().addCycleItem(item);
         items.add(index, item);
+        this.listenerSupport.fireEvent(new TrainsCycleEvent(this, TrainsCycleEvent.Type.CYCLE_ITEM));
     }
     
     public TrainsCycleItem removeItem(int index) {
         TrainsCycleItem item = items.remove(index);
         item.getTrain().removeCycleItem(item);
+        this.listenerSupport.fireEvent(new TrainsCycleEvent(this, TrainsCycleEvent.Type.CYCLE_ITEM));
         return item;
     }
     
@@ -165,6 +169,7 @@ public class TrainsCycle implements AttributesHolder, ObjectWithId, Iterable<Tra
         t.removeCycleItem(oldItem);
         t.addCycleItem(newItem);
         this.items.set(this.items.indexOf(oldItem), newItem);
+        this.listenerSupport.fireEvent(new TrainsCycleEvent(this, TrainsCycleEvent.Type.CYCLE_ITEM));
     }
     
     public List<TrainsCycleItem> getItems() {
