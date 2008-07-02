@@ -329,6 +329,6 @@ public class Node implements RouteSegment, AttributesHolder, ObjectWithId {
     }
 
     void fireTrackAttributeChanged(String attributeName, NodeTrack track) {
-        
+        this.listenerSupport.fireEvent(new NodeEvent(this, attributeName, track));
     }
 }

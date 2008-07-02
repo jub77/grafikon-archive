@@ -327,6 +327,6 @@ public class Line implements RouteSegment, AttributesHolder {
     }
     
     void fireTrackAttributeChanged(String attributeName, LineTrack track) {
-        
+        this.listenerSupport.fireEvent(new LineEvent(this, attributeName, track));
     }
 }

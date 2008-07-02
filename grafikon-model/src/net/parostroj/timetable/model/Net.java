@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import net.parostroj.timetable.model.events.GTEvent;
 import net.parostroj.timetable.model.events.NetEvent;
 import net.parostroj.timetable.model.events.NetListener;
 import net.parostroj.timetable.utils.Tuple;
@@ -20,6 +21,7 @@ public class Net {
     
     private List<LineClass> lineClasses;
     private ListenableUndirectedGraph<Node, Line> netDelegate;
+    private GTListenerNetImpl listener;
     private GTListenerSupport<NetListener, NetEvent> listenerSupport;
 
     /**
@@ -35,6 +37,7 @@ public class Net {
                 listener.netChanged(event);
             }
         });
+        listener = new GTListenerNetImpl(this);
     }
     
     public Tuple<Node> getNodes(Line track) {
@@ -48,11 +51,13 @@ public class Net {
     public void addNode(Node node) {
         netDelegate.addVertex(node);
         this.listenerSupport.fireEvent(new NetEvent(this, NetEvent.Type.NODE_ADDED));
+        node.addListener(listener);
     }
     
     public void removeNode(Node node) {
         netDelegate.removeVertex(node);
         this.listenerSupport.fireEvent(new NetEvent(this, NetEvent.Type.NODE_REMOVED));
+        node.removeListener(listener);
     }
     
     public Set<Line> getLines() {
@@ -66,11 +71,13 @@ public class Net {
     public void addLine(Node from, Node to, Line line) {
         netDelegate.addEdge(from, to, line);
         this.listenerSupport.fireEvent(new NetEvent(this, NetEvent.Type.LINE_ADDED));
+        line.addListener(listener);
     }
     
     public void removeLine(Line line) {
         netDelegate.removeEdge(line);
         this.listenerSupport.fireEvent(new NetEvent(this, NetEvent.Type.LINE_REMOVED));
+        line.removeListener(listener);
     }
     
     public List<Line> getRoute(Node from, Node to) {
@@ -130,5 +137,14 @@ public class Net {
     
     public void removeListener(NetListener listener) {
         this.listenerSupport.removeListener(listener);
+    }
+    
+    void fireNestedEvent(GTEvent<?> event) {
+        this.listenerSupport.fireEvent(new NetEvent(this, event));
+    }
+
+    @Override
+    public String toString() {
+        return "Net";
     }
 }
