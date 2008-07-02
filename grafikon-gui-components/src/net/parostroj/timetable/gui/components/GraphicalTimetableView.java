@@ -192,10 +192,10 @@ public class GraphicalTimetableView extends javax.swing.JPanel implements Change
         typesButtonGroup = new javax.swing.ButtonGroup();
         routesGroup = new javax.swing.ButtonGroup();
 
-        routesMenu.setText(ResourceLoader.getString("gt.routes")); // NOI18N
+        routesMenu.setText("null");
         popupMenu.add(routesMenu);
 
-        routesEditMenuItem.setText(ResourceLoader.getString("gt.routes.edit")); // NOI18N
+        routesEditMenuItem.setText("null");
         routesEditMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 routesEditMenuItemActionPerformed(evt);
@@ -204,11 +204,11 @@ public class GraphicalTimetableView extends javax.swing.JPanel implements Change
         popupMenu.add(routesEditMenuItem);
         popupMenu.add(jSeparator1);
 
-        typesMenu.setText(ResourceLoader.getString("gt.type")); // NOI18N
+        typesMenu.setText("null");
 
         typesButtonGroup.add(classicMenuItem);
         classicMenuItem.setSelected(true);
-        classicMenuItem.setText(ResourceLoader.getString("gt.classic")); // NOI18N
+        classicMenuItem.setText("null");
         classicMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 classicMenuItemActionPerformed(evt);
@@ -217,7 +217,7 @@ public class GraphicalTimetableView extends javax.swing.JPanel implements Change
         typesMenu.add(classicMenuItem);
 
         typesButtonGroup.add(withTracksMenuItem);
-        withTracksMenuItem.setText(ResourceLoader.getString("gt.withtracks")); // NOI18N
+        withTracksMenuItem.setText("null");
         withTracksMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 withTracksMenuItemActionPerformed(evt);
@@ -227,12 +227,12 @@ public class GraphicalTimetableView extends javax.swing.JPanel implements Change
 
         popupMenu.add(typesMenu);
 
-        sizesMenu.setText(ResourceLoader.getString("gt.sizes")); // NOI18N
+        sizesMenu.setText("null");
         popupMenu.add(sizesMenu);
 
-        preferencesMenu.setText(ResourceLoader.getString("gt.preferences")); // NOI18N
+        preferencesMenu.setText("null");
 
-        addigitsCheckBoxMenuItem.setText(ResourceLoader.getString("gt.addigits")); // NOI18N
+        addigitsCheckBoxMenuItem.setText("null");
         addigitsCheckBoxMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 preferencesCheckBoxMenuItemActionPerformed(evt);
@@ -240,7 +240,7 @@ public class GraphicalTimetableView extends javax.swing.JPanel implements Change
         });
         preferencesMenu.add(addigitsCheckBoxMenuItem);
 
-        extendedLinesCheckBoxMenuItem.setText(ResourceLoader.getString("gt.extendedlines")); // NOI18N
+        extendedLinesCheckBoxMenuItem.setText("null");
         extendedLinesCheckBoxMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 preferencesCheckBoxMenuItemActionPerformed(evt);
@@ -249,7 +249,7 @@ public class GraphicalTimetableView extends javax.swing.JPanel implements Change
         preferencesMenu.add(extendedLinesCheckBoxMenuItem);
 
         trainNamesCheckBoxMenuItem.setSelected(true);
-        trainNamesCheckBoxMenuItem.setText(ResourceLoader.getString("gt.trainnames")); // NOI18N
+        trainNamesCheckBoxMenuItem.setText("null");
         trainNamesCheckBoxMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 preferencesCheckBoxMenuItemActionPerformed(evt);
@@ -260,7 +260,7 @@ public class GraphicalTimetableView extends javax.swing.JPanel implements Change
         popupMenu.add(preferencesMenu);
         popupMenu.add(jSeparator2);
 
-        saveMenuItem.setText(ResourceLoader.getString("gt.save")); // NOI18N
+        saveMenuItem.setText("null");
         saveMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 saveMenuItemActionPerformed(evt);

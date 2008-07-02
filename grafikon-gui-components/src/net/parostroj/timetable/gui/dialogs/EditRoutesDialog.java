@@ -87,7 +87,7 @@ public class EditRoutesDialog extends javax.swing.JDialog {
 
         FormListener formListener = new FormListener();
 
-        setTitle(ResourceLoader.getString("edit.routes.title")); // NOI18N
+        setTitle("null");
 
         scrollPane.setMinimumSize(new java.awt.Dimension(0, 0));
         scrollPane.setPreferredSize(new java.awt.Dimension(200, 0));
@@ -96,25 +96,25 @@ public class EditRoutesDialog extends javax.swing.JDialog {
         routesList.addListSelectionListener(formListener);
         scrollPane.setViewportView(routesList);
 
-        newButton.setText(ResourceLoader.getString("button.new")); // NOI18N
+        newButton.setText("null");
         newButton.addActionListener(formListener);
 
-        deleteButton.setText(ResourceLoader.getString("button.delete")); // NOI18N
+        deleteButton.setText("null");
         deleteButton.addActionListener(formListener);
 
-        exitButton.setText(ResourceLoader.getString("button.ok")); // NOI18N
+        exitButton.setText("null");
         exitButton.addActionListener(formListener);
 
-        jLabel1.setText(ResourceLoader.getString("from.node")); // NOI18N
+        jLabel1.setText("null");
 
-        jLabel2.setText(ResourceLoader.getString("to.node")); // NOI18N
+        jLabel2.setText("null");
 
-        throughButton.setText(ResourceLoader.getString("create.train.throughbutton")); // NOI18N
+        throughButton.setText("null");
         throughButton.addActionListener(formListener);
 
         throughTextField.setEditable(false);
 
-        jLabel3.setText(ResourceLoader.getString("edit.routes.routename")); // NOI18N
+        jLabel3.setText("null");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -132,8 +132,8 @@ public class EditRoutesDialog extends javax.swing.JDialog {
                         .addComponent(newButton, javax.swing.GroupLayout.DEFAULT_SIZE, 160, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, 26, Short.MAX_VALUE)
-                            .addComponent(jLabel2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 26, Short.MAX_VALUE))
+                            .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 26, Short.MAX_VALUE)
+                            .addComponent(jLabel2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 26, Short.MAX_VALUE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                             .addComponent(toComboBox, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
