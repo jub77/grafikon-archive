@@ -9,8 +9,7 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.*;
 import net.parostroj.timetable.model.*;
-import net.parostroj.timetable.utils.Pair;
-import net.parostroj.timetable.utils.TimeConverter;
+import net.parostroj.timetable.utils.*;
 
 /**
  * Time table for train.
@@ -201,7 +200,7 @@ public class TrainTimetable {
                 }
             }
 
-            String stopName = TransformUtil.transformStation(node);
+            String stopName = TransformUtil.transformStation(node, TrainTimetablesListTemplates.getString("abbr.stop"), TrainTimetablesListTemplates.getString("abbr.stop.freight"));
             if (nodeInterval.getType() == TimeIntervalType.NODE_START || nodeInterval.getType() == TimeIntervalType.NODE_END ||
                     node.getType() == NodeType.STATION_BRANCH) {
                 stopName = "<b>" + stopName + "</b>";

@@ -1,4 +1,4 @@
-package net.parostroj.timetable.output;
+package net.parostroj.timetable.utils;
 
 import java.util.List;
 import java.util.ListIterator;
@@ -15,12 +15,20 @@ import net.parostroj.timetable.model.TrainsCycleType;
  * @author jub
  */
 public class TransformUtil {
-    public static String transformStation(Node node) {
+    /**
+     * creates name of the station.
+     * 
+     * @param node station
+     * @param stop abbreviation for stops
+     * @param stopFreight abbreviation for stops with freight
+     * @return transformed name
+     */
+    public static String transformStation(Node node, String stop, String stopFreight) {
         String name = node.getName();
-        if (node.getType() == NodeType.STOP)
-            name += " " + TrainTimetablesListTemplates.getString("abbr.stop");
-        else if (node.getType() == NodeType.STOP_WITH_FREIGHT)
-            name += " " + TrainTimetablesListTemplates.getString("abbr.stop.freight");
+        if (node.getType() == NodeType.STOP && stop != null)
+            name += " " + stop;
+        else if (node.getType() == NodeType.STOP_WITH_FREIGHT && stopFreight != null)
+            name += " " + stopFreight;
         return name;
     }
     

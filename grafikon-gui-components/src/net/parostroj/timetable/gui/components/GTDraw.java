@@ -1,9 +1,4 @@
-/*
- * GTDraw.java
- * 
- * Created on 9.9.2007, 8:49:01
- */
-package net.parostroj.timetable.gui.views;
+package net.parostroj.timetable.gui.components;
 
 import java.awt.*;
 import java.awt.geom.*;

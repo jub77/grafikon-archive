@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.Formatter;
 import net.parostroj.timetable.model.*;
+import net.parostroj.timetable.utils.TransformUtil;
 
 /**
  * List of starting positions.

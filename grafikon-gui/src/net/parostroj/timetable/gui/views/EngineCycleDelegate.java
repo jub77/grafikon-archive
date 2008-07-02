@@ -12,10 +12,7 @@ import net.parostroj.timetable.gui.ApplicationModelEvent;
 import net.parostroj.timetable.gui.ApplicationModelEventType;
 import net.parostroj.timetable.gui.dialogs.TCDetailsViewDialogEngineClass;
 import net.parostroj.timetable.model.*;
-import net.parostroj.timetable.output.TransformUtil;
-import net.parostroj.timetable.utils.ResourceLoader;
-import net.parostroj.timetable.utils.TimeConverter;
-import net.parostroj.timetable.utils.Tuple;
+import net.parostroj.timetable.utils.*;
 
 /**
  * Implementation of the interface for engine cycle.

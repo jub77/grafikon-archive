@@ -5,7 +5,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import net.parostroj.timetable.model.*;
-import net.parostroj.timetable.utils.Pair;
+import net.parostroj.timetable.utils.*;
 
 /**
  * Creates information about train's allowed weight and engine. 

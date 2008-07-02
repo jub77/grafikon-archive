@@ -11,7 +11,7 @@ import java.util.Formatter;
 import java.util.Iterator;
 import java.util.List;
 import net.parostroj.timetable.model.*;
-import net.parostroj.timetable.utils.TimeConverter;
+import net.parostroj.timetable.utils.*;
 
 /**
  * List of timetables for nodes.
