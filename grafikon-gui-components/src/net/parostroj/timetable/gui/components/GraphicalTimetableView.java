@@ -2,11 +2,8 @@ package net.parostroj.timetable.gui.components;
 
 import java.awt.*;
 import java.awt.event.*;
-import java.awt.image.BufferedImage;
-import java.io.*;
 import java.util.List;
 import java.util.logging.Logger;
-import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -14,13 +11,7 @@ import javax.swing.event.ChangeListener;
 import net.parostroj.timetable.gui.*;
 import net.parostroj.timetable.gui.components.GraphicalTimetableView.TrainColors;
 import net.parostroj.timetable.gui.dialogs.EditRoutesDialog;
-import net.parostroj.timetable.gui.dialogs.SaveGTDialog;
 import net.parostroj.timetable.model.*;
-import org.apache.batik.dom.GenericDOMImplementation;
-import org.apache.batik.svggen.SVGGeneratorContext;
-import org.apache.batik.svggen.SVGGraphics2D;
-import org.w3c.dom.DOMImplementation;
-import org.w3c.dom.Document;
 
 /**
  * Graphical timetable view.
@@ -37,7 +28,7 @@ public class GraphicalTimetableView extends javax.swing.JPanel implements Change
     private HighlightedTrains hTrains;
     private Type type = Type.CLASSIC;
 
-    private enum Type {
+    public enum Type {
         CLASSIC, WITH_TRACKS;
     }
 
@@ -52,7 +43,6 @@ public class GraphicalTimetableView extends javax.swing.JPanel implements Change
     private int currentSize;
     private TrainColors trainColors = TrainColors.BY_TYPE;
     private TrainColorChooser trainColorChooser;
-    private SaveGTDialog dialog;
     private EditRoutesDialog editRoutesDialog;
     private TrainDiagram diagram;
 
@@ -70,8 +60,6 @@ public class GraphicalTimetableView extends javax.swing.JPanel implements Change
                 setRoute(getRoute());
             }
         });
-
-        dialog = new SaveGTDialog(null, true);
 
         editRoutesDialog = new EditRoutesDialog(null, true);
 
@@ -98,6 +86,10 @@ public class GraphicalTimetableView extends javax.swing.JPanel implements Change
 
     public TrainColors getTrainColors() {
         return trainColors;
+    }
+
+    public TrainColorChooser getTrainColorChooser() {
+        return trainColorChooser;
     }
 
     public void setTrainColors(TrainColors trainColors, TrainColorChooser chooser) {
@@ -128,7 +120,7 @@ public class GraphicalTimetableView extends javax.swing.JPanel implements Change
         this.repaint();
     }
 
-    private void setPreferencesToDraw(GTDraw gtDraw) {
+    protected void setPreferencesToDraw(GTDraw gtDraw) {
         if (gtDraw != null) {
             if (addigitsCheckBoxMenuItem.isSelected()) {
                 gtDraw.setPreference(GTDrawPreference.ARRIVAL_DEPARTURE_DIGITS, true);
@@ -142,13 +134,19 @@ public class GraphicalTimetableView extends javax.swing.JPanel implements Change
         }
     }
 
-    private Route getRoute() {
+    public Route getRoute() {
         if (draw == null) {
             return null;
         } else {
             return draw.getRoute();
         }
     }
+    
+    public Type getType() {
+        return type;
+    }
+    
+    
 
     private void setShiftX(int shift) {
         if (draw != null) {
@@ -187,8 +185,6 @@ public class GraphicalTimetableView extends javax.swing.JPanel implements Change
         addigitsCheckBoxMenuItem = new javax.swing.JCheckBoxMenuItem();
         extendedLinesCheckBoxMenuItem = new javax.swing.JCheckBoxMenuItem();
         trainNamesCheckBoxMenuItem = new javax.swing.JCheckBoxMenuItem();
-        javax.swing.JSeparator jSeparator2 = new javax.swing.JSeparator();
-        saveMenuItem = new javax.swing.JMenuItem();
         typesButtonGroup = new javax.swing.ButtonGroup();
         routesGroup = new javax.swing.ButtonGroup();
 
@@ -258,15 +254,6 @@ public class GraphicalTimetableView extends javax.swing.JPanel implements Change
         preferencesMenu.add(trainNamesCheckBoxMenuItem);
 
         popupMenu.add(preferencesMenu);
-        popupMenu.add(jSeparator2);
-
-        saveMenuItem.setText("null");
-        saveMenuItem.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                saveMenuItemActionPerformed(evt);
-            }
-        });
-        popupMenu.add(saveMenuItem);
 
         setDoubleBuffered(false);
         addMouseListener(new java.awt.event.MouseAdapter() {
@@ -276,63 +263,6 @@ public class GraphicalTimetableView extends javax.swing.JPanel implements Change
         });
         setLayout(null);
     }// </editor-fold>//GEN-END:initComponents
-
-private void saveMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveMenuItemActionPerformed
-    if (this.getRoute() == null) {
-        return;
-    }
-    dialog.setLocationRelativeTo(this.getParent());
-    dialog.setVisible(true);
-
-    if (!dialog.isSave()) {
-        return;
-    }
-    // get values and provide save
-    GTDraw drawFile = null;
-    if (type == Type.CLASSIC) {
-        drawFile = new GTDrawClassic(new Point(10, 20), 100, dialog.getSaveSize(), this.getRoute(), trainColors, trainColorChooser, null, null);
-    } else if (type == Type.WITH_TRACKS) {
-        drawFile = new GTDrawWithNodeTracks(new Point(10, 20), 100, dialog.getSaveSize(), this.getRoute(), trainColors, trainColorChooser, null, null);
-    }
-    this.setPreferencesToDraw(drawFile);
-
-    if (dialog.getType() == SaveGTDialog.Type.PNG) {
-        BufferedImage img = new BufferedImage(dialog.getSaveSize().width, dialog.getSaveSize().height, BufferedImage.TYPE_INT_RGB);
-        Graphics2D g2d = img.createGraphics();
-        g2d.setColor(Color.white);
-        g2d.fillRect(0, 0, dialog.getSaveSize().width, dialog.getSaveSize().height);
-        drawFile.draw(g2d);
-
-        try {
-            ImageIO.write(img, "png", dialog.getSaveFile());
-        } catch (IOException e) {
-            JOptionPane.showMessageDialog(this, ResourceLoader.getString("save.image.error"), ResourceLoader.getString("save.image.error.text"), JOptionPane.ERROR_MESSAGE);
-        }
-    } else if (dialog.getType() == SaveGTDialog.Type.SVG) {
-        DOMImplementation domImpl =
-                GenericDOMImplementation.getDOMImplementation();
-
-        // Create an instance of org.w3c.dom.Document.
-        String svgNS = "http://www.w3.org/2000/svg";
-        Document document = domImpl.createDocument(svgNS, "svg", null);
-
-        SVGGeneratorContext context = SVGGeneratorContext.createDefault(document);
-        SVGGraphics2D g2d = new SVGGraphics2D(context, false);
-
-        g2d.setSVGCanvasSize(dialog.getSaveSize());
-
-        drawFile.draw(g2d);
-
-        // write to ouput - do not use css style
-        boolean useCSS = false;
-        try {
-            Writer out = new OutputStreamWriter(new FileOutputStream(dialog.getSaveFile()), "UTF-8");
-            g2d.stream(out, useCSS);
-        } catch (IOException e) {
-            // do nothing for this moment
-        }
-    }
-}//GEN-LAST:event_saveMenuItemActionPerformed
 
 private void withTracksMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_withTracksMenuItemActionPerformed
     this.setType(Type.WITH_TRACKS);
@@ -520,12 +450,11 @@ private void preferencesCheckBoxMenuItemActionPerformed(java.awt.event.ActionEve
     private javax.swing.JCheckBoxMenuItem addigitsCheckBoxMenuItem;
     private javax.swing.JRadioButtonMenuItem classicMenuItem;
     private javax.swing.JCheckBoxMenuItem extendedLinesCheckBoxMenuItem;
-    private javax.swing.JPopupMenu popupMenu;
+    protected javax.swing.JPopupMenu popupMenu;
     private javax.swing.JMenu preferencesMenu;
     private javax.swing.JMenuItem routesEditMenuItem;
     private javax.swing.ButtonGroup routesGroup;
     private javax.swing.JMenu routesMenu;
-    private javax.swing.JMenuItem saveMenuItem;
     private javax.swing.JMenu sizesMenu;
     private javax.swing.JCheckBoxMenuItem trainNamesCheckBoxMenuItem;
     private javax.swing.ButtonGroup typesButtonGroup;
