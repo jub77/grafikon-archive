@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+import java.util.logging.Logger;
 import java.util.zip.*;
 import net.parostroj.timetable.utils.Pair;
 
@@ -14,14 +15,34 @@ import net.parostroj.timetable.utils.Pair;
  * @author jub
  */
 public class LSFileFactory {
+    
+    private static final Logger LOG = Logger.getLogger(LSFileFactory.class.getName());
 
     private static final String METADATA = "metadata.properties";
     private static final String METADATA_KEY_MODEL_VERSION = "model.version";
     private static final LSFileFactory instance = new LSFileFactory();
 
+    private static boolean initizalized = false;
+    
     public static LSFileFactory getInstance() {
+        if (!initizalized) {
+            registerWithClass(new ModelVersion(1, 0), "net.parostroj.timetable.model.save.LoadSave");
+            registerWithClass(new ModelVersion(2, 0), "net.parostroj.timetable.model.save.LoadSave");
+            registerWithClass(new ModelVersion(3,0), "net.parostroj.timetable.model.ls.impl3.FileLoadSaveImpl");
+            initizalized = true;
+        }
         return instance;
     }
+    
+    private static void registerWithClass(ModelVersion version, String classStr) {
+        try {
+            Class.forName(classStr);
+            instance.registerLS(version, classStr);
+        } catch (ClassNotFoundException e) {
+            LOG.fine("Class " + classStr + " is not available.");
+        }
+    }
+
     private Map<Integer, Class<?>> lss = new HashMap<Integer, Class<?>>();
     private Pair<Integer, Class<?>> latest;
 
@@ -32,6 +53,10 @@ public class LSFileFactory {
             latest = new Pair<Integer, Class<?>>(version.getMajorVersion(), lsClazz);
         }
         lss.put(version.getMajorVersion(), lsClazz);
+    }
+    
+    public synchronized void registerLS(ModelVersion version, String classStr) throws ClassNotFoundException {
+        registerLS(version, Class.forName(classStr));
     }
 
     public synchronized FileLoadSave createLatest() throws LSException {
