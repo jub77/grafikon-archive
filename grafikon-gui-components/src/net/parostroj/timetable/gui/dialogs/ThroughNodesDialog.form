@@ -79,7 +79,7 @@
     <Component class="javax.swing.JButton" name="addButton">
       <Properties>
         <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-          <ResourceString bundle="" key="ted.add" replaceFormat="ResourceLoader.getString(&quot;{key}&quot;)"/>
+          <ResourceString bundle="net/parostroj/timetable/gui/components_texts.properties" key="ted.add" replaceFormat="ResourceLoader.getString(&quot;{key}&quot;)"/>
         </Property>
       </Properties>
       <Events>
@@ -89,7 +89,7 @@
     <Component class="javax.swing.JButton" name="removeButton">
       <Properties>
         <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-          <ResourceString bundle="" key="ted.remove" replaceFormat="ResourceLoader.getString(&quot;{key}&quot;)"/>
+          <ResourceString bundle="net/parostroj/timetable/gui/components_texts.properties" key="ted.remove" replaceFormat="ResourceLoader.getString(&quot;{key}&quot;)"/>
         </Property>
       </Properties>
       <Events>
@@ -99,7 +99,7 @@
     <Component class="javax.swing.JButton" name="cancelButton">
       <Properties>
         <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-          <ResourceString bundle="" key="button.cancel" replaceFormat="ResourceLoader.getString(&quot;{key}&quot;)"/>
+          <ResourceString bundle="net/parostroj/timetable/gui/components_texts.properties" key="button.cancel" replaceFormat="ResourceLoader.getString(&quot;{key}&quot;)"/>
         </Property>
       </Properties>
       <Events>
@@ -119,7 +119,7 @@
     <Component class="javax.swing.JButton" name="okButton">
       <Properties>
         <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-          <ResourceString bundle="" key="button.ok" replaceFormat="ResourceLoader.getString(&quot;{key}&quot;)"/>
+          <ResourceString bundle="net/parostroj/timetable/gui/components_texts.properties" key="button.ok" replaceFormat="ResourceLoader.getString(&quot;{key}&quot;)"/>
         </Property>
       </Properties>
       <Events>

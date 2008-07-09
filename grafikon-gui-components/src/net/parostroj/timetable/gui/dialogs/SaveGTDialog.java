@@ -7,7 +7,7 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileNameExtensionFilter;
-import net.parostroj.timetable.gui.components.ResourceLoader;
+import net.parostroj.timetable.gui.utils.ResourceLoader;
 
 /**
  * Dialog for saving GT.

@@ -3,7 +3,7 @@
 <Form version="1.3" maxVersion="1.5" type="org.netbeans.modules.form.forminfo.JDialogFormInfo">
   <Properties>
     <Property name="title" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-      <ResourceString bundle="" key="edit.routes.title" replaceFormat="ResourceLoader.getString(&quot;{key}&quot;)"/>
+      <ResourceString bundle="net/parostroj/timetable/gui/components_texts.properties" key="edit.routes.title" replaceFormat="ResourceLoader.getString(&quot;{key}&quot;)"/>
     </Property>
   </Properties>
   <SyntheticProperties>
@@ -25,7 +25,7 @@
       <Group type="103" groupAlignment="0" attributes="0">
           <Group type="102" alignment="1" attributes="0">
               <EmptySpace min="-2" max="-2" attributes="0"/>
-              <Component id="scrollPane" pref="338" max="32767" attributes="0"/>
+              <Component id="scrollPane" pref="362" max="32767" attributes="0"/>
               <EmptySpace min="-2" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" max="-2" attributes="0">
                   <Component id="exitButton" alignment="1" pref="160" max="32767" attributes="1"/>
@@ -36,13 +36,13 @@
                   </Group>
                   <Group type="102" alignment="1" attributes="0">
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="jLabel1" pref="26" max="32767" attributes="1"/>
-                          <Component id="jLabel2" alignment="1" pref="26" max="32767" attributes="1"/>
+                          <Component id="jLabel1" min="-2" max="-2" attributes="1"/>
+                          <Component id="jLabel2" min="-2" max="-2" attributes="1"/>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="1" max="-2" attributes="0">
-                          <Component id="toComboBox" max="32767" attributes="3"/>
-                          <Component id="fromComboBox" alignment="1" pref="130" max="32767" attributes="3"/>
+                      <Group type="103" groupAlignment="1" attributes="0">
+                          <Component id="fromComboBox" pref="140" max="32767" attributes="3"/>
+                          <Component id="toComboBox" alignment="0" pref="140" max="32767" attributes="3"/>
                       </Group>
                   </Group>
                   <Group type="102" alignment="0" attributes="0">
@@ -52,7 +52,7 @@
                   </Group>
                   <Group type="102" alignment="0" attributes="0">
                       <Component id="jLabel3" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
                       <Component id="routeNameTextField" min="-2" pref="122" max="-2" attributes="0"/>
                   </Group>
               </Group>
@@ -68,8 +68,8 @@
                   <Component id="scrollPane" alignment="0" pref="192" max="32767" attributes="0"/>
                   <Group type="102" alignment="0" attributes="1">
                       <Group type="103" groupAlignment="3" attributes="0">
-                          <Component id="fromComboBox" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="jLabel1" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="fromComboBox" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="3" attributes="0">
@@ -132,7 +132,7 @@
     <Component class="javax.swing.JButton" name="newButton">
       <Properties>
         <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-          <ResourceString bundle="" key="button.new" replaceFormat="ResourceLoader.getString(&quot;{key}&quot;)"/>
+          <ResourceString bundle="net/parostroj/timetable/gui/components_texts.properties" key="button.new" replaceFormat="ResourceLoader.getString(&quot;{key}&quot;)"/>
         </Property>
       </Properties>
       <Events>
@@ -142,7 +142,7 @@
     <Component class="javax.swing.JButton" name="deleteButton">
       <Properties>
         <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-          <ResourceString bundle="" key="button.delete" replaceFormat="ResourceLoader.getString(&quot;{key}&quot;)"/>
+          <ResourceString bundle="net/parostroj/timetable/gui/components_texts.properties" key="button.delete" replaceFormat="ResourceLoader.getString(&quot;{key}&quot;)"/>
         </Property>
       </Properties>
       <Events>
@@ -152,7 +152,7 @@
     <Component class="javax.swing.JButton" name="exitButton">
       <Properties>
         <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-          <ResourceString bundle="" key="button.ok" replaceFormat="ResourceLoader.getString(&quot;{key}&quot;)"/>
+          <ResourceString bundle="net/parostroj/timetable/gui/components_texts.properties" key="button.ok" replaceFormat="ResourceLoader.getString(&quot;{key}&quot;)"/>
         </Property>
       </Properties>
       <Events>
@@ -162,7 +162,7 @@
     <Component class="javax.swing.JLabel" name="jLabel1">
       <Properties>
         <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-          <ResourceString bundle="" key="from.node" replaceFormat="ResourceLoader.getString(&quot;{key}&quot;)"/>
+          <ResourceString bundle="net/parostroj/timetable/gui/components_texts.properties" key="from.node" replaceFormat="ResourceLoader.getString(&quot;{key}&quot;)"/>
         </Property>
       </Properties>
       <AuxValues>
@@ -173,7 +173,7 @@
     <Component class="javax.swing.JLabel" name="jLabel2">
       <Properties>
         <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-          <ResourceString bundle="" key="to.node" replaceFormat="ResourceLoader.getString(&quot;{key}&quot;)"/>
+          <ResourceString bundle="net/parostroj/timetable/gui/components_texts.properties" key="to.node" replaceFormat="ResourceLoader.getString(&quot;{key}&quot;)"/>
         </Property>
       </Properties>
       <AuxValues>
@@ -184,7 +184,7 @@
     <Component class="javax.swing.JButton" name="throughButton">
       <Properties>
         <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-          <ResourceString bundle="" key="create.train.throughbutton" replaceFormat="ResourceLoader.getString(&quot;{key}&quot;)"/>
+          <ResourceString bundle="net/parostroj/timetable/gui/components_texts.properties" key="create.train.throughbutton" replaceFormat="ResourceLoader.getString(&quot;{key}&quot;)"/>
         </Property>
       </Properties>
       <Events>
@@ -199,7 +199,7 @@
     <Component class="javax.swing.JLabel" name="jLabel3">
       <Properties>
         <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-          <ResourceString bundle="" key="edit.routes.routename" replaceFormat="ResourceLoader.getString(&quot;{key}&quot;)"/>
+          <ResourceString bundle="net/parostroj/timetable/gui/components_texts.properties" key="edit.routes.routename" replaceFormat="ResourceLoader.getString(&quot;{key}&quot;)"/>
         </Property>
       </Properties>
       <AuxValues>

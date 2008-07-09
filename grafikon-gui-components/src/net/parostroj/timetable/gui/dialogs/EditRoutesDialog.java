@@ -4,7 +4,7 @@ import java.util.*;
 import javax.swing.DefaultListModel;
 import net.parostroj.timetable.actions.NodeSort;
 import net.parostroj.timetable.actions.RouteBuilder;
-import net.parostroj.timetable.gui.components.ResourceLoader;
+import net.parostroj.timetable.gui.utils.ResourceLoader;
 import net.parostroj.timetable.model.*;
 
 /**
@@ -87,7 +87,7 @@ public class EditRoutesDialog extends javax.swing.JDialog {
 
         FormListener formListener = new FormListener();
 
-        setTitle("null");
+        setTitle(ResourceLoader.getString("edit.routes.title")); // NOI18N
 
         scrollPane.setMinimumSize(new java.awt.Dimension(0, 0));
         scrollPane.setPreferredSize(new java.awt.Dimension(200, 0));
@@ -96,25 +96,25 @@ public class EditRoutesDialog extends javax.swing.JDialog {
         routesList.addListSelectionListener(formListener);
         scrollPane.setViewportView(routesList);
 
-        newButton.setText("null");
+        newButton.setText(ResourceLoader.getString("button.new")); // NOI18N
         newButton.addActionListener(formListener);
 
-        deleteButton.setText("null");
+        deleteButton.setText(ResourceLoader.getString("button.delete")); // NOI18N
         deleteButton.addActionListener(formListener);
 
-        exitButton.setText("null");
+        exitButton.setText(ResourceLoader.getString("button.ok")); // NOI18N
         exitButton.addActionListener(formListener);
 
-        jLabel1.setText("null");
+        jLabel1.setText(ResourceLoader.getString("from.node")); // NOI18N
 
-        jLabel2.setText("null");
+        jLabel2.setText(ResourceLoader.getString("to.node")); // NOI18N
 
-        throughButton.setText("null");
+        throughButton.setText(ResourceLoader.getString("create.train.throughbutton")); // NOI18N
         throughButton.addActionListener(formListener);
 
         throughTextField.setEditable(false);
 
-        jLabel3.setText("null");
+        jLabel3.setText(ResourceLoader.getString("edit.routes.routename")); // NOI18N
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -122,7 +122,7 @@ public class EditRoutesDialog extends javax.swing.JDialog {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(scrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 338, Short.MAX_VALUE)
+                .addComponent(scrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 362, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(exitButton, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 160, Short.MAX_VALUE)
@@ -132,12 +132,12 @@ public class EditRoutesDialog extends javax.swing.JDialog {
                         .addComponent(newButton, javax.swing.GroupLayout.DEFAULT_SIZE, 160, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 26, Short.MAX_VALUE)
-                            .addComponent(jLabel2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 26, Short.MAX_VALUE))
+                            .addComponent(jLabel1)
+                            .addComponent(jLabel2))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                            .addComponent(toComboBox, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(fromComboBox, 0, 130, Short.MAX_VALUE)))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(fromComboBox, 0, 140, Short.MAX_VALUE)
+                            .addComponent(toComboBox, javax.swing.GroupLayout.Alignment.LEADING, 0, 140, Short.MAX_VALUE)))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(throughButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -156,8 +156,8 @@ public class EditRoutesDialog extends javax.swing.JDialog {
                     .addComponent(scrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 192, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(fromComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel1))
+                            .addComponent(jLabel1)
+                            .addComponent(fromComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel2)

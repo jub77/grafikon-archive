@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Set;
 import javax.swing.DefaultListModel;
 import net.parostroj.timetable.actions.NodeSort;
-import net.parostroj.timetable.gui.components.ResourceLoader;
+import net.parostroj.timetable.gui.utils.ResourceLoader;
 import net.parostroj.timetable.model.Node;
 
 /**

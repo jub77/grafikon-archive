@@ -1,5 +1,6 @@
 package net.parostroj.timetable.gui.components;
 
+import net.parostroj.timetable.gui.utils.ResourceLoader;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.List;
@@ -188,10 +189,10 @@ public class GraphicalTimetableView extends javax.swing.JPanel implements Change
         typesButtonGroup = new javax.swing.ButtonGroup();
         routesGroup = new javax.swing.ButtonGroup();
 
-        routesMenu.setText("null");
+        routesMenu.setText(ResourceLoader.getString("gt.routes")); // NOI18N
         popupMenu.add(routesMenu);
 
-        routesEditMenuItem.setText("null");
+        routesEditMenuItem.setText(ResourceLoader.getString("gt.routes.edit")); // NOI18N
         routesEditMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 routesEditMenuItemActionPerformed(evt);
@@ -200,11 +201,11 @@ public class GraphicalTimetableView extends javax.swing.JPanel implements Change
         popupMenu.add(routesEditMenuItem);
         popupMenu.add(jSeparator1);
 
-        typesMenu.setText("null");
+        typesMenu.setText(ResourceLoader.getString("gt.type")); // NOI18N
 
         typesButtonGroup.add(classicMenuItem);
         classicMenuItem.setSelected(true);
-        classicMenuItem.setText("null");
+        classicMenuItem.setText(ResourceLoader.getString("gt.classic")); // NOI18N
         classicMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 classicMenuItemActionPerformed(evt);
@@ -213,7 +214,7 @@ public class GraphicalTimetableView extends javax.swing.JPanel implements Change
         typesMenu.add(classicMenuItem);
 
         typesButtonGroup.add(withTracksMenuItem);
-        withTracksMenuItem.setText("null");
+        withTracksMenuItem.setText(ResourceLoader.getString("gt.withtracks")); // NOI18N
         withTracksMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 withTracksMenuItemActionPerformed(evt);
@@ -223,12 +224,12 @@ public class GraphicalTimetableView extends javax.swing.JPanel implements Change
 
         popupMenu.add(typesMenu);
 
-        sizesMenu.setText("null");
+        sizesMenu.setText(ResourceLoader.getString("gt.sizes")); // NOI18N
         popupMenu.add(sizesMenu);
 
-        preferencesMenu.setText("null");
+        preferencesMenu.setText(ResourceLoader.getString("gt.preferences")); // NOI18N
 
-        addigitsCheckBoxMenuItem.setText("null");
+        addigitsCheckBoxMenuItem.setText(ResourceLoader.getString("gt.addigits")); // NOI18N
         addigitsCheckBoxMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 preferencesCheckBoxMenuItemActionPerformed(evt);
@@ -236,7 +237,7 @@ public class GraphicalTimetableView extends javax.swing.JPanel implements Change
         });
         preferencesMenu.add(addigitsCheckBoxMenuItem);
 
-        extendedLinesCheckBoxMenuItem.setText("null");
+        extendedLinesCheckBoxMenuItem.setText(ResourceLoader.getString("gt.extendedlines")); // NOI18N
         extendedLinesCheckBoxMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 preferencesCheckBoxMenuItemActionPerformed(evt);
@@ -245,7 +246,7 @@ public class GraphicalTimetableView extends javax.swing.JPanel implements Change
         preferencesMenu.add(extendedLinesCheckBoxMenuItem);
 
         trainNamesCheckBoxMenuItem.setSelected(true);
-        trainNamesCheckBoxMenuItem.setText("null");
+        trainNamesCheckBoxMenuItem.setText(ResourceLoader.getString("gt.trainnames")); // NOI18N
         trainNamesCheckBoxMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 preferencesCheckBoxMenuItemActionPerformed(evt);

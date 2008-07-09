@@ -1,4 +1,4 @@
-package net.parostroj.timetable.gui.components;
+package net.parostroj.timetable.gui.utils;
 
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
@@ -22,9 +22,9 @@ public class ResourceLoader {
      */
     public static String getString(String key) {
         try {
-            return ResourceBundle.getBundle("gt_texts").getString(key);
+            return ResourceBundle.getBundle("net.parostroj.timetable.gui.components_texts").getString(key);
         } catch (MissingResourceException e) {
-//            LOG.log(Level.WARNING, "Error getting text for key: " + key, e);
+            LOG.log(Level.WARNING, "Error getting text for key: " + key, e);
             return "MISSING STRING FOR KEY: " + key;
         }
     }

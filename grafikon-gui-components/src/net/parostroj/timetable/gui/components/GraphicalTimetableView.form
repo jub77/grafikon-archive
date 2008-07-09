@@ -14,14 +14,14 @@
         <Menu class="javax.swing.JMenu" name="routesMenu">
           <Properties>
             <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-              <ResourceString bundle="" key="gt.routes" replaceFormat="ResourceLoader.getString(&quot;{key}&quot;)"/>
+              <ResourceString bundle="net/parostroj/timetable/gui/components_texts.properties" key="gt.routes" replaceFormat="ResourceLoader.getString(&quot;{key}&quot;)"/>
             </Property>
           </Properties>
         </Menu>
         <MenuItem class="javax.swing.JMenuItem" name="routesEditMenuItem">
           <Properties>
             <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-              <ResourceString bundle="" key="gt.routes.edit" replaceFormat="ResourceLoader.getString(&quot;{key}&quot;)"/>
+              <ResourceString bundle="net/parostroj/timetable/gui/components_texts.properties" key="gt.routes.edit" replaceFormat="ResourceLoader.getString(&quot;{key}&quot;)"/>
             </Property>
           </Properties>
           <Events>
@@ -37,7 +37,7 @@
         <Menu class="javax.swing.JMenu" name="typesMenu">
           <Properties>
             <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-              <ResourceString bundle="" key="gt.type" replaceFormat="ResourceLoader.getString(&quot;{key}&quot;)"/>
+              <ResourceString bundle="net/parostroj/timetable/gui/components_texts.properties" key="gt.type" replaceFormat="ResourceLoader.getString(&quot;{key}&quot;)"/>
             </Property>
           </Properties>
           <AuxValues>
@@ -52,7 +52,7 @@
                 </Property>
                 <Property name="selected" type="boolean" value="true"/>
                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                  <ResourceString bundle="" key="gt.classic" replaceFormat="ResourceLoader.getString(&quot;{key}&quot;)"/>
+                  <ResourceString bundle="net/parostroj/timetable/gui/components_texts.properties" key="gt.classic" replaceFormat="ResourceLoader.getString(&quot;{key}&quot;)"/>
                 </Property>
               </Properties>
               <Events>
@@ -65,7 +65,7 @@
                   <ComponentRef name="typesButtonGroup"/>
                 </Property>
                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                  <ResourceString bundle="" key="gt.withtracks" replaceFormat="ResourceLoader.getString(&quot;{key}&quot;)"/>
+                  <ResourceString bundle="net/parostroj/timetable/gui/components_texts.properties" key="gt.withtracks" replaceFormat="ResourceLoader.getString(&quot;{key}&quot;)"/>
                 </Property>
               </Properties>
               <Events>
@@ -77,21 +77,21 @@
         <Menu class="javax.swing.JMenu" name="sizesMenu">
           <Properties>
             <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-              <ResourceString bundle="" key="gt.sizes" replaceFormat="ResourceLoader.getString(&quot;{key}&quot;)"/>
+              <ResourceString bundle="net/parostroj/timetable/gui/components_texts.properties" key="gt.sizes" replaceFormat="ResourceLoader.getString(&quot;{key}&quot;)"/>
             </Property>
           </Properties>
         </Menu>
         <Menu class="javax.swing.JMenu" name="preferencesMenu">
           <Properties>
             <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-              <ResourceString bundle="" key="gt.preferences" replaceFormat="ResourceLoader.getString(&quot;{key}&quot;)"/>
+              <ResourceString bundle="net/parostroj/timetable/gui/components_texts.properties" key="gt.preferences" replaceFormat="ResourceLoader.getString(&quot;{key}&quot;)"/>
             </Property>
           </Properties>
           <SubComponents>
             <MenuItem class="javax.swing.JCheckBoxMenuItem" name="addigitsCheckBoxMenuItem">
               <Properties>
                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                  <ResourceString bundle="" key="gt.addigits" replaceFormat="ResourceLoader.getString(&quot;{key}&quot;)"/>
+                  <ResourceString bundle="net/parostroj/timetable/gui/components_texts.properties" key="gt.addigits" replaceFormat="ResourceLoader.getString(&quot;{key}&quot;)"/>
                 </Property>
               </Properties>
               <Events>
@@ -101,7 +101,7 @@
             <MenuItem class="javax.swing.JCheckBoxMenuItem" name="extendedLinesCheckBoxMenuItem">
               <Properties>
                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                  <ResourceString bundle="" key="gt.extendedlines" replaceFormat="ResourceLoader.getString(&quot;{key}&quot;)"/>
+                  <ResourceString bundle="net/parostroj/timetable/gui/components_texts.properties" key="gt.extendedlines" replaceFormat="ResourceLoader.getString(&quot;{key}&quot;)"/>
                 </Property>
               </Properties>
               <Events>
@@ -112,7 +112,7 @@
               <Properties>
                 <Property name="selected" type="boolean" value="true"/>
                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                  <ResourceString bundle="" key="gt.trainnames" replaceFormat="ResourceLoader.getString(&quot;{key}&quot;)"/>
+                  <ResourceString bundle="net/parostroj/timetable/gui/components_texts.properties" key="gt.trainnames" replaceFormat="ResourceLoader.getString(&quot;{key}&quot;)"/>
                 </Property>
               </Properties>
               <Events>
