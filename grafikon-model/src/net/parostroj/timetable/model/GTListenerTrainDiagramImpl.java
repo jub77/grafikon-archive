@@ -18,22 +18,22 @@ class GTListenerTrainDiagramImpl implements TrainListener, TrainsCycleListener, 
     private static final Logger LOG = Logger.getLogger(GTListenerTrainDiagramImpl.class.getName());
     private TrainDiagram diagram;
 
-    public GTListenerTrainDiagramImpl(TrainDiagram diagram) {
+    protected GTListenerTrainDiagramImpl(TrainDiagram diagram) {
         this.diagram = diagram;
     }
 
     @Override
     public void trainChanged(TrainEvent event) {
-        LOG.fine(event.toString());
+        diagram.fireNestedEvent(event);
     }
 
     @Override
     public void trainsCycleChanged(TrainsCycleEvent event) {
-        LOG.fine(event.toString());
+        diagram.fireNestedEvent(event);
     }
 
     @Override
     public void netChanged(NetEvent event) {
-        LOG.fine(event.toString());
+        diagram.fireNestedEvent(event);
     }
 }

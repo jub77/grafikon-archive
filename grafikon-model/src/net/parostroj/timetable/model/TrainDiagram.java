@@ -1,6 +1,7 @@
 package net.parostroj.timetable.model;
 
 import java.util.*;
+import net.parostroj.timetable.model.events.GTEvent;
 import net.parostroj.timetable.model.events.TrainDiagramEvent;
 import net.parostroj.timetable.model.events.TrainDiagramListener;
 
@@ -33,6 +34,7 @@ public class TrainDiagram implements AttributesHolder, ObjectWithId {
     private List<EngineClass> engineClasses;
     private GTListenerTrainDiagramImpl listener;
     private GTListenerSupport<TrainDiagramListener, TrainDiagramEvent> listenerSupport;
+    private GTListenerSupport<TrainDiagramListener, TrainDiagramEvent> listenerSupportAll;
 
     /**
      * Default constructor.
@@ -56,6 +58,16 @@ public class TrainDiagram implements AttributesHolder, ObjectWithId {
                 listener.trainDiagramChanged(event);
             }
         });
+        this.listenerSupportAll = new GTListenerSupport<TrainDiagramListener, TrainDiagramEvent>(new GTEventSender<TrainDiagramListener, TrainDiagramEvent>() {
+
+            @Override
+            public void fireEvent(TrainDiagramListener listener, TrainDiagramEvent event) {
+                if (event.getNestedEvent() != null)
+                    listener.trainDiagramChangedNested(event);
+                else
+                    listener.trainDiagramChanged(event);
+            }
+        });
         this.net.addListener(listener);
     }
 
@@ -75,10 +87,12 @@ public class TrainDiagram implements AttributesHolder, ObjectWithId {
 
     public void addRoute(Route route) {
         this.routes.add(route);
+        this.fireEvent(new TrainDiagramEvent(this, TrainDiagramEvent.Type.ROUTE_ADDED));
     }
 
     public void removeRoute(Route route) {
         this.routes.remove(route);
+        this.fireEvent(new TrainDiagramEvent(this, TrainDiagramEvent.Type.ROUTE_REMOVED));
     }
 
     public Route getRouteById(String id) {
@@ -101,12 +115,14 @@ public class TrainDiagram implements AttributesHolder, ObjectWithId {
         train.addListener(listener);
         train.attach();
         this.trains.add(train);
+        this.fireEvent(new TrainDiagramEvent(this, TrainDiagramEvent.Type.TRAIN_ADDED));
     }
 
     public void removeTrain(Train train) {
         train.detach();
         this.trains.remove(train);
         train.removeListener(listener);
+        this.fireEvent(new TrainDiagramEvent(this, TrainDiagramEvent.Type.TRAIN_REMOVED));
     }
 
     public Train getTrainById(String id) {
@@ -285,5 +301,25 @@ public class TrainDiagram implements AttributesHolder, ObjectWithId {
     
     public void removeListener(TrainDiagramListener listener) {
         listenerSupport.removeListener(listener);
+    }
+    
+    public void addListenerWithNested(TrainDiagramListener listener) {
+        listenerSupportAll.addListener(listener);
+    }
+    
+    public void removeListenerWithNested(TrainDiagramListener listener) {
+        listenerSupportAll.removeListener(listener);
+    }
+    
+    protected void fireNestedEvent(GTEvent<?> nestedEvent) {
+        TrainDiagramEvent event = new TrainDiagramEvent(this, nestedEvent);
+        this.fireEvent(event);
+    }
+    
+    protected void fireEvent(TrainDiagramEvent e) {
+        listenerSupportAll.fireEvent(e);
+        if (e.getNestedEvent() == null) {
+            listenerSupport.fireEvent(e);
+        }
     }
 }

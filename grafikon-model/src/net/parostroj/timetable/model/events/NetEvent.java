@@ -10,7 +10,6 @@ import net.parostroj.timetable.model.Net;
 public class NetEvent extends GTEvent<Net> {
 
     public enum Type {
-
         NODE_ADDED, NODE_REMOVED, LINE_ADDED, LINE_REMOVED, LINE_CLASS_ADDED, LINE_CLASS_REMOVED, NESTED
     }
     private final Type type;
