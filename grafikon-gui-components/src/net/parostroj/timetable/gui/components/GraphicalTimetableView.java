@@ -1,6 +1,5 @@
 package net.parostroj.timetable.gui.components;
 
-import net.parostroj.timetable.gui.utils.ResourceLoader;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.List;
@@ -12,9 +11,10 @@ import javax.swing.event.ChangeListener;
 import net.parostroj.timetable.gui.*;
 import net.parostroj.timetable.gui.components.GraphicalTimetableView.TrainColors;
 import net.parostroj.timetable.gui.dialogs.EditRoutesDialog;
+import net.parostroj.timetable.gui.utils.ResourceLoader;
 import net.parostroj.timetable.model.*;
-import net.parostroj.timetable.model.events.AbstractTrainDiagramListener;
 import net.parostroj.timetable.model.events.TrainDiagramEvent;
+import net.parostroj.timetable.model.events.TrainDiagramListener;
 
 /**
  * Graphical timetable view.
@@ -76,12 +76,27 @@ public class GraphicalTimetableView extends javax.swing.JPanel implements Change
         }
         this.createMenuForRoutes(diagram.getRoutes());
         this.setComponentPopupMenu(popupMenu);
-        this.diagram.addListener(new AbstractTrainDiagramListener() {
+        this.diagram.addListener(new TrainDiagramListener() {
 
             @Override
             public void trainDiagramChanged(TrainDiagramEvent event) {
+                // modified routes ...
+                if (event.getType() == TrainDiagramEvent.Type.ROUTE_ADDED ||
+                        event.getType() == TrainDiagramEvent.Type.ROUTE_REMOVED)
+                    routesChanged(event);
             }
         });
+    }
+
+    private void routesChanged(TrainDiagramEvent event) {
+        // changed list of routes
+        this.createMenuForRoutes(diagram.getRoutes());
+        // check current route
+        if (event.getType() == TrainDiagramEvent.Type.ROUTE_REMOVED) {
+            if (!diagram.getRoutes().contains(this.getRoute())) {
+                this.setRoute(null);
+            }
+        }
     }
 
     private void setGTWidth(int size) {
@@ -114,7 +129,6 @@ public class GraphicalTimetableView extends javax.swing.JPanel implements Change
         if (route == null) {
             draw = null;
         } else {
-            Dimension d = this.getSize();
             trainRegionCollector = new TrainRegionCollector(SELECTION_RADIUS);
             if (type == Type.CLASSIC) {
                 draw = new GTDrawClassic(new Point(10, 20), 100, this.getSize(), route, trainColors, trainColorChooser, hTrains, trainRegionCollector);
