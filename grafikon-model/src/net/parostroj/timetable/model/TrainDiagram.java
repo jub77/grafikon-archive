@@ -88,12 +88,12 @@ public class TrainDiagram implements AttributesHolder, ObjectWithId {
 
     public void addRoute(Route route) {
         this.routes.add(route);
-        this.fireEvent(new TrainDiagramEvent(this, TrainDiagramEvent.Type.ROUTE_ADDED));
+        this.fireEvent(new TrainDiagramEvent(this, TrainDiagramEvent.Type.ROUTE_ADDED, route));
     }
 
     public void removeRoute(Route route) {
         this.routes.remove(route);
-        this.fireEvent(new TrainDiagramEvent(this, TrainDiagramEvent.Type.ROUTE_REMOVED));
+        this.fireEvent(new TrainDiagramEvent(this, TrainDiagramEvent.Type.ROUTE_REMOVED, route));
     }
 
     public Route getRouteById(String id) {
@@ -116,14 +116,14 @@ public class TrainDiagram implements AttributesHolder, ObjectWithId {
         train.addListener(listener);
         train.attach();
         this.trains.add(train);
-        this.fireEvent(new TrainDiagramEvent(this, TrainDiagramEvent.Type.TRAIN_ADDED));
+        this.fireEvent(new TrainDiagramEvent(this, TrainDiagramEvent.Type.TRAIN_ADDED, train));
     }
 
     public void removeTrain(Train train) {
         train.detach();
         this.trains.remove(train);
         train.removeListener(listener);
-        this.fireEvent(new TrainDiagramEvent(this, TrainDiagramEvent.Type.TRAIN_REMOVED));
+        this.fireEvent(new TrainDiagramEvent(this, TrainDiagramEvent.Type.TRAIN_REMOVED, train));
     }
 
     public Train getTrainById(String id) {
