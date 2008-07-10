@@ -13,6 +13,8 @@ import net.parostroj.timetable.gui.*;
 import net.parostroj.timetable.gui.components.GraphicalTimetableView.TrainColors;
 import net.parostroj.timetable.gui.dialogs.EditRoutesDialog;
 import net.parostroj.timetable.model.*;
+import net.parostroj.timetable.model.events.AbstractTrainDiagramListener;
+import net.parostroj.timetable.model.events.TrainDiagramEvent;
 
 /**
  * Graphical timetable view.
@@ -74,6 +76,12 @@ public class GraphicalTimetableView extends javax.swing.JPanel implements Change
         }
         this.createMenuForRoutes(diagram.getRoutes());
         this.setComponentPopupMenu(popupMenu);
+        this.diagram.addListener(new AbstractTrainDiagramListener() {
+
+            @Override
+            public void trainDiagramChanged(TrainDiagramEvent event) {
+            }
+        });
     }
 
     private void setGTWidth(int size) {

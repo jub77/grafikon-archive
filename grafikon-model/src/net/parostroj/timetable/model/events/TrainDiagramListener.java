@@ -8,6 +8,4 @@ package net.parostroj.timetable.model.events;
 public interface TrainDiagramListener extends GTListener {
 
     public void trainDiagramChanged(TrainDiagramEvent event);
-    
-    public void trainDiagramChangedNested(TrainDiagramEvent event);
 }

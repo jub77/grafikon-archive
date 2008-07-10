@@ -4,6 +4,7 @@ import java.util.*;
 import net.parostroj.timetable.model.events.GTEvent;
 import net.parostroj.timetable.model.events.TrainDiagramEvent;
 import net.parostroj.timetable.model.events.TrainDiagramListener;
+import net.parostroj.timetable.model.events.TrainDiagramListenerWithNested;
 
 /**
  * Collection of all parts of graphical timetable.
@@ -34,7 +35,7 @@ public class TrainDiagram implements AttributesHolder, ObjectWithId {
     private List<EngineClass> engineClasses;
     private GTListenerTrainDiagramImpl listener;
     private GTListenerSupport<TrainDiagramListener, TrainDiagramEvent> listenerSupport;
-    private GTListenerSupport<TrainDiagramListener, TrainDiagramEvent> listenerSupportAll;
+    private GTListenerSupport<TrainDiagramListenerWithNested, TrainDiagramEvent> listenerSupportAll;
 
     /**
      * Default constructor.
@@ -58,10 +59,10 @@ public class TrainDiagram implements AttributesHolder, ObjectWithId {
                 listener.trainDiagramChanged(event);
             }
         });
-        this.listenerSupportAll = new GTListenerSupport<TrainDiagramListener, TrainDiagramEvent>(new GTEventSender<TrainDiagramListener, TrainDiagramEvent>() {
+        this.listenerSupportAll = new GTListenerSupport<TrainDiagramListenerWithNested, TrainDiagramEvent>(new GTEventSender<TrainDiagramListenerWithNested, TrainDiagramEvent>() {
 
             @Override
-            public void fireEvent(TrainDiagramListener listener, TrainDiagramEvent event) {
+            public void fireEvent(TrainDiagramListenerWithNested listener, TrainDiagramEvent event) {
                 if (event.getNestedEvent() != null)
                     listener.trainDiagramChangedNested(event);
                 else
@@ -303,11 +304,11 @@ public class TrainDiagram implements AttributesHolder, ObjectWithId {
         listenerSupport.removeListener(listener);
     }
     
-    public void addListenerWithNested(TrainDiagramListener listener) {
+    public void addListenerWithNested(TrainDiagramListenerWithNested listener) {
         listenerSupportAll.addListener(listener);
     }
     
-    public void removeListenerWithNested(TrainDiagramListener listener) {
+    public void removeListenerWithNested(TrainDiagramListenerWithNested listener) {
         listenerSupportAll.removeListener(listener);
     }
     
