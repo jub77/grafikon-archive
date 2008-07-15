@@ -60,20 +60,18 @@ public class GraphicalTimetableView extends javax.swing.JPanel implements Change
 
             @Override
             public void componentResized(ComponentEvent e) {
-                setRoute(getRoute());
+                resize();
             }
         });
 
         editRoutesDialog = new EditRoutesDialog(null, true);
+        trainRegionCollector = new TrainRegionCollector(SELECTION_RADIUS);
 
         this.addSizesToMenu();
     }
     
     public void setTrainDiagram(TrainDiagram diagram) {
         this.diagram = diagram;
-        if (diagram.getRoutes().size() > 0) {
-            this.setRoute(diagram.getRoutes().get(0));
-        }
         this.createMenuForRoutes(diagram.getRoutes());
         this.setComponentPopupMenu(popupMenu);
         this.diagram.addListener(new TrainDiagramListener() {
@@ -86,16 +84,23 @@ public class GraphicalTimetableView extends javax.swing.JPanel implements Change
                     routesChanged(event);
             }
         });
+        if (diagram.getRoutes().size() > 0) {
+            this.setRoute(diagram.getRoutes().get(0));
+        }
     }
 
     private void routesChanged(TrainDiagramEvent event) {
         // changed list of routes
         this.createMenuForRoutes(diagram.getRoutes());
         // check current route
-        if (event.getType() == TrainDiagramEvent.Type.ROUTE_REMOVED) {
-            if (!diagram.getRoutes().contains(this.getRoute())) {
+        if (event.getType() == TrainDiagramEvent.Type.ROUTE_REMOVED && event.getRoute().equals(this.getRoute())) {
+            if (diagram.getRoutes().size() != 0)
+                this.setRoute(diagram.getRoutes().get(0));
+            else
                 this.setRoute(null);
-            }
+        }
+        if (event.getType() == TrainDiagramEvent.Type.ROUTE_ADDED && this.getRoute() == null) {
+            this.setRoute(event.getRoute());
         }
     }
 
@@ -126,10 +131,12 @@ public class GraphicalTimetableView extends javax.swing.JPanel implements Change
     }
 
     public void setRoute(Route route) {
+        if (this.getRoute() == route)
+            return;
         if (route == null) {
             draw = null;
         } else {
-            trainRegionCollector = new TrainRegionCollector(SELECTION_RADIUS);
+            trainRegionCollector.clear();
             if (type == Type.CLASSIC) {
                 draw = new GTDrawClassic(new Point(10, 20), 100, this.getSize(), route, trainColors, trainColorChooser, hTrains, trainRegionCollector);
             } else if (type == Type.WITH_TRACKS) {
@@ -140,6 +147,13 @@ public class GraphicalTimetableView extends javax.swing.JPanel implements Change
 
             this.setShiftX(shift);
         }
+        this.activateRouteMenuItem(route);
+        this.repaint();
+    }
+    
+    private void resize() {
+        draw.setSize(this.getSize());
+        trainRegionCollector.clear();
         this.repaint();
     }
 
@@ -306,7 +320,7 @@ private void routesEditMenuItemActionPerformed(java.awt.event.ActionEvent evt) {
 private void formMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_formMouseClicked
     // selection of the train
     if (trainRegionCollector != null) {
-        List<Train> selectedTrains = trainRegionCollector.getTrainForPoint(evt.getX(), evt.getY());
+        List<Train> selectedTrains = trainRegionCollector.getTrainsForPoint(evt.getX(), evt.getY());
         if (trainSelector != null) {
             if (selectedTrains.size() == 0) {
                 trainSelector.selectTrain(null);
@@ -409,10 +423,8 @@ private void preferencesCheckBoxMenuItemActionPerformed(java.awt.event.ActionEve
     private void createMenuForRoutes(List<Route> routes) {
         routesGroup = new ButtonGroup();
         routesMenu.removeAll();
-        int cnt = 0;
         for (Route lRoute : routes) {
-            JRadioButtonMenuItem item = new JRadioButtonMenuItem(lRoute.toString());
-            item.setActionCommand(Integer.toString(cnt++));
+            RouteRadioButtonMenuItem item = new RouteRadioButtonMenuItem(lRoute);
             routesMenu.add(item);
             routesGroup.add(item);
             if (lRoute == this.getRoute())
@@ -420,9 +432,26 @@ private void preferencesCheckBoxMenuItemActionPerformed(java.awt.event.ActionEve
             item.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    activateRoute(diagram.getRoutes().get(Integer.parseInt(e.getActionCommand())));
+                    System.out.println("ACTION ...");
+                    RouteRadioButtonMenuItem button = (RouteRadioButtonMenuItem)e.getSource();
+                    setRoute(button.getRoute());
                 }
             });
+        }
+    }
+    
+    private void activateRouteMenuItem(Route route) {
+        for (int i =0; i < routesMenu.getItemCount(); i++) {
+            JMenuItem item = routesMenu.getItem(i);
+            System.out.println("Check(1): " + item);
+            if (item instanceof RouteRadioButtonMenuItem) {
+                RouteRadioButtonMenuItem rItem = (RouteRadioButtonMenuItem)item;
+                System.out.println("Checking: " + rItem.getText());
+                if (rItem.getRoute().equals(route)) {
+                    System.out.println("Setting: " + route);
+                    rItem.setSelected(true);
+                }
+            }
         }
     }
     
@@ -458,11 +487,6 @@ private void preferencesCheckBoxMenuItemActionPerformed(java.awt.event.ActionEve
         }
     }
     
-    private void activateRoute(Route route) {
-        this.setRoute(route);
-        this.repaint();
-    }
-    
     private void setGTSize(int size) {
         this.setGTWidth(size);
         this.setRoute(this.getRoute());
@@ -483,4 +507,18 @@ private void preferencesCheckBoxMenuItemActionPerformed(java.awt.event.ActionEve
     private javax.swing.ButtonGroup typesButtonGroup;
     private javax.swing.JRadioButtonMenuItem withTracksMenuItem;
     // End of variables declaration//GEN-END:variables
+}
+
+class RouteRadioButtonMenuItem extends JRadioButtonMenuItem {
+    
+    private final Route route;
+    
+    public RouteRadioButtonMenuItem(Route route) {
+        super(route.toString());
+        this.route = route;
+    }
+
+    public Route getRoute() {
+        return route;
+    }
 }

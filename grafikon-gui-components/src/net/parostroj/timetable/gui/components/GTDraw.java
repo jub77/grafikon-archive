@@ -70,7 +70,7 @@ abstract public class GTDraw {
         this.trainRegionCollector = collector;
         
         // compute size
-        this.size = new Dimension(size.width - start.x * 2 - gapStationX, size.height - start.y * 2);
+        this.setSize(size);
         
         // create preferences
         preferences = new EnumMap<GTDrawPreference, Boolean>(GTDrawPreference.class);
@@ -117,7 +117,7 @@ abstract public class GTDraw {
     }
 
     public void setSize(Dimension size) {
-        this.size = size;
+        this.size = new Dimension(size.width - start.x * 2 - gapStationX, size.height - start.y * 2);
     }
 
     public void setStart(Point start) {

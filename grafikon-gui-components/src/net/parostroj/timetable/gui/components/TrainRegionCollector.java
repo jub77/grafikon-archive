@@ -31,6 +31,12 @@ public class TrainRegionCollector {
         this.radius = radius;
     }
     
+    public void clear() {
+        regions.clear();
+        collected = false;
+        modifiedTrain = null;
+    }
+    
     public void addRegion(Train train,Shape shape) {
         // check if the regions are already collected
         if (collected && modifiedTrain != train)
@@ -65,7 +71,7 @@ public class TrainRegionCollector {
         modifiedTrain = train;
     }
     
-    public List<Train> getTrainForPoint(int x, int y) {
+    public List<Train> getTrainsForPoint(int x, int y) {
         Rectangle2D cursor = new Rectangle2D.Double(x - radius, y - radius, radius * 2, radius * 2);
         List<Train> list = new LinkedList<Train>();
         for (Train train : regions.keySet()) {
