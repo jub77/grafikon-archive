@@ -124,6 +124,11 @@ public class GraphicalTimetableView extends javax.swing.JPanel implements Change
     public void setTrainColors(TrainColors trainColors, TrainColorChooser chooser) {
         this.trainColors = trainColors;
         this.trainColorChooser = chooser;
+        // update information in draw
+        if (draw != null) {
+            draw.setTrainColors(trainColors, trainColorChooser);
+            this.repaint();
+        }
     }
 
     public void setTrainSelector(TrainSelector trainSelector) {
@@ -136,18 +141,25 @@ public class GraphicalTimetableView extends javax.swing.JPanel implements Change
         if (route == null) {
             draw = null;
         } else {
-            trainRegionCollector.clear();
-            if (type == Type.CLASSIC) {
-                draw = new GTDrawClassic(new Point(10, 20), 100, this.getSize(), route, trainColors, trainColorChooser, hTrains, trainRegionCollector);
-            } else if (type == Type.WITH_TRACKS) {
-                draw = new GTDrawWithNodeTracks(new Point(10, 20), 100, this.getSize(), route, trainColors, trainColorChooser, hTrains, trainRegionCollector);
-            }
-            // set preferences
-            this.setPreferencesToDraw(draw);
-
-            this.setShiftX(shift);
+            recreateDraw(route);
         }
         this.activateRouteMenuItem(route);
+    }
+    
+    private void recreateDraw(Route route) {
+        if (route == null)
+            return;
+
+        trainRegionCollector.clear();
+        if (type == Type.CLASSIC) {
+            draw = new GTDrawClassic(new Point(10, 20), 100, this.getSize(), route, trainColors, trainColorChooser, hTrains, trainRegionCollector);
+        } else if (type == Type.WITH_TRACKS) {
+            draw = new GTDrawWithNodeTracks(new Point(10, 20), 100, this.getSize(), route, trainColors, trainColorChooser, hTrains, trainRegionCollector);
+        }
+        // set preferences
+        this.setPreferencesToDraw(draw);
+
+        this.setShiftX(shift);
         this.repaint();
     }
     
@@ -182,8 +194,6 @@ public class GraphicalTimetableView extends javax.swing.JPanel implements Change
     public Type getType() {
         return type;
     }
-    
-    
 
     private void setShiftX(int shift) {
         if (draw != null) {
@@ -194,12 +204,15 @@ public class GraphicalTimetableView extends javax.swing.JPanel implements Change
 
     private void setType(Type type) {
         this.type = type;
-        this.setRoute(this.getRoute());
-        this.repaint();
+        this.recreateDraw(this.getRoute());
     }
 
     public void setHTrains(HighlightedTrains hTrains) {
         this.hTrains = hTrains;
+        if (draw != null) {
+            draw.setHTrains(hTrains);
+            this.repaint();
+        }
     }
 
     /** This method is called from within the constructor to
@@ -319,26 +332,23 @@ private void routesEditMenuItemActionPerformed(java.awt.event.ActionEvent evt) {
 
 private void formMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_formMouseClicked
     // selection of the train
-    if (trainRegionCollector != null) {
-        List<Train> selectedTrains = trainRegionCollector.getTrainsForPoint(evt.getX(), evt.getY());
-        if (trainSelector != null) {
-            if (selectedTrains.size() == 0) {
-                trainSelector.selectTrain(null);
+    List<Train> selectedTrains = trainRegionCollector.getTrainsForPoint(evt.getX(), evt.getY());
+    if (trainSelector != null) {
+        if (selectedTrains.size() == 0) {
+            trainSelector.selectTrain(null);
+        } else {
+            Train oldSelection = trainSelector.getSelectedTrain();
+            if (oldSelection == null) {
+                trainSelector.selectTrain(selectedTrains.get(0));
             } else {
-                Train oldSelection = trainSelector.getSelectedTrain();
-                if (oldSelection == null) {
+                int oldIndex = selectedTrains.indexOf(oldSelection);
+                if (oldIndex == -1) {
                     trainSelector.selectTrain(selectedTrains.get(0));
                 } else {
-                    int oldIndex = selectedTrains.indexOf(oldSelection);
-                    if (oldIndex == -1) {
-                        trainSelector.selectTrain(selectedTrains.get(0));
-                    } else {
-                        oldIndex += 1;
-                        if (oldIndex >= selectedTrains.size()) {
-                            oldIndex = 0;
-                        }
-                        trainSelector.selectTrain(selectedTrains.get(oldIndex));
-                    }
+                    oldIndex += 1;
+                    if (oldIndex >= selectedTrains.size())
+                        oldIndex = 0;
+                    trainSelector.selectTrain(selectedTrains.get(oldIndex));
                 }
             }
         }
@@ -346,8 +356,8 @@ private void formMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_
 }//GEN-LAST:event_formMouseClicked
 
 private void preferencesCheckBoxMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_preferencesCheckBoxMenuItemActionPerformed
-    // update GTDraw using setRoute with the same route
-    this.setRoute(this.getRoute());
+    // recreate draw
+    this.recreateDraw(this.getRoute());
 }//GEN-LAST:event_preferencesCheckBoxMenuItemActionPerformed
 
     @Override
@@ -443,14 +453,10 @@ private void preferencesCheckBoxMenuItemActionPerformed(java.awt.event.ActionEve
     private void activateRouteMenuItem(Route route) {
         for (int i =0; i < routesMenu.getItemCount(); i++) {
             JMenuItem item = routesMenu.getItem(i);
-            System.out.println("Check(1): " + item);
             if (item instanceof RouteRadioButtonMenuItem) {
                 RouteRadioButtonMenuItem rItem = (RouteRadioButtonMenuItem)item;
-                System.out.println("Checking: " + rItem.getText());
-                if (rItem.getRoute().equals(route)) {
-                    System.out.println("Setting: " + route);
+                if (rItem.getRoute().equals(route))
                     rItem.setSelected(true);
-                }
             }
         }
     }
@@ -489,8 +495,7 @@ private void preferencesCheckBoxMenuItemActionPerformed(java.awt.event.ActionEve
     
     private void setGTSize(int size) {
         this.setGTWidth(size);
-        this.setRoute(this.getRoute());
-        this.repaint();
+        this.recreateDraw(this.getRoute());
     }
     
     // Variables declaration - do not modify//GEN-BEGIN:variables

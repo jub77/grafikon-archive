@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import net.parostroj.timetable.gui.components.GraphicalTimetableView.TrainColors;
 import net.parostroj.timetable.model.*;
 import net.parostroj.timetable.utils.TimeConverter;
 import net.parostroj.timetable.utils.TransformUtil;
@@ -130,6 +131,15 @@ abstract public class GTDraw {
 
     public Route getRoute() {
         return route;
+    }
+
+    public void setHTrains(HighlightedTrains hTrains) {
+        this.hTrains = hTrains;
+    }
+
+    public void setTrainColors(TrainColors colors, TrainColorChooser trainColorChooser) {
+        this.colors = colors;
+        this.trainColorChooser = trainColorChooser;
     }
 
     protected void paintHours(Graphics2D g) {
