@@ -70,22 +70,34 @@ public class GraphicalTimetableView extends javax.swing.JPanel implements Change
         this.addSizesToMenu();
     }
     
+    private TrainDiagramListener currentListener;
+    
     public void setTrainDiagram(TrainDiagram diagram) {
-        this.diagram = diagram;
-        this.createMenuForRoutes(diagram.getRoutes());
-        this.setComponentPopupMenu(popupMenu);
-        this.diagram.addListener(new TrainDiagramListener() {
+        if (currentListener != null && this.diagram != null) {
+            this.diagram.removeListener(currentListener);
+        }
+        if (diagram == null) {
+            this.diagram = null;
+            this.currentListener = null;
+            this.setRoute(null);
+        } else {
+            this.diagram = diagram;
+            this.createMenuForRoutes(diagram.getRoutes());
+            this.setComponentPopupMenu(popupMenu);
+            this.currentListener = new TrainDiagramListener() {
 
-            @Override
-            public void trainDiagramChanged(TrainDiagramEvent event) {
-                // modified routes ...
-                if (event.getType() == TrainDiagramEvent.Type.ROUTE_ADDED ||
-                        event.getType() == TrainDiagramEvent.Type.ROUTE_REMOVED)
-                    routesChanged(event);
+                @Override
+                public void trainDiagramChanged(TrainDiagramEvent event) {
+                    // modified routes ...
+                    if (event.getType() == TrainDiagramEvent.Type.ROUTE_ADDED ||
+                            event.getType() == TrainDiagramEvent.Type.ROUTE_REMOVED)
+                        routesChanged(event);
+                }
+            };
+            this.diagram.addListener(this.currentListener);
+            if (diagram.getRoutes().size() > 0) {
+                this.setRoute(diagram.getRoutes().get(0));
             }
-        });
-        if (diagram.getRoutes().size() > 0) {
-            this.setRoute(diagram.getRoutes().get(0));
         }
     }
 
