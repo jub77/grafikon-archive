@@ -52,14 +52,11 @@ abstract public class Templates {
             InputStream fis = TrainTimetablesListTemplates.class.getResourceAsStream(filename);
             Reader in = new InputStreamReader(fis, "utf-8");
             char[] buffer = new char[1000];
-            int read = 0;
+            int read;
             StringBuilder result = new StringBuilder();
-            do {
-                read = in.read(buffer);
-                if (read != -1) {
-                    result.append(buffer, 0, read);
-                }
-            } while (read != -1);
+            while ((read = in.read(buffer)) != -1) {
+                result.append(buffer, 0, read);
+            }
             in.close();
             return result.toString();
         } catch (FileNotFoundException e) {
