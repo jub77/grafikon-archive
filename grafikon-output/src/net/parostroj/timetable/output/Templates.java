@@ -59,9 +59,6 @@ abstract public class Templates {
             }
             in.close();
             return result.toString();
-        } catch (FileNotFoundException e) {
-            LOG.log(Level.WARNING, e.getMessage(),e);
-            return "";
         } catch (IOException e) {
             LOG.log(Level.WARNING, e.getMessage(),e);
             return "";
