@@ -220,6 +220,15 @@ public class Train implements AttributesHolder, ObjectWithId {
         this.getCyclesIntern(cycleType).remove(item);
         this.listenerSupport.fireEvent(new TrainEvent(this, TrainEvent.Type.CYCLE_ITEM));
     }
+    
+    public TrainsCycleItem getCycleItemForInterval(TrainsCycleType type, TimeInterval interval) {
+        List<TrainsCycleItem> items = this.getCyclesIntern(type);
+        for (TrainsCycleItem item : items) {
+            if (item.containsInterval(interval))
+                return item;
+        }
+        return null;
+    }
 
     public Attributes getAttributes() {
         return attributes;

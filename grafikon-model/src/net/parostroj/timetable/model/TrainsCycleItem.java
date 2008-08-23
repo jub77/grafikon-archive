@@ -27,6 +27,19 @@ public class TrainsCycleItem {
         this.from = (train.getFirstInterval() != from) ? from : null;
         this.to = (train.getLastInterval() != to) ? to : null;
     }
+    
+    public boolean containsInterval(TimeInterval interval) {
+        boolean in = false;
+        for (TimeInterval currentInterval : train.getTimeIntervalList()) {
+            if (getFromInterval() == currentInterval)
+                in = true;
+            if (in && interval == currentInterval)
+                return true;
+            if (getToInterval() == currentInterval)
+                in = false;
+        }
+        return false;
+    }
 
     public String getComment() {
         return comment;
