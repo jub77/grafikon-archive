@@ -11,6 +11,7 @@ import java.util.Collection;
 import java.util.Formatter;
 import java.util.List;
 import net.parostroj.timetable.actions.NodeSort;
+import net.parostroj.timetable.actions.TrainsHelper;
 import net.parostroj.timetable.model.*;
 import net.parostroj.timetable.utils.*;
 
@@ -78,6 +79,7 @@ public class NodeTimetablesList {
     
     private String generateComment(TimeInterval interval) {
         StringBuilder comment = new StringBuilder();
+        this.generateCommentWithWeight(interval, comment);
         this.generateCommentForEngineCycle(interval, comment);
         this.generateCommentForTrainUnitCycle(interval, comment);
         // comment itself
@@ -142,7 +144,31 @@ public class NodeTimetablesList {
             }
         }
     }
-    
+
+    private void generateCommentWithWeight(TimeInterval interval, StringBuilder comment) {
+        Train train = interval.getTrain();
+        TimeInterval nextInterval = train.getIntervalAfter(interval);
+        if (nextInterval != null) {
+            Integer weight = TrainsHelper.getWeight(nextInterval);
+            if (weight != null) {
+                // new style of weight information
+                this.appendDelimiter(comment);
+                comment.append('[');
+                comment.append(weight);
+                comment.append("t]");
+            } else {
+                // check old style comment
+                String weightStr = (String) train.getAttribute("weight.info");
+                if (weightStr != null && !weightStr.trim().equals("")) {
+                    this.appendDelimiter(comment);
+                    comment.append('[');
+                    comment.append(weightStr);
+                    comment.append("t]");
+                }
+            }
+        }
+    }
+
     private void appendDelimiter(StringBuilder str) {
         if (str.length() > 0)
             str.append(", ");
