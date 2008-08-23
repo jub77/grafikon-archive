@@ -11,6 +11,7 @@ import java.util.Set;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;
+import net.parostroj.timetable.actions.TrainsHelper;
 import net.parostroj.timetable.gui.ApplicationModel;
 import net.parostroj.timetable.gui.ApplicationModelEvent;
 import net.parostroj.timetable.gui.ApplicationModelEventType;
@@ -137,6 +138,17 @@ class TrainTableModel implements TableModel {
             // problems
             case CONFLICTS:
                 StringBuilder builder = new StringBuilder();
+                // temporary weight info
+                // TODO remove when new column is introduced
+                if (interval.isLineOwner()) {
+                    Integer weight = TrainsHelper.getWeight(interval);
+                    if (weight != null) {
+                        builder.append('(');
+                        builder.append(weight);
+                        builder.append("t)");
+                    }
+                }
+                
                 for (TimeInterval overlap : interval.getOverlappingIntervals()) {
                     if (builder.length() != 0)
                         builder.append(", ");
