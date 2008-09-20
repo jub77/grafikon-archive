@@ -405,10 +405,12 @@ public class EditLineDialog extends javax.swing.JDialog {
     private void newTrackButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newTrackButtonActionPerformed
         // show dialog with name question
         String name = JOptionPane.showInputDialog(this,"");
-        LineTrack track = new LineTrack(UUID.randomUUID().toString(), name);
-        ((DefaultListModel)trackList.getModel()).addElement(track);
-        connections.put(track, new Tuple<NodeTrack>(null, null));
-        this.updateSelectedTrack(track);
+        if (name != null && !name.equals("")) {
+            LineTrack track = new LineTrack(UUID.randomUUID().toString(), name);
+            ((DefaultListModel)trackList.getModel()).addElement(track);
+            connections.put(track, new Tuple<NodeTrack>(null, null));
+            this.updateSelectedTrack(track);
+        }
 }//GEN-LAST:event_newTrackButtonActionPerformed
 
     private void deleteTrackButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteTrackButtonActionPerformed

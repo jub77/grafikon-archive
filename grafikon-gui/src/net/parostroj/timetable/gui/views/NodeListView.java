@@ -190,6 +190,7 @@ public class NodeListView extends javax.swing.JPanel implements ApplicationModel
                 return;
             Node n = new Node(UUID.randomUUID().toString(), NodeType.STATION, result, result);
             NodeTrack track = new NodeTrack(UUID.randomUUID().toString(), "1");
+            track.setPlatform(true);
             n.addTrack(track);
             model.getDiagram().getNet().addNode(n);
             this.updateNodeList();

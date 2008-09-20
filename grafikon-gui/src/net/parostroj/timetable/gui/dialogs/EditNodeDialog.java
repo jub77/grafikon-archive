@@ -75,10 +75,6 @@ public class EditNodeDialog extends javax.swing.JDialog {
         controlCheckBox.setSelected(Boolean.TRUE.equals(node.getAttribute("control.station")));
         trapezoidCheckBox.setSelected(Boolean.TRUE.equals(node.getAttribute("trapezoid.sign")));
 
-        // clear checkboxes for tracks
-        platformCheckBox.setSelected(false);
-        lineEndCheckBox.setSelected(false);
-
         // get node tracks
         DefaultListModel listModel = new DefaultListModel();
         for (NodeTrack track : node.getTracks()) {
@@ -315,9 +311,11 @@ public class EditNodeDialog extends javax.swing.JDialog {
 
     private void newNodeTrackButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newNodeTrackButtonActionPerformed
         String name = JOptionPane.showInputDialog(this, "");
-        NodeTrack track = new NodeTrack(UUID.randomUUID().toString(), name);
-        track.setPlatform(true);
-        ((DefaultListModel) nodeTrackList.getModel()).addElement(track);
+        if (name != null && !name.equals("")) {
+            NodeTrack track = new NodeTrack(UUID.randomUUID().toString(), name);
+            track.setPlatform(true);
+            ((DefaultListModel) nodeTrackList.getModel()).addElement(track);
+        }
     }//GEN-LAST:event_newNodeTrackButtonActionPerformed
 
     private void renameNodeTrackButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_renameNodeTrackButtonActionPerformed
@@ -373,20 +371,16 @@ public class EditNodeDialog extends javax.swing.JDialog {
     }//GEN-LAST:event_nodeTrackListValueChanged
 
     private void platformCheckBoxItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_platformCheckBoxItemStateChanged
-        if (evt.getStateChange() == ItemEvent.SELECTED) {
-            NodeTrack selected = (NodeTrack) nodeTrackList.getSelectedValue();
-            if (selected != null) {
-                selected.setPlatform(platformCheckBox.isSelected());
-            }
+        NodeTrack selected = (NodeTrack)nodeTrackList.getSelectedValue();
+        if ((evt.getStateChange() == ItemEvent.SELECTED || evt.getStateChange() == ItemEvent.DESELECTED) && selected != null) {
+            selected.setPlatform(platformCheckBox.isSelected());
         }
     }//GEN-LAST:event_platformCheckBoxItemStateChanged
 
     private void lineEndCheckBoxItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_lineEndCheckBoxItemStateChanged
-        if (evt.getStateChange() == ItemEvent.SELECTED) {
-            NodeTrack selected = (NodeTrack) nodeTrackList.getSelectedValue();
-            if (selected != null) {
-                selected.setAttribute("line.end", lineEndCheckBox.isSelected());
-            }
+        NodeTrack selected = (NodeTrack) nodeTrackList.getSelectedValue();
+        if ((evt.getStateChange() == ItemEvent.SELECTED || evt.getStateChange() == ItemEvent.DESELECTED) && selected != null) {
+            selected.setAttribute("line.end", lineEndCheckBox.isSelected());
         }
     }//GEN-LAST:event_lineEndCheckBoxItemStateChanged
     // Variables declaration - do not modify//GEN-BEGIN:variables

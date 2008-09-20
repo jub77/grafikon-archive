@@ -31,7 +31,7 @@
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="lineEndCheckBox" min="-2" max="-2" attributes="0"/>
                   </Group>
-                  <Component id="scrollPane" alignment="0" pref="259" max="32767" attributes="0"/>
+                  <Component id="scrollPane" alignment="0" pref="265" max="32767" attributes="0"/>
                   <Component id="trapezoidCheckBox" alignment="0" min="-2" max="-2" attributes="0"/>
                   <Group type="102" alignment="0" attributes="0">
                       <Group type="103" groupAlignment="0" max="-2" attributes="0">
@@ -41,9 +41,9 @@
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="abbrTextField" pref="215" max="32767" attributes="0"/>
-                          <Component id="nameTextField" alignment="0" pref="215" max="32767" attributes="0"/>
-                          <Component id="typeComboBox" alignment="0" pref="215" max="32767" attributes="0"/>
+                          <Component id="abbrTextField" pref="221" max="32767" attributes="0"/>
+                          <Component id="nameTextField" alignment="0" pref="221" max="32767" attributes="0"/>
+                          <Component id="typeComboBox" alignment="0" pref="221" max="32767" attributes="0"/>
                       </Group>
                   </Group>
                   <Group type="102" alignment="0" attributes="0">
