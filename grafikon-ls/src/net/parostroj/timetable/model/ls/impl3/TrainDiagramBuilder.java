@@ -35,21 +35,24 @@ public class TrainDiagramBuilder {
     public void setNet(LSNet lsNet) {
         Net net = this.diagram.getNet();
         // add line classes
-        for (LSLineClass lsLineClass : lsNet.getLineClasses()) {
-            net.addLineClass(lsLineClass.createLineClass());
-        }
+        if (lsNet.getLineClasses() != null)
+            for (LSLineClass lsLineClass : lsNet.getLineClasses()) {
+                net.addLineClass(lsLineClass.createLineClass());
+            }
         // create nodes ...
-        for (LSNode lsNode : lsNet.getNodes()) {
-            Node node = lsNode.createNode();
-            net.addNode(node);
-        }
+        if (lsNet.getNodes() != null)
+            for (LSNode lsNode : lsNet.getNodes()) {
+                Node node = lsNode.createNode();
+                net.addNode(node);
+            }
         // create lines ...
-        for (LSLine lsLine : lsNet.getLines()) {
-            Line line = lsLine.createLine(diagram);
-            Node from = net.getNodeById(lsLine.getFrom());
-            Node to = net.getNodeById(lsLine.getTo());
-            net.addLine(from, to, line);
-        }
+        if (lsNet.getLines() != null)
+            for (LSLine lsLine : lsNet.getLines()) {
+                Line line = lsLine.createLine(diagram);
+                Node from = net.getNodeById(lsLine.getFrom());
+                Node to = net.getNodeById(lsLine.getTo());
+                net.addLine(from, to, line);
+            }
     }
     
     public void setRoute(LSRoute lsRoute) {
