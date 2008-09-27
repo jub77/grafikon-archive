@@ -23,6 +23,7 @@ import net.parostroj.timetable.gui.dialogs.EditNodeDialog;
 import net.parostroj.timetable.model.Node;
 import net.parostroj.timetable.model.NodeTrack;
 import net.parostroj.timetable.model.NodeType;
+import net.parostroj.timetable.model.Route;
 import net.parostroj.timetable.utils.ResourceLoader;
 
 /**
@@ -158,7 +159,7 @@ public class NodeListView extends javax.swing.JPanel implements ApplicationModel
     private void deleteButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteButtonActionPerformed
         if (nodeList.getSelectedIndex() != -1) {
             Node n = (Node)nodeList.getSelectedValue();
-            if (!n.isEmpty() || !model.getDiagram().getNet().getLinesOf(n).isEmpty()) {
+            if (!n.isEmpty() || !model.getDiagram().getNet().getLinesOf(n).isEmpty() || checkRoutesForNode(n, model.getDiagram().getRoutes())) {
                 JOptionPane.showMessageDialog(this, ResourceLoader.getString("nl.error.notempty"),ResourceLoader.getString("nl.error.title"),JOptionPane.ERROR_MESSAGE);
             } else {
                 model.getDiagram().getNet().removeNode(n);
@@ -168,6 +169,14 @@ public class NodeListView extends javax.swing.JPanel implements ApplicationModel
         
     }//GEN-LAST:event_deleteButtonActionPerformed
 
+    private boolean checkRoutesForNode(Node node, List<Route> routes) {
+        for (Route route : routes) {
+            if (route.contains(node))
+                return true;
+        }
+        return false;
+    }
+    
     private void editButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editButtonActionPerformed
         if (model.getDiagram() != null) {
             editDialog.setLocationRelativeTo(this);

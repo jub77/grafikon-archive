@@ -22,8 +22,8 @@
               <EmptySpace min="-2" max="-2" attributes="0"/>
               <Component id="deleteButton" max="32767" attributes="0"/>
           </Group>
-          <Component id="scrollPane" alignment="1" pref="229" max="32767" attributes="0"/>
-          <Component id="jLabel1" alignment="0" pref="229" max="32767" attributes="0"/>
+          <Component id="scrollPane" alignment="1" pref="235" max="32767" attributes="0"/>
+          <Component id="jLabel1" alignment="0" pref="235" max="32767" attributes="0"/>
       </Group>
     </DimensionLayout>
     <DimensionLayout dim="1">

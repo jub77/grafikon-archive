@@ -2,6 +2,7 @@ package net.parostroj.timetable.model.ls.impl3;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.logging.Logger;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -9,6 +10,7 @@ import javax.xml.bind.annotation.XmlType;
 import net.parostroj.timetable.model.Net;
 import net.parostroj.timetable.model.Route;
 import net.parostroj.timetable.model.RouteSegment;
+import net.parostroj.timetable.model.ls.LSException;
 
 /**
  * Storage for route.
@@ -18,6 +20,8 @@ import net.parostroj.timetable.model.RouteSegment;
 @XmlRootElement(name = "route")
 @XmlType(propOrder = {"id", "name", "netPart", "segments"})
 public class LSRoute {
+    
+    private static final Logger LOG = Logger.getLogger(LSRoute.class.getName());
 
     private String id;
     private String name;
@@ -72,17 +76,25 @@ public class LSRoute {
         this.segments = segments;
     }
     
-    public Route createRoute(Net net) {
+    public Route createRoute(Net net) throws LSException {
         Route route = new Route(id);
         route.setName(name);
         route.setNetPart(netPart);
         // create segments
         boolean node = true;
         for (String segment : getSegments()) {
-            if (node)
-                route.getSegments().add(net.getNodeById(segment));
-            else
-                route.getSegments().add(net.getLineById(segment));
+            RouteSegment routeSegment = null;
+            if (node) {
+                routeSegment = net.getNodeById(segment);
+            } else {
+                routeSegment = net.getLineById(segment);
+            }
+            if (routeSegment == null) {
+                String message = String.format("Segment with id:%s not found. Cannot create route with id:%s.", segment, id);
+                LOG.warning(message);
+                throw new LSException(message);
+            }
+            route.getSegments().add(routeSegment);
             node = !node;
         }
         return route;

@@ -8,6 +8,7 @@ package net.parostroj.timetable.gui.views;
 
 import java.awt.Frame;
 import java.util.Collection;
+import java.util.List;
 import java.util.UUID;
 import javax.swing.DefaultListModel;
 import javax.swing.JOptionPane;
@@ -22,6 +23,7 @@ import net.parostroj.timetable.gui.dialogs.EditLineDialog;
 import net.parostroj.timetable.model.Line;
 import net.parostroj.timetable.model.LineTrack;
 import net.parostroj.timetable.model.Node;
+import net.parostroj.timetable.model.Route;
 import net.parostroj.timetable.utils.ResourceLoader;
 import net.parostroj.timetable.utils.Tuple;
 
@@ -161,7 +163,7 @@ public class LineListView extends javax.swing.JPanel implements ApplicationModel
     private void deleteButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteButtonActionPerformed
         if (lineList.getSelectedIndex() != -1) {
             Line line = (Line)lineList.getSelectedValue();
-            if (!line.isEmpty()) {
+            if (!line.isEmpty() || checkRoutesForLine(line, model.getDiagram().getRoutes())) {
                 JOptionPane.showMessageDialog(this, ResourceLoader.getString("nl.error.notempty"),ResourceLoader.getString("nl.error.title"),JOptionPane.ERROR_MESSAGE);
             } else {
                 model.getDiagram().getNet().removeLine(line);
@@ -171,6 +173,14 @@ public class LineListView extends javax.swing.JPanel implements ApplicationModel
         
     }//GEN-LAST:event_deleteButtonActionPerformed
 
+    private boolean checkRoutesForLine(Line line, List<Route> routes) {
+        for (Route route : routes) {
+            if (route.contains(line))
+                return true;
+        }
+        return false;
+    }
+    
     private void editButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editButtonActionPerformed
         editLineDialog.setLine((Line)lineList.getSelectedValue());
         editLineDialog.setLocationRelativeTo(this);

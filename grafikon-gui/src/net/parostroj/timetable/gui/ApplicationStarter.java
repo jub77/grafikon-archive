@@ -89,6 +89,7 @@ public class ApplicationStarter {
         SplashScreenInfoOrig info = new SplashScreenInfoOrig(splash, x, y);
         final JFrame frm = this.getApplicationInstance(info);
         SwingUtilities.invokeLater(new Runnable() {
+            @Override
             public void run() {
                 frm.setVisible(true);
             }
@@ -102,6 +103,7 @@ public class ApplicationStarter {
         LOGGER.fine("Splash initialized.");
         final JFrame frm = this.getApplicationInstance(spl);
         SwingUtilities.invokeLater(new Runnable() {
+            @Override
             public void run() {
                 spl.setVisible(false);
                 spl.dispose();

@@ -826,10 +826,9 @@ private void fileOpenMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//
     ActionHandler.getInstance().executeAction(this, ResourceLoader.getString("wait.message.loadmodel"), new ModelAction() {
 
         private TrainDiagram diagram;
-
         private String errorMessage;
-
         private String errorSaveMessage;
+        private Exception errorException;
 
         @Override
         public void run(
@@ -850,8 +849,10 @@ private void fileOpenMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//
                         errorMessage = ResourceLoader.getString("dialog.error.filenotfound");
                     else if (e.getCause() instanceof IOException)
                         errorMessage = ResourceLoader.getString("dialog.error.loading");
-                    else
+                    else {
                         errorMessage = ResourceLoader.getString("dialog.error.loading");
+                        errorException = e;
+                    }
                 } catch (Exception e) {
                     LOG.log(Level.WARNING, "Error loading model.", e);
                     errorMessage = ResourceLoader.getString("dialog.error.loading");
@@ -875,7 +876,10 @@ private void fileOpenMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//
                 if (diagram != null)
                     model.setDiagram(diagram);
                 else {
-                    showError(errorMessage + " " + xmlFileChooser.getSelectedFile().getName());
+                    String text = errorMessage + " " + xmlFileChooser.getSelectedFile().getName();
+                    if (errorException != null)
+                        text = text + "\n(" + errorException.getMessage() + ")";
+                    showError(text);
                     model.setDiagram(null);
                 }
             }
@@ -1262,7 +1266,7 @@ private void weightTablesMenuItemActionPerformed(java.awt.event.ActionEvent evt)
     }
 
     private void showError(String text) {
-        JOptionPane.showMessageDialog(this, text,ResourceLoader.getString("dialog.error.title"),JOptionPane.ERROR_MESSAGE);
+        JOptionPane.showMessageDialog(this, text, ResourceLoader.getString("dialog.error.title"), JOptionPane.ERROR_MESSAGE);
     }
     
     @Override

@@ -2,6 +2,7 @@ package net.parostroj.timetable.model.ls.impl3;
 
 import java.io.File;
 import net.parostroj.timetable.model.*;
+import net.parostroj.timetable.model.ls.LSException;
 
 /**
  * Builder for TrainDiagram.
@@ -55,7 +56,7 @@ public class TrainDiagramBuilder {
             }
     }
     
-    public void setRoute(LSRoute lsRoute) {
+    public void setRoute(LSRoute lsRoute) throws LSException {
         Route route = lsRoute.createRoute(diagram.getNet());
         Route foundRoute = null;
         if ((foundRoute = diagram.getRouteById(route.getId())) != null) {

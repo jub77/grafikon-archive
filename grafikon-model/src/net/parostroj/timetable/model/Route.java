@@ -105,6 +105,14 @@ public class Route implements ObjectWithId {
     public String getId() {
         return id;
     }
+    
+    /**
+     * @param segment checked segment
+     * @return if the route contains given segment
+     */
+    public boolean contains(RouteSegment segment) {
+        return segments.contains(segment);
+    }
 
     /**
      * adds route at the end.
