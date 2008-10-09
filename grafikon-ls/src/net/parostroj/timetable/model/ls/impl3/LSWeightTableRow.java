@@ -50,9 +50,10 @@ public class LSWeightTableRow {
     
     public WeightTableRow createWeightTableRow(Net net) {
         WeightTableRow row = new WeightTableRow(speed);
-        for (LSWeightLimit limit : weights) {
-            row.setWeightInfo(net.getLineClassById(limit.getLineClass()), limit.getWeight());
-        }
+        if (weights != null)
+            for (LSWeightLimit limit : weights) {
+                row.setWeightInfo(net.getLineClassById(limit.getLineClass()), limit.getWeight());
+            }
         return row;
     }
 }
