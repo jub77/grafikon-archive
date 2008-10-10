@@ -34,6 +34,7 @@ public class MainFrame extends javax.swing.JFrame implements ApplicationModelLis
     
     private static final Logger LOG = Logger.getLogger(MainFrame.class.getName());
     private static final String FILE_EXTENSION = "gtm";
+    private static final String FRAME_TITLE = "Grafikon";
 
     private ApplicationModel model;
     private SettingsDialog settingsDialog;
@@ -322,8 +323,16 @@ public class MainFrame extends javax.swing.JFrame implements ApplicationModelLis
     }
 
     private void setTitleChanged(boolean b) {
-        String title = "Grafikon";
-        if (model.getDiagram() != null) {
+        this.setTitle(this.getTitleString(b));
+    }
+    
+    private String getTitleString(boolean b) {
+        String title = FRAME_TITLE;
+        ResourceBundle bundle = ResourceBundle.getBundle("grafikon_version");
+        String version = bundle.getString("grafikon.version");
+        if (version != null)
+            title += " (" + version + ")";
+        if (model != null && model.getDiagram() != null) {
             if (model.getOpenedFile() == null)
                 title += " - " + ResourceLoader.getString("title.new");
             else
@@ -331,7 +340,7 @@ public class MainFrame extends javax.swing.JFrame implements ApplicationModelLis
             if (b)
                 title += " *";
         }
-        this.setTitle(title);
+        return title;
     }
     
     private int checkModelChangedContinue() {
@@ -428,7 +437,7 @@ public class MainFrame extends javax.swing.JFrame implements ApplicationModelLis
         recalculateMenuItem = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
-        setTitle("Grafikon");
+        setTitle(this.getTitleString(false));
         setLocationByPlatform(true);
         setMinimumSize(new java.awt.Dimension(800, 600));
 
@@ -1330,7 +1339,7 @@ private void weightTablesMenuItemActionPerformed(java.awt.event.ActionEvent evt)
         trainsPane.loadFromPreferences(prefs);
         conflictsDialog.loadFromPreferences(prefs);
     }
-
+    
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenu actionMenu;
     private javax.swing.JMenuItem allHtmlMenuItem;
