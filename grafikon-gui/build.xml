@@ -66,12 +66,15 @@
     nbproject/build-impl.xml file.
 
     -->
-    <target name="-pre-init">
+    <target name="-pre-compile">
         <copy file="templates/grafikon_version.properties" tofile="resources/grafikon_version.properties" overwrite="true"/>
         <exec executable="hg" outputproperty="grafikon.version">
             <arg value="identify"/>
             <arg value="-n"/>
         </exec>
         <replace file="resources/grafikon_version.properties" token="$VERSION$" value="${grafikon.version}"/>
+    </target>
+    <target name="-post-compile">
+        <delete file="resources/grafikon_version.properties"/>
     </target>
 </project>
