@@ -70,6 +70,31 @@ public class TrainsCycleHelper {
         }
         return si.getToInterval() == train.getLastInterval();
     }
+    
+    public boolean isTrainIntervalCovered(Train train, List<TrainsCycleItem> items, TimeInterval interval) {
+        if (items == null)
+            throw new IllegalArgumentException("List cannot be null");
+        if (items.isEmpty())
+            return false;
+        Iterator<TrainsCycleItem> i = items.iterator();
+        TrainsCycleItem fi = i.next();
+        boolean in = false;
+        for (TimeInterval curr : train.getTimeIntervalList()) {
+            if (fi.getFromInterval() == curr)
+                in = true;
+            if (curr == interval) {
+                return in;
+            }
+            if (fi.getToInterval() == curr) {
+                in = false;
+                if (i.hasNext())
+                    fi = i.next();
+                else
+                    break;
+            }
+        }
+        return false;
+    }
 
     public Tuple<TimeInterval> getFirstUncoveredPart(Train train, List<TrainsCycleItem> items) {
         if (items == null) {

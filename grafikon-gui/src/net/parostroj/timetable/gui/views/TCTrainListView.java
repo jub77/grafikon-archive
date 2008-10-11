@@ -125,7 +125,7 @@ public class TCTrainListView extends javax.swing.JPanel implements ApplicationMo
             infoTextArea.setText("");
         }
     }
-    private Train lastSelected;
+    private TimeInterval lastSelected;
 
     @Override
     public void selectTrainInterval(TimeInterval interval) {
@@ -134,12 +134,12 @@ public class TCTrainListView extends javax.swing.JPanel implements ApplicationMo
         if (interval == null)
             lastSelected = null;
         else
-            lastSelected = interval.getTrain();
+            lastSelected = interval;
     }
 
     @Override
     public TimeInterval getSelectedTrainInterval() {
-        return lastSelected == null ? null : lastSelected.getFirstInterval();
+        return lastSelected;
     }
 
     /** This method is called from within the constructor to
@@ -172,6 +172,7 @@ public class TCTrainListView extends javax.swing.JPanel implements ApplicationMo
         allTrainsList.setPrototypeCellValue("mmmmmmmmmmmmm");
         allTrainsList.setVisibleRowCount(5);
         allTrainsList.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
+            @Override
             public void valueChanged(javax.swing.event.ListSelectionEvent evt) {
                 allTrainsListValueChanged(evt);
             }
@@ -182,6 +183,7 @@ public class TCTrainListView extends javax.swing.JPanel implements ApplicationMo
         ecTrainsList.setPrototypeCellValue("mmmmmmmmmmmmm");
         ecTrainsList.setVisibleRowCount(5);
         ecTrainsList.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
+            @Override
             public void valueChanged(javax.swing.event.ListSelectionEvent evt) {
                 ecTrainsListValueChanged(evt);
             }
@@ -191,6 +193,7 @@ public class TCTrainListView extends javax.swing.JPanel implements ApplicationMo
         addButton.setText(ResourceLoader.getString("ec.trains.add")); // NOI18N
         addButton.setEnabled(false);
         addButton.addActionListener(new java.awt.event.ActionListener() {
+            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 addButtonActionPerformed(evt);
             }
@@ -199,6 +202,7 @@ public class TCTrainListView extends javax.swing.JPanel implements ApplicationMo
         removeButton.setText(ResourceLoader.getString("ec.trains.remove")); // NOI18N
         removeButton.setEnabled(false);
         removeButton.addActionListener(new java.awt.event.ActionListener() {
+            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 removeButtonActionPerformed(evt);
             }
@@ -213,6 +217,7 @@ public class TCTrainListView extends javax.swing.JPanel implements ApplicationMo
         upButton.setText(ResourceLoader.getString("ec.trains.up")); // NOI18N
         upButton.setEnabled(false);
         upButton.addActionListener(new java.awt.event.ActionListener() {
+            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 upButtonActionPerformed(evt);
             }
@@ -221,6 +226,7 @@ public class TCTrainListView extends javax.swing.JPanel implements ApplicationMo
         downButton.setText(ResourceLoader.getString("ec.trains.down")); // NOI18N
         downButton.setEnabled(false);
         downButton.addActionListener(new java.awt.event.ActionListener() {
+            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 downButtonActionPerformed(evt);
             }
@@ -229,6 +235,7 @@ public class TCTrainListView extends javax.swing.JPanel implements ApplicationMo
         changeButton.setText(ResourceLoader.getString("ec.details.change")); // NOI18N
         changeButton.setEnabled(false);
         changeButton.addActionListener(new java.awt.event.ActionListener() {
+            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 changeButtonActionPerformed(evt);
             }

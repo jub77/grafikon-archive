@@ -200,13 +200,13 @@ abstract public class GTDraw {
                 Line2D line2D = this.createTrainLine(interval, timeStep);
 
                 // add shape to collector
-                this.addShapeToCollector(interval.getTrain(), line2D);
+                this.addShapeToCollector(interval, line2D);
 
                 g.draw(line2D);
 
                 if ((interval.getFrom().getType() != NodeType.SIGNAL) &&
                         (preferences.get(GTDrawPreference.TRAIN_NAMES) == Boolean.TRUE))
-                    this.paintTrainNameOnLine(g, interval.getTrain(), line2D);
+                    this.paintTrainNameOnLine(g, interval, line2D);
 
                 if (preferences.get(GTDrawPreference.ARRIVAL_DEPARTURE_DIGITS) == Boolean.TRUE)
                     this.paintMinutesOnLine(g, interval, line2D);
@@ -244,7 +244,7 @@ abstract public class GTDraw {
         }
     }
 
-    protected void paintTrainNameOnLine(Graphics2D g, Train train, Line2D line) {
+    protected void paintTrainNameOnLine(Graphics2D g, TimeInterval interval, Line2D line) {
         // draw train name
         AffineTransform old = g.getTransform();
         double lengthY = line.getY2()-line.getY1();
@@ -257,14 +257,14 @@ abstract public class GTDraw {
         newTransform.rotate(angle);
         g.setTransform(newTransform);
         // length of the text
-        String text = train.getName();
+        String text = interval.getTrain().getName();
         Rectangle2D rr = g.getFont().getStringBounds(text, g.getFontRenderContext());
         Shape nameShape = null;
         
         int shift = (int)(length - rr.getWidth()) / 2; 
         if (shift >= 0) {
             g.drawString(text, shift, -5);
-            if (this.isCollectorCollecting(train)) {
+            if (this.isCollectorCollecting(interval.getTrain())) {
                 Rectangle rec = rr.getBounds();
                 rec.translate(shift, -5);
                 nameShape = newTransform.createTransformedShape(rec);
@@ -278,7 +278,7 @@ abstract public class GTDraw {
         g.setTransform(old);
         
         if (nameShape != null) {
-            this.addShapeToCollector(train, nameShape);
+            this.addShapeToCollector(interval, nameShape);
         }
     }
     
@@ -336,9 +336,9 @@ abstract public class GTDraw {
         }
     }
     
-    protected void addShapeToCollector(Train train, Shape shape) {
+    protected void addShapeToCollector(TimeInterval interval, Shape shape) {
         if (trainRegionCollector != null) {
-            trainRegionCollector.addRegion(train, shape);
+            trainRegionCollector.addRegion(interval, shape);
         }
     }
     

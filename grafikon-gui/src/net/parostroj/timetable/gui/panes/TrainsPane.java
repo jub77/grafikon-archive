@@ -73,6 +73,9 @@ public class TrainsPane extends javax.swing.JPanel implements StorableGuiData {
         graphicalTimetableView.setHTrains(ht);
 
         graphicalTimetableView.setTrainSelector(new TrainSelector() {
+            
+            private TimeInterval selectedTimeInterval;
+            
             @Override
             public void selectTrainInterval(TimeInterval interval) {
                 // set selected train
@@ -80,11 +83,12 @@ public class TrainsPane extends javax.swing.JPanel implements StorableGuiData {
                 if (interval != null)
                     selected = interval.getTrain();
                 model.setSelectedTrain(selected);
+                selectedTimeInterval = interval;
             }
 
             @Override
             public TimeInterval getSelectedTrainInterval() {
-                return model.getSelectedTrain() != null ? model.getSelectedTrain().getFirstInterval() : null;
+                return selectedTimeInterval;
             }
         });
     }

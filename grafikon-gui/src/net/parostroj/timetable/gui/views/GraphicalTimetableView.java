@@ -63,6 +63,10 @@ public class GraphicalTimetableView extends javax.swing.JPanel implements Applic
         BY_TYPE, BY_COLOR_CHOOSER;
     }
     
+    public enum Selection {
+        INTERVAL, TRAIN;
+    }
+    
     private final static int MIN_WIDTH = 1000;
     
     private final static int MAX_WIDTH = 10000;
@@ -76,6 +80,8 @@ public class GraphicalTimetableView extends javax.swing.JPanel implements Applic
     private int currentSize;
     
     private TrainColors trainColors = TrainColors.BY_TYPE;
+    
+    private Selection selection = Selection.TRAIN;
     
     private TrainColorChooser trainColorChooser;
     
@@ -136,7 +142,6 @@ public class GraphicalTimetableView extends javax.swing.JPanel implements Applic
         if (route == null)
             draw = null;
         else {
-            Dimension d = this.getSize();
             trainRegionCollector = new TrainRegionCollector(SELECTION_RADIUS);
             if (type == Type.CLASSIC) {
                 draw = new GTDrawClassic(new Point(10,20), 100, this.getSize(), route, trainColors, trainColorChooser,hTrains,trainRegionCollector);
@@ -373,30 +378,47 @@ private void routesEditMenuItemActionPerformed(java.awt.event.ActionEvent evt) {
 private void formMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_formMouseClicked
     // selection of the train
     if (trainRegionCollector != null) {
-        List<Train> selectedTrains = trainRegionCollector.getTrainForPoint(evt.getX(), evt.getY());
+        List<TimeInterval> selectedIntervals = trainRegionCollector.getTrainForPoint(evt.getX(), evt.getY());
         if (trainSelector != null) {
-            if (selectedTrains.size() == 0)
+            if (selectedIntervals.size() == 0)
                 trainSelector.selectTrainInterval(null);
             else {
                 TimeInterval oldInterval = trainSelector.getSelectedTrainInterval();
-                Train oldSelection = oldInterval == null ? null : oldInterval.getTrain();
-                if (oldSelection == null)
-                    trainSelector.selectTrainInterval(selectedTrains.get(0).getFirstInterval());
+                if (oldInterval == null)
+                    trainSelector.selectTrainInterval(selectedIntervals.get(0));
                 else {
-                    int oldIndex = selectedTrains.indexOf(oldSelection);
-                    if (oldIndex == -1)
-                        trainSelector.selectTrainInterval(selectedTrains.get(0).getFirstInterval());
-                    else {
-                        oldIndex += 1;
-                        if (oldIndex >= selectedTrains.size())
-                            oldIndex = 0;
-                        trainSelector.selectTrainInterval(selectedTrains.get(oldIndex).getFirstInterval());
-                    }
+                    TimeInterval newSelection = this.getNextSelected(selectedIntervals, oldInterval);
+                    trainSelector.selectTrainInterval(newSelection);
                 }
             }
         }
     }
 }//GEN-LAST:event_formMouseClicked
+
+private TimeInterval getNextSelected(List<TimeInterval> list, TimeInterval oldInterval) {
+    int oldIndex = list.indexOf(oldInterval);
+    if (oldIndex == -1)
+        return list.get(0);
+    else {
+        if (selection == Selection.INTERVAL) {
+            oldIndex += 1;
+            if (oldIndex >= list.size())
+                oldIndex = 0;
+            return list.get(oldIndex);
+        } else {
+            int newIndex = oldIndex;
+            Train oldTrain = oldInterval.getTrain();
+            Train selectedTrain = oldTrain;
+            do {
+                newIndex++;
+                if (newIndex >= list.size())
+                    newIndex = 0;
+                selectedTrain = list.get(newIndex).getTrain();
+            } while (selectedTrain == oldTrain && newIndex != oldIndex);
+            return list.get(newIndex);
+        }
+    }
+}
 
 private void preferencesCheckBoxMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_preferencesCheckBoxMenuItemActionPerformed
     // update GTDraw using setRoute with the same route
