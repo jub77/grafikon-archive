@@ -417,7 +417,7 @@ public class EditLineDialog extends javax.swing.JDialog {
         // remove track
         if (!trackList.isSelectionEmpty()) {
             LineTrack deleted = (LineTrack)trackList.getSelectedValue();
-            if (!deleted.isEmpty()) {
+            if (!deleted.isEmpty() || trackList.getModel().getSize() == 1) {
                 JOptionPane.showMessageDialog(this, ResourceLoader.getString("nl.error.notempty"),null,JOptionPane.ERROR_MESSAGE);
             } else {
                 ((DefaultListModel)trackList.getModel()).removeElement(deleted);

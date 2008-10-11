@@ -334,7 +334,7 @@ public class EditNodeDialog extends javax.swing.JDialog {
         if (!nodeTrackList.isSelectionEmpty()) {
             NodeTrack track = (NodeTrack) nodeTrackList.getSelectedValue();
             // test node track
-            if (!track.isEmpty()) {
+            if (!track.isEmpty() || nodeTrackList.getModel().getSize() == 1) {
                 JOptionPane.showMessageDialog(this, ResourceLoader.getString("nl.error.notempty"), null, JOptionPane.ERROR_MESSAGE);
             } else {
                 ((DefaultListModel) nodeTrackList.getModel()).removeElement(track);
