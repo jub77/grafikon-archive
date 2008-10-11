@@ -128,14 +128,18 @@ public class TCTrainListView extends javax.swing.JPanel implements ApplicationMo
     private Train lastSelected;
 
     @Override
-    public void selectTrain(Train train) {
-        allTrainsList.setSelectedValue(new TrainWrapper(train, TrainWrapper.Type.NAME_AND_END_NODES_WITH_TIME), true);
-        lastSelected = train;
+    public void selectTrainInterval(TimeInterval interval) {
+        if (interval != null)
+            allTrainsList.setSelectedValue(new TrainWrapper(interval.getTrain(), TrainWrapper.Type.NAME_AND_END_NODES_WITH_TIME), true);
+        if (interval == null)
+            lastSelected = null;
+        else
+            lastSelected = interval.getTrain();
     }
 
     @Override
-    public Train getSelectedTrain() {
-        return lastSelected;
+    public TimeInterval getSelectedTrainInterval() {
+        return lastSelected == null ? null : lastSelected.getFirstInterval();
     }
 
     /** This method is called from within the constructor to
@@ -407,6 +411,7 @@ private void changeButtonActionPerformed(java.awt.event.ActionEvent evt) {
                 this.updateSelectedTrainsCycleItem(item);
             }
         }
+        delegate.fireEvent(TCDelegate.Action.MODIFIED_CYCLE, model, delegate.getSelectedCycle(model));
     }
 }                                            
 

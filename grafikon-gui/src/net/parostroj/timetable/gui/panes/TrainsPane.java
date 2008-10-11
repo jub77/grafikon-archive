@@ -15,6 +15,7 @@ import net.parostroj.timetable.gui.ApplicationModelEventType;
 import net.parostroj.timetable.gui.StorableGuiData;
 import net.parostroj.timetable.gui.views.HighlightedTrains;
 import net.parostroj.timetable.gui.views.TrainSelector;
+import net.parostroj.timetable.model.TimeInterval;
 import net.parostroj.timetable.model.Train;
 
 /**
@@ -51,8 +52,8 @@ public class TrainsPane extends javax.swing.JPanel implements StorableGuiData {
             Set<Train> set = Collections.emptySet();
 
             @Override
-            public Set<Train> getHighlighedTrains() {
-                return set;
+            public boolean isHighlighedInterval(TimeInterval interval) {
+                return set.contains(interval.getTrain());
             }
 
             @Override
@@ -73,14 +74,17 @@ public class TrainsPane extends javax.swing.JPanel implements StorableGuiData {
 
         graphicalTimetableView.setTrainSelector(new TrainSelector() {
             @Override
-            public void selectTrain(Train train) {
+            public void selectTrainInterval(TimeInterval interval) {
                 // set selected train
-                model.setSelectedTrain(train);
+                Train selected = null;
+                if (interval != null)
+                    selected = interval.getTrain();
+                model.setSelectedTrain(selected);
             }
 
             @Override
-            public Train getSelectedTrain() {
-                return model.getSelectedTrain();
+            public TimeInterval getSelectedTrainInterval() {
+                return model.getSelectedTrain() != null ? model.getSelectedTrain().getFirstInterval() : null;
             }
         });
     }

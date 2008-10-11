@@ -7,9 +7,8 @@
 package net.parostroj.timetable.gui.views;
 
 import java.awt.Color;
-import java.util.Set;
 import net.parostroj.timetable.gui.ApplicationModelListener;
-import net.parostroj.timetable.model.Train;
+import net.parostroj.timetable.model.TimeInterval;
 
 /**
  * Highlighted trains.
@@ -17,7 +16,7 @@ import net.parostroj.timetable.model.Train;
  * @author jub
  */
 public interface HighlightedTrains extends ApplicationModelListener {
-    public Set<Train> getHighlighedTrains();
+    public boolean isHighlighedInterval(TimeInterval interval);
     
     public Color getColor();
 }

@@ -13,6 +13,7 @@ import net.parostroj.timetable.gui.ApplicationModel;
 import net.parostroj.timetable.gui.ApplicationModelEvent;
 import net.parostroj.timetable.gui.views.GraphicalTimetableView.TrainColors;
 import net.parostroj.timetable.gui.views.*;
+import net.parostroj.timetable.model.TimeInterval;
 import net.parostroj.timetable.model.Train;
 import net.parostroj.timetable.model.TrainsCycle;
 import net.parostroj.timetable.model.TrainsCycleItem;
@@ -39,8 +40,12 @@ public class TrainsCyclesPane extends javax.swing.JPanel {
         private TrainsCycle last;
 
         @Override
-        public Set<Train> getHighlighedTrains() {
-            return Collections.singleton(selectorDelegate.getSelectedTrain());
+        public boolean isHighlighedInterval(TimeInterval interval) {
+            TimeInterval selectedInterval = selectorDelegate.getSelectedTrainInterval();
+            if (selectedInterval == null)
+                return false;
+            else
+                return selectedInterval.getTrain() == interval.getTrain();
         }
 
         @Override
@@ -74,21 +79,21 @@ public class TrainsCyclesPane extends javax.swing.JPanel {
         }
 
         @Override
-        public void selectTrain(Train train) {
-            selectorDelegate.selectTrain(train);
+        public void selectTrainInterval(TimeInterval interval) {
+            selectorDelegate.selectTrainInterval(interval);
             graphicalTimetableView.repaint();
         }
 
         @Override
-        public Train getSelectedTrain() {
-            return selectorDelegate.getSelectedTrain();
+        public TimeInterval getSelectedTrainInterval() {
+            return selectorDelegate.getSelectedTrainInterval();
         }
 
         @Override
-        public Color getColor(Train train) {
-            if (set.contains(train))
+        public Color getIntervalColor(TimeInterval interval) {
+            if (set.contains(interval.getTrain()))
                 return Color.RED;
-            return chooserDelegate.getColor(train);
+            return chooserDelegate.getIntervalColor(interval);
         }
     }
 

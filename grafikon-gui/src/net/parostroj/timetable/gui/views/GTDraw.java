@@ -195,7 +195,7 @@ abstract public class GTDraw {
         g.setStroke(trainStroke);
         for (LineTrack track : line.getTracks()) {
             for (TimeInterval interval : track.getTimeIntervalList()) {
-                g.setColor(this.getTrainColor(interval.getTrain()));
+                g.setColor(this.getIntervalColor(interval));
 
                 Line2D line2D = this.createTrainLine(interval, timeStep);
 
@@ -323,14 +323,14 @@ abstract public class GTDraw {
             g.drawString(TimeConverter.getLastDigitOfMinutes(interval.getEnd()), (int)endP.getX(), (int)endP.getY());
     }
     
-    protected Color getTrainColor(Train train) {
-        if (hTrains != null && hTrains.getHighlighedTrains().contains(train))
+    protected Color getIntervalColor(TimeInterval interval) {
+        if (hTrains != null && hTrains.isHighlighedInterval(interval))
             return hTrains.getColor();
         switch (colors) {
             case BY_TYPE:
-                return train.getType().getColor();
+                return interval.getTrain().getType().getColor();
             case BY_COLOR_CHOOSER:
-                return trainColorChooser.getColor(train);
+                return trainColorChooser.getIntervalColor(interval);
             default:
                 return Color.black;
         }

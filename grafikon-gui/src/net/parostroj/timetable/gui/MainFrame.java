@@ -204,8 +204,8 @@ public class MainFrame extends javax.swing.JFrame implements ApplicationModelLis
         trainsPane.setModel(model);
         engineCyclesPane.setModel(model, new EngineCycleDelegate(),new TrainColorChooser() {
             @Override
-            public Color getColor(Train train) {
-                if (train.getCycles(TrainsCycleType.ENGINE_CYCLE).isEmpty())
+            public Color getIntervalColor(TimeInterval interval) {
+                if (interval.getTrain().getCycles(TrainsCycleType.ENGINE_CYCLE).isEmpty())
                     return Color.black;
                 else
                     return Color.gray;
@@ -213,8 +213,8 @@ public class MainFrame extends javax.swing.JFrame implements ApplicationModelLis
         });
         trainUnitCyclesPane.setModel(model, new TrainUnitCycleDelegate(),new TrainColorChooser() {
             @Override
-            public Color getColor(Train train) {
-                if (train.getCycles(TrainsCycleType.TRAIN_UNIT_CYCLE).isEmpty())
+            public Color getIntervalColor(TimeInterval interval) {
+                if (interval.getTrain().getCycles(TrainsCycleType.TRAIN_UNIT_CYCLE).isEmpty())
                     return Color.black;
                 else
                     return Color.gray;
@@ -222,8 +222,8 @@ public class MainFrame extends javax.swing.JFrame implements ApplicationModelLis
         });
         driverCyclesPane.setModel(model, new DriverCycleDelegate(),new TrainColorChooser() {
             @Override
-            public Color getColor(Train train) {
-                if (train.getCycles(TrainsCycleType.DRIVER_CYCLE).isEmpty())
+            public Color getIntervalColor(TimeInterval interval) {
+                if (interval.getTrain().getCycles(TrainsCycleType.DRIVER_CYCLE).isEmpty())
                     return Color.black;
                 else
                     return Color.gray;

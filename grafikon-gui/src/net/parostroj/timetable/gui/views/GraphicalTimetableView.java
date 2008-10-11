@@ -376,20 +376,21 @@ private void formMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_
         List<Train> selectedTrains = trainRegionCollector.getTrainForPoint(evt.getX(), evt.getY());
         if (trainSelector != null) {
             if (selectedTrains.size() == 0)
-                trainSelector.selectTrain(null);
+                trainSelector.selectTrainInterval(null);
             else {
-                Train oldSelection = trainSelector.getSelectedTrain();
+                TimeInterval oldInterval = trainSelector.getSelectedTrainInterval();
+                Train oldSelection = oldInterval == null ? null : oldInterval.getTrain();
                 if (oldSelection == null)
-                    trainSelector.selectTrain(selectedTrains.get(0));
+                    trainSelector.selectTrainInterval(selectedTrains.get(0).getFirstInterval());
                 else {
                     int oldIndex = selectedTrains.indexOf(oldSelection);
                     if (oldIndex == -1)
-                        trainSelector.selectTrain(selectedTrains.get(0));
+                        trainSelector.selectTrainInterval(selectedTrains.get(0).getFirstInterval());
                     else {
                         oldIndex += 1;
                         if (oldIndex >= selectedTrains.size())
                             oldIndex = 0;
-                        trainSelector.selectTrain(selectedTrains.get(oldIndex));
+                        trainSelector.selectTrainInterval(selectedTrains.get(oldIndex).getFirstInterval());
                     }
                 }
             }

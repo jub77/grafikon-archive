@@ -136,11 +136,11 @@ public class GTDrawWithNodeTracks extends GTDraw {
                 int x2 = (int)(start.x + interval.getEnd() * timeStep);
                 if (interval.getType() == TimeIntervalType.NODE_STOP || interval.getType() == TimeIntervalType.NODE_THROUGH) {
                     g.setStroke(TRAIN_STROKE);
-                    g.setColor(this.getTrainColor(interval.getTrain()));
+                    g.setColor(this.getIntervalColor(interval));
                     g.drawLine(x1, y, x2, y);
                 } else {
                     g.setStroke(TRAIN_SS_STROKE);
-                    g.setColor(this.getTrainColor(interval.getTrain()));
+                    g.setColor(this.getIntervalColor(interval));
                     g.drawLine(x1, y, x2, y);
                 }
             }
