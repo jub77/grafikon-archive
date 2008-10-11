@@ -6,6 +6,7 @@
 package net.parostroj.timetable.gui.views;
 
 import java.awt.Frame;
+import java.util.LinkedList;
 import java.util.List;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
@@ -19,6 +20,7 @@ import net.parostroj.timetable.gui.ApplicationModelEventType;
 import net.parostroj.timetable.gui.ApplicationModelListener;
 import net.parostroj.timetable.gui.dialogs.CreateTrainDialog;
 import net.parostroj.timetable.model.Train;
+import net.parostroj.timetable.model.TrainsCycle;
 import net.parostroj.timetable.model.TrainsCycleItem;
 import net.parostroj.timetable.model.TrainsCycleType;
 import net.parostroj.timetable.utils.ResourceLoader;
@@ -239,9 +241,14 @@ private void deleteButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-
 }//GEN-LAST:event_deleteButtonActionPerformed
 
 private void removeTrainFromCycles(List<TrainsCycleItem> items, ApplicationModelEventType eventType) {
-    for (TrainsCycleItem item : items) {
+    for (TrainsCycleItem item : new LinkedList<TrainsCycleItem>(items)) {
+        System.out.println(item.getCycle());
+        System.out.println(item.getTrain());
+        System.out.println(item.getFrom());
+        TrainsCycle cycle = item.getCycle();
+        System.out.println(cycle);
         item.getCycle().removeItem(item);
-        model.fireEvent(new ApplicationModelEvent(eventType, model, item.getCycle()));
+        model.fireEvent(new ApplicationModelEvent(eventType, model, cycle));
     }
 }
 

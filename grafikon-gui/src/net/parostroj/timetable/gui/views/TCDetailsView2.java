@@ -42,7 +42,8 @@ public class TCDetailsView2 extends javax.swing.JPanel implements ApplicationMod
                     this.updateValues((TrainsCycle)event.getObject());
                     break;
                 case MODIFIED_CYCLE:
-                    this.updateValues((TrainsCycle)event.getObject());
+                    if (delegate.getSelectedCycle(model) == (TrainsCycle)event.getObject())
+                        this.updateValues((TrainsCycle)event.getObject());
                     break;
             }
     }
