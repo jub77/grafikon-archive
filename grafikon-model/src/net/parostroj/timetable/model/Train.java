@@ -692,6 +692,10 @@ public class Train implements AttributesHolder, ObjectWithId {
         return TrainsCycleHelper.getHelper(type).isTrainIntervalCovered(this, this.getCycles(type), interval);
     }
     
+    public boolean isCovered(TrainsCycle cycle, TimeInterval interval) {
+        return TrainsCycleHelper.getHelper(cycle.getType()).isTrainIntervalCovered(this, cycle.getItems(), interval);
+    }
+    
     /**
      * returns pair of nodes that indicates first uncovered interval.
      * 

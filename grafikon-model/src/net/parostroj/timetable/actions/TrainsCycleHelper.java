@@ -77,7 +77,9 @@ public class TrainsCycleHelper {
         if (items.isEmpty())
             return false;
         Iterator<TrainsCycleItem> i = items.iterator();
-        TrainsCycleItem fi = i.next();
+        TrainsCycleItem fi = getNextTrainsCycleItem(i, train);
+        if (fi == null)
+            return false;
         boolean in = false;
         for (TimeInterval curr : train.getTimeIntervalList()) {
             if (fi.getFromInterval() == curr)
@@ -87,15 +89,27 @@ public class TrainsCycleHelper {
             }
             if (fi.getToInterval() == curr) {
                 in = false;
-                if (i.hasNext())
-                    fi = i.next();
-                else
+                fi = getNextTrainsCycleItem(i, train);
+                if (fi == null)
                     break;
+                if (fi.getFromInterval() == curr)
+                    in = true;
             }
         }
         return false;
     }
-
+    
+    private TrainsCycleItem getNextTrainsCycleItem(Iterator<TrainsCycleItem> i, Train train) {
+        TrainsCycleItem fi = null;
+        do {
+            if (i.hasNext())
+                fi = i.next();
+            else
+                fi = null;
+        } while (fi != null && fi.getTrain() != train);
+        return fi;
+    }
+    
     public Tuple<TimeInterval> getFirstUncoveredPart(Train train, List<TrainsCycleItem> items) {
         if (items == null) {
             throw new IllegalArgumentException("List cannot be null.");

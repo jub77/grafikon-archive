@@ -36,7 +36,6 @@ public class TrainsCyclesPane extends javax.swing.JPanel {
             this.chooserDelegate = chooser;
             this.selectorDelegate = selector;
         }
-        private Set<Train> set = Collections.emptySet();
         private TrainsCycle last;
 
         @Override
@@ -52,25 +51,12 @@ public class TrainsCyclesPane extends javax.swing.JPanel {
         public void modelChanged(ApplicationModelEvent event) {
             if (delegate.transformEventType(event.getType()) == TCDelegate.Action.SELECTED_CHANGED) {
                 last = delegate.getSelectedCycle(event.getModel());
-                set = this.createSet(last);
                 graphicalTimetableView.repaint();
             } else if (delegate.transformEventType(event.getType()) == TCDelegate.Action.MODIFIED_CYCLE) {
                 if (event.getObject() == last) {
-                    set = this.createSet(last);
                     graphicalTimetableView.repaint();
                 }
             }
-        }
-
-        private Set<Train> createSet(TrainsCycle cycle) {
-            if (cycle == null) {
-                return Collections.emptySet();
-            }
-            Set<Train> result = new HashSet<Train>();
-            for (TrainsCycleItem item : cycle) {
-                result.add(item.getTrain());
-            }
-            return result;
         }
 
         @Override
@@ -91,8 +77,9 @@ public class TrainsCyclesPane extends javax.swing.JPanel {
 
         @Override
         public Color getIntervalColor(TimeInterval interval) {
-            if (set.contains(interval.getTrain()))
+            if (last != null && interval.getTrain().isCovered(last, interval)) {
                 return Color.RED;
+            }
             return chooserDelegate.getIntervalColor(interval);
         }
     }
