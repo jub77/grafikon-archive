@@ -375,6 +375,7 @@ public class MainFrame extends javax.swing.JFrame implements ApplicationModelLis
         imagesMenuItem.setEnabled(model.getDiagram() != null);
         infoMenuItem.setEnabled(model.getDiagram() != null);
         spListMenuItem.setEnabled(model.getDiagram() != null);
+        epListMenuItem.setEnabled(model.getDiagram() != null);
         trainTypesMenuItem.setEnabled(model.getDiagram() != null);
         lineClassesMenuItem.setEnabled(model.getDiagram() != null);
         weightTablesMenuItem.setEnabled(model.getDiagram() != null);
@@ -426,6 +427,7 @@ public class MainFrame extends javax.swing.JFrame implements ApplicationModelLis
         spListMenuItem = new javax.swing.JMenuItem();
         javax.swing.JSeparator jSeparator1 = new javax.swing.JSeparator();
         trainTimetableListByDcMenuItem = new javax.swing.JMenuItem();
+        epListMenuItem = new javax.swing.JMenuItem();
         javax.swing.JSeparator jSeparator2 = new javax.swing.JSeparator();
         allHtmlMenuItem = new javax.swing.JMenuItem();
         javax.swing.JSeparator jSeparator3 = new javax.swing.JSeparator();
@@ -635,6 +637,14 @@ public class MainFrame extends javax.swing.JFrame implements ApplicationModelLis
             }
         });
         actionMenu.add(trainTimetableListByDcMenuItem);
+
+        epListMenuItem.setText(ResourceLoader.getString("menu.acion.eplist")); // NOI18N
+        epListMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                epListMenuItemActionPerformed(evt);
+            }
+        });
+        actionMenu.add(epListMenuItem);
         actionMenu.add(jSeparator2);
 
         allHtmlMenuItem.setText(ResourceLoader.getString("menu.action.all.html")); // NOI18N
@@ -1200,6 +1210,22 @@ private void weightTablesMenuItemActionPerformed(java.awt.event.ActionEvent evt)
     engineClassesDialog.setVisible(true);
 }//GEN-LAST:event_weightTablesMenuItemActionPerformed
 
+private void epListMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_epListMenuItemActionPerformed
+    final EndPositionsList list = new EndPositionsList(model.getDiagram());
+    HtmlAction action = new HtmlAction() {
+            @Override
+            public void write(Writer writer) throws Exception {
+                list.writeTo(writer);
+            }
+
+            @Override
+            public void writeToDirectory(File directory) throws Exception {
+                // do nothing
+            }
+    };
+    this.saveHtml(action);
+}//GEN-LAST:event_epListMenuItemActionPerformed
+
     private void setSelectedLocale() {
         if (locale == null)
             systemLanguageRadioButtonMenuItem.setSelected(true);
@@ -1348,6 +1374,7 @@ private void weightTablesMenuItemActionPerformed(java.awt.event.ActionEvent evt)
     private net.parostroj.timetable.gui.panes.TrainsCyclesPane driverCyclesPane;
     private javax.swing.JMenuItem ecListMenuItem;
     private net.parostroj.timetable.gui.panes.TrainsCyclesPane engineCyclesPane;
+    private javax.swing.JMenuItem epListMenuItem;
     private javax.swing.JMenuItem exitMenuItem;
     private javax.swing.JMenu fileMenu;
     private javax.swing.JMenuItem fileNewMenuItem;
