@@ -1,5 +1,6 @@
 package net.parostroj.timetable.gui;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.logging.FileHandler;
 import java.util.logging.Handler;
@@ -20,7 +21,8 @@ public class Main {
         
         // add file output to logging
         try {
-            Handler handler = new FileHandler("grafikon.log");
+            File file = new File(System.getProperty("java.io.tmpdir"), "grafikon.log");
+            Handler handler = new FileHandler(file.getCanonicalPath());
             handler.setFormatter(new SimpleFormatter());
             Logger.getLogger("").addHandler(handler);
         } catch (IOException e) {
