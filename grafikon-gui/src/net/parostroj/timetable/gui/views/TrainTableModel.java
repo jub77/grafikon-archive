@@ -158,7 +158,7 @@ class TrainTableModel implements TableModel {
                 break;
             // comment
             case COMMENT:
-                retValue = interval.getComment();
+                retValue = interval.getAttribute("comment");
                 break;
             case OCCUPIED_ENTRY:
                 Boolean value = (Boolean)interval.getAttribute("occupied");
@@ -252,7 +252,13 @@ class TrainTableModel implements TableModel {
         case COMMENT:
             // comment
             interval = train.getTimeIntervalList().get(rowIndex);
-            interval.setComment((String)aValue);
+            String commentStr = (String)aValue;
+            if ("".equals(commentStr))
+                commentStr = null;
+            if (commentStr != null)
+                interval.setAttribute("comment", (String)aValue);
+            else
+                interval.removeAttribute("comment");
             model.fireEvent(new ApplicationModelEvent(ApplicationModelEventType.MODIFIED_TRAIN_ATTRIBUTE, model, train));
             break;
         case OCCUPIED_ENTRY:

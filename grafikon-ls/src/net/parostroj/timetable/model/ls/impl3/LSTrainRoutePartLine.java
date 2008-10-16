@@ -8,13 +8,14 @@ import net.parostroj.timetable.model.TimeInterval;
  * 
  * @author jub
  */
-@XmlType(propOrder = {"intervalId", "lineId", "trackId", "speed"})
+@XmlType(propOrder = {"intervalId", "lineId", "trackId", "speed", "attributes"})
 public class LSTrainRoutePartLine {
 
     private String intervalId;
     private String lineId;
     private String trackId;
     private int speed;
+    private LSAttributes attributes;
 
     public LSTrainRoutePartLine() {
     }
@@ -24,6 +25,7 @@ public class LSTrainRoutePartLine {
         lineId = interval.getOwner().getId();
         trackId = interval.getTrack().getId();
         speed = interval.getSpeed();
+        this.attributes = new LSAttributes(interval.getAttributes());
     }
 
     public String getLineId() {
@@ -56,5 +58,16 @@ public class LSTrainRoutePartLine {
 
     public void setIntervalId(String intervalId) {
         this.intervalId = intervalId;
+    }
+
+    public LSAttributes getAttributes() {
+        if (attributes == null)
+            return new LSAttributes();
+        else
+            return attributes;
+    }
+
+    public void setAttributes(LSAttributes attributes) {
+        this.attributes = attributes;
     }
 }

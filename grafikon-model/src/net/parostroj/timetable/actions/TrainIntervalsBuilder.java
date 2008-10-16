@@ -31,7 +31,7 @@ public class TrainIntervalsBuilder {
         this.timeIntervals = new LinkedList<TimeInterval>();
     }
 
-    public void addNode(String intervalId, Node node, NodeTrack track, int stop) {
+    public void addNode(String intervalId, Node node, NodeTrack track, int stop, Attributes attributes) {
         if (intervalId == null) {
             LOG.warning("Adding interval with not specified id (fix - generated): " + node);
             intervalId = UUID.randomUUID().toString();
@@ -49,10 +49,11 @@ public class TrainIntervalsBuilder {
             lastInterval = new TimeInterval(intervalId,
                     train, node, 0, stop, stop == 0 ? TimeIntervalType.NODE_THROUGH : TimeIntervalType.NODE_STOP, track);
         }
+        lastInterval.setAttributes(attributes);
         timeIntervals.add(lastInterval);
     }
 
-    public void addLine(String intervalId, Line line, LineTrack track, int speed) {
+    public void addLine(String intervalId, Line line, LineTrack track, int speed, Attributes attributes) {
         if (intervalId == null) {
             LOG.warning("Adding interval with not specified id (fix - generated): " + line);
             intervalId = UUID.randomUUID().toString();
@@ -69,6 +70,7 @@ public class TrainIntervalsBuilder {
                 lastInterval.getOwner().asNode() == line.getFrom() ? TimeIntervalDirection.FORWARD : TimeIntervalDirection.BACKWARD,
                 lastInterval.getType() == TimeIntervalType.NODE_THROUGH ? TimeIntervalType.LINE_THROUGH_STOP : TimeIntervalType.LINE_START_STOP,
                 track);
+        lastInterval.setAttributes(attributes);
         timeIntervals.add(lastInterval);
     }
 
@@ -101,12 +103,14 @@ public class TrainIntervalsBuilder {
                 created = last.getOwner().asNode().createTimeInterval(last.getId(), train, start, diagram, last.getType(), last.getLength());
                 created.setTrack(last.getTrack());
             }
+            created.setAttributes(last.getAttributes());
             train.addInterval(created);
             start = created.getEnd();
             last = current;
         }
         // finish last node
         TimeInterval lastCreated = last.getOwner().asNode().createTimeInterval(last.getId(), train, start, diagram, TimeIntervalType.NODE_END, last.getLength());
+        lastCreated.setAttributes(last.getAttributes());
         lastCreated.setTrack(last.getTrack());
         train.addInterval(lastCreated);
         

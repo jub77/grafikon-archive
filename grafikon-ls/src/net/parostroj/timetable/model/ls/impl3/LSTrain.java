@@ -140,12 +140,12 @@ public class LSTrain {
                 LSTrainRoutePartNode nodePart = (LSTrainRoutePartNode)routePart;
                 Node node = diagram.getNet().getNodeById(nodePart.getNodeId());
                 NodeTrack nodeTrack = node.findTrackById(nodePart.getTrackId());
-                builder.addNode(nodePart.getIntervalId(), node, nodeTrack, nodePart.getStop());
+                builder.addNode(nodePart.getIntervalId(), node, nodeTrack, nodePart.getStop(), nodePart.getAttributes().createAttributes());
             } else {
                 LSTrainRoutePartLine linePart = (LSTrainRoutePartLine)routePart;
                 Line line = diagram.getNet().getLineById(linePart.getLineId());
                 LineTrack lineTrack = line.findTrackById(linePart.getTrackId());
-                builder.addLine(linePart.getIntervalId(), line, lineTrack, linePart.getSpeed());
+                builder.addLine(linePart.getIntervalId(), line, lineTrack, linePart.getSpeed(), linePart.getAttributes().createAttributes());
             }
         }
         builder.finish();

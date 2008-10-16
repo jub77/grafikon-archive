@@ -83,9 +83,10 @@ public class NodeTimetablesList {
         this.generateCommentForEngineCycle(interval, comment);
         this.generateCommentForTrainUnitCycle(interval, comment);
         // comment itself
-        if (interval.getComment() != null && !interval.getComment().equals("")) {
+        String commentStr = (String)interval.getAttribute("comment");
+        if (commentStr != null && !commentStr.equals("")) {
             this.appendDelimiter(comment);
-            comment.append(interval.getComment());
+            comment.append(commentStr);
         }
         if (Boolean.TRUE.equals(interval.getAttribute("occupied"))) {
             this.appendDelimiter(comment);

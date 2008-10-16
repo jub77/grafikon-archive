@@ -33,8 +33,6 @@ public class TimeInterval implements AttributesHolder, ObjectWithId {
     public static final int NO_SPEED = -1;
     /** Direction of the time interval regarding the underlying line. */
     private TimeIntervalDirection direction;
-    /** Comment. */
-    private String comment;
 
     /**
      * creates instance of an time interval.
@@ -86,7 +84,6 @@ public class TimeInterval implements AttributesHolder, ObjectWithId {
         this(id, interval.getTrain(), interval.getOwner(), interval.getStart(),
                 interval.getEnd(), interval.getSpeed(), interval.getDirection(),
                 interval.getType(), interval.getTrack());
-        this.setComment(interval.getComment());
         this.setAttributes(new Attributes(interval.getAttributes()));
     }
 
@@ -335,20 +332,6 @@ public class TimeInterval implements AttributesHolder, ObjectWithId {
      */
     public NodeTrack getToStraightTrack() {
         return (owner instanceof Line) ? ((LineTrack) track).getToStraightTrack(direction) : null;
-    }
-
-    /**
-     * @return comment to this time interval
-     */
-    public String getComment() {
-        return comment;
-    }
-
-    /**
-     * @param comment the comment to set
-     */
-    public void setComment(String comment) {
-        this.comment = comment;
     }
 
     public void removeFromOwner() {

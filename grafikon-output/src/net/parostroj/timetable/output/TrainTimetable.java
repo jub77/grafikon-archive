@@ -263,7 +263,7 @@ public class TrainTimetable {
             if (Boolean.TRUE.equals(nodeInterval.getAttribute("comment.shown"))) {
                 lastComment = lastComment + "*";
                 note += lastComment;
-                this.addComment(new Pair<String, String>(lastComment, nodeInterval.getComment()));
+                this.addComment(new Pair<String, String>(lastComment, (String)nodeInterval.getAttribute("comment")));
             }
 
             if (lineInterval != null) {
