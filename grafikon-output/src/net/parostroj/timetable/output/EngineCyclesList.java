@@ -50,6 +50,8 @@ public class EngineCyclesList {
             if ((i % 3) == 2) {
                 writer.write(templates.getRowFooter());
             }
+            if ((i % 9) == 8)
+                writer.write("<div style=\"page-break-before: always; font-size: 1mm;\">&nbsp;</div>\n");
         }
         writer.write(templates.getHtmlFooter());
     }
