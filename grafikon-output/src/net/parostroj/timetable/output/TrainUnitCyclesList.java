@@ -37,7 +37,7 @@ public class TrainUnitCyclesList {
         for (TrainsCycle cycle : trainUnitCycles) {
             this.writeTrainUnitCycle(f, writer, cycle);
             if ((i & 1) == 1)
-                writer.write("<div style=\"page-break-after: always;\">&nbsp;</div>");
+                writer.write("<div style=\"page-break-before: always;\">&nbsp;</div>");
             i++;
         }
         writer.write(templates.getHtmlFooter());
