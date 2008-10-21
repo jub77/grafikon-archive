@@ -77,4 +77,12 @@
     <target name="-post-compile">
         <delete file="resources/grafikon_version.properties"/>
     </target>
+    <target name="-post-jar">
+        <signjar alias="jub" keystore="keystore/grafikon.ks" storepass="grafikon">
+            <path>
+                <fileset file="${dist.jar}"/>
+                <fileset dir="${dist.dir}" includes="lib/*.jar" />
+            </path>
+        </signjar>
+    </target>
 </project>
