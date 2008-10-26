@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.Formatter;
 import java.util.List;
+import net.parostroj.timetable.actions.TrainsCycleSort;
 import net.parostroj.timetable.model.TrainsCycle;
 import net.parostroj.timetable.model.Train;
 import net.parostroj.timetable.model.TrainsCycleItem;
@@ -26,7 +27,8 @@ public class TrainUnitCyclesList {
     private TrainUnitCyclesListTemplates templates;
 
     public TrainUnitCyclesList(List<TrainsCycle> trainUnitCycles) {
-        this.trainUnitCycles = trainUnitCycles;
+        TrainsCycleSort sort = new TrainsCycleSort(TrainsCycleSort.Type.ASC);
+        this.trainUnitCycles = sort.sort(trainUnitCycles);
         templates = new TrainUnitCyclesListTemplates();
     }
 

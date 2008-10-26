@@ -10,6 +10,7 @@ import java.io.Writer;
 import java.util.Formatter;
 import java.util.List;
 import java.util.ListIterator;
+import net.parostroj.timetable.actions.TrainsCycleSort;
 import net.parostroj.timetable.model.*;
 import net.parostroj.timetable.utils.TimeConverter;
 import net.parostroj.timetable.utils.Tuple;
@@ -26,7 +27,8 @@ public class DriverCyclesList {
     private DriverCyclesListTemplates templates;
 
     public DriverCyclesList(List<TrainsCycle> driverCycles, Attributes infos) {
-        this.driverCycles = driverCycles;
+        TrainsCycleSort sort = new TrainsCycleSort(TrainsCycleSort.Type.ASC);
+        this.driverCycles = sort.sort(driverCycles);
         this.infos = infos;
         templates = new DriverCyclesListTemplates();
     }

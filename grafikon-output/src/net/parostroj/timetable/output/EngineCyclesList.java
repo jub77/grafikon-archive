@@ -10,6 +10,7 @@ import java.io.Writer;
 import java.util.Formatter;
 import java.util.Iterator;
 import java.util.List;
+import net.parostroj.timetable.actions.TrainsCycleSort;
 import net.parostroj.timetable.model.*;
 import net.parostroj.timetable.utils.*;
 
@@ -25,7 +26,8 @@ public class EngineCyclesList {
     private EngineCyclesListTemplates templates;
 
     public EngineCyclesList(List<TrainsCycle> engineCycles) {
-        this.engineCycles = engineCycles;
+        TrainsCycleSort sort = new TrainsCycleSort(TrainsCycleSort.Type.ASC);
+        this.engineCycles = sort.sort(engineCycles);
         templates = new EngineCyclesListTemplates();
     }
 

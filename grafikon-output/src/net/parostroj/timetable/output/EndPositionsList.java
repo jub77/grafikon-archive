@@ -8,6 +8,8 @@ package net.parostroj.timetable.output;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.Formatter;
+import java.util.List;
+import net.parostroj.timetable.actions.TrainsCycleSort;
 import net.parostroj.timetable.model.*;
 import net.parostroj.timetable.utils.TransformUtil;
 
@@ -33,7 +35,7 @@ public class EndPositionsList {
         
         // engines
         f.format(templates.getEpSection(), templates.getString("section.ec"));
-        for (TrainsCycle ecCycle : diagram.getCycles(TrainsCycleType.ENGINE_CYCLE)) {
+        for (TrainsCycle ecCycle : this.sortTrainsCycleList(diagram.getCycles(TrainsCycleType.ENGINE_CYCLE))) {
             if (!ecCycle.isEmpty()) {
                 TrainsCycleItem end = ecCycle.getItems().get(ecCycle.getItems().size() - 1);
                 String endName = end.getToInterval().getOwnerAsNode().getName();
@@ -44,7 +46,7 @@ public class EndPositionsList {
         
         // train units
         f.format(templates.getEpSection(), templates.getString("section.tuc"));
-        for (TrainsCycle tucCycle : diagram.getCycles(TrainsCycleType.TRAIN_UNIT_CYCLE)) {
+        for (TrainsCycle tucCycle : this.sortTrainsCycleList(diagram.getCycles(TrainsCycleType.TRAIN_UNIT_CYCLE))) {
             if (!tucCycle.isEmpty()) {
                 TrainsCycleItem end = tucCycle.getItems().get(tucCycle.getItems().size() - 1);
                 String endName = end.getToInterval().getOwnerAsNode().getName();
@@ -54,5 +56,10 @@ public class EndPositionsList {
         writer.write(templates.getEpSectionFooter());
         
         writer.write(templates.getHtmlFooter());
+    }
+
+    private List<TrainsCycle> sortTrainsCycleList(List<TrainsCycle> list) {
+        TrainsCycleSort sort = new TrainsCycleSort(TrainsCycleSort.Type.ASC);
+        return sort.sort(list);
     }
 }
