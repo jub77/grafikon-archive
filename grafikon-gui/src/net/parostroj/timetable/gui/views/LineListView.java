@@ -164,7 +164,10 @@ public class LineListView extends javax.swing.JPanel implements ApplicationModel
         if (lineList.getSelectedIndex() != -1) {
             Line line = (Line)lineList.getSelectedValue();
             if (!line.isEmpty() || checkRoutesForLine(line, model.getDiagram().getRoutes())) {
-                JOptionPane.showMessageDialog(this, ResourceLoader.getString("nl.error.notempty"),ResourceLoader.getString("nl.error.title"),JOptionPane.ERROR_MESSAGE);
+                if (!line.isEmpty())
+                    JOptionPane.showMessageDialog(this, ResourceLoader.getString("nl.error.notempty"),ResourceLoader.getString("nl.error.title"),JOptionPane.ERROR_MESSAGE);
+                else
+                    JOptionPane.showMessageDialog(this, ResourceLoader.getString("ne.error.routepart"),ResourceLoader.getString("nl.error.title"),JOptionPane.ERROR_MESSAGE);
             } else {
                 model.getDiagram().getNet().removeLine(line);
                 this.updateLineList();
