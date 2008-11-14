@@ -36,6 +36,9 @@ public class RouteBuilder {
         while (i.hasNext()) {
             Node current = i.next();
             Route part = this.createRouteInternal(id, net, last, current);
+            // no route between two nodes - return null
+            if (part == null)
+                return null;
             route.add(part);
             last = current;
         }
@@ -66,6 +69,9 @@ public class RouteBuilder {
      */
     private Route createRouteInternal(String id, Net net, Node from, Node to) {
         List<Line> lines = net.getRoute(from, to);
+        // no route between nodes - return null
+        if (lines == null || lines.size() == 0)
+            return null;
         // create route
         Route route = new Route(id);
         // last route point
