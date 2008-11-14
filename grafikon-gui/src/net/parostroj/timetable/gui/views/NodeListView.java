@@ -160,7 +160,12 @@ public class NodeListView extends javax.swing.JPanel implements ApplicationModel
         if (nodeList.getSelectedIndex() != -1) {
             Node n = (Node)nodeList.getSelectedValue();
             if (!n.isEmpty() || !model.getDiagram().getNet().getLinesOf(n).isEmpty() || checkRoutesForNode(n, model.getDiagram().getRoutes())) {
-                JOptionPane.showMessageDialog(this, ResourceLoader.getString("nl.error.notempty"),ResourceLoader.getString("nl.error.title"),JOptionPane.ERROR_MESSAGE);
+                if (!n.isEmpty())
+                    JOptionPane.showMessageDialog(this, ResourceLoader.getString("nl.error.notempty"),ResourceLoader.getString("nl.error.title"),JOptionPane.ERROR_MESSAGE);
+                else if (!model.getDiagram().getNet().getLinesOf(n).isEmpty())
+                    JOptionPane.showMessageDialog(this, ResourceLoader.getString("nl.error.linesexist"),ResourceLoader.getString("nl.error.title"),JOptionPane.ERROR_MESSAGE);
+                else
+                    JOptionPane.showMessageDialog(this, ResourceLoader.getString("ne.error.routepart"),ResourceLoader.getString("nl.error.title"),JOptionPane.ERROR_MESSAGE);
             } else {
                 model.getDiagram().getNet().removeNode(n);
                 this.updateNodeList();

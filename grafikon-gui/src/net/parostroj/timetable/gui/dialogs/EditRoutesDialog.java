@@ -240,6 +240,9 @@ public class EditRoutesDialog extends javax.swing.JDialog {
         nodes.addAll(throughNodes);
         nodes.add((Node)toComboBox.getSelectedItem());
         newRoute = builder.createRoute(UUID.randomUUID().toString(), model.getDiagram().getNet(), nodes);
+        // check if the returned route is null - no route available
+        if (newRoute == null)
+            return;
         // do not create route with duplicate nodes
         if (newRoute.checkDuplicateNodes())
             return;
