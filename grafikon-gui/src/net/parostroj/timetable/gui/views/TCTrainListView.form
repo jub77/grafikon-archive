@@ -4,6 +4,7 @@
   <AuxValues>
     <AuxValue name="FormSettings_autoResourcing" type="java.lang.Integer" value="0"/>
     <AuxValue name="FormSettings_autoSetComponentName" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_generateFQN" type="java.lang.Boolean" value="true"/>
     <AuxValue name="FormSettings_generateMnemonicsCode" type="java.lang.Boolean" value="false"/>
     <AuxValue name="FormSettings_i18nAutoMode" type="java.lang.Boolean" value="false"/>
     <AuxValue name="FormSettings_layoutCodeTarget" type="java.lang.Integer" value="1"/>
@@ -18,11 +19,11 @@
           <Group type="102" alignment="0" attributes="0">
               <Component id="scrollPane1" max="32767" attributes="0"/>
               <EmptySpace min="-2" max="-2" attributes="0"/>
-              <Group type="103" groupAlignment="1" max="-2" attributes="0">
+              <Group type="103" groupAlignment="0" max="-2" attributes="0">
                   <Component id="upButton" alignment="1" max="32767" attributes="1"/>
                   <Component id="downButton" alignment="1" max="32767" attributes="1"/>
                   <Component id="removeButton" alignment="1" max="32767" attributes="1"/>
-                  <Component id="addButton" alignment="1" max="32767" attributes="1"/>
+                  <Component id="addButton" alignment="0" max="32767" attributes="1"/>
               </Group>
               <EmptySpace min="-2" max="-2" attributes="0"/>
               <Component id="scrollPane2" max="32767" attributes="0"/>
