@@ -75,12 +75,22 @@ public class DriverCycleDelegate implements TCDelegate {
     }
 
     @Override
-    public String getTrainCycleErrors(TrainsCycle cycle) {
+    public String getTrainCycleErrors(TrainsCycle cycle, TrainDiagram diagram) {
         StringBuilder result = new StringBuilder();
         List<Tuple<TrainsCycleItem>> conflicts = cycle.checkConflicts();
         for (Tuple<TrainsCycleItem> item : conflicts) {
             if (item.first.getToInterval().getOwnerAsNode() != item.second.getFromInterval().getOwnerAsNode()) {
-                result.append(String.format(ResourceLoader.getString("ec.move.nodes"),item.first.getTrain().getName(),item.first.getToInterval().getOwnerAsNode().getName(),item.second.getTrain().getName(),item.second.getFromInterval().getOwnerAsNode().getName()));
+                // get time difference
+                int difference = item.second.getStartTime() - item.first.getEndTime();
+                Integer okDifference = (Integer)diagram.getAttribute("station.transfer.time");
+                String template = ResourceLoader.getString("ec.move.nodes");
+                if (okDifference != null) {
+                    // computed difference in model seconds
+                    int computedDiff = (int)(okDifference.intValue() * ((Double)diagram.getAttribute("time.scale")).doubleValue() * 60);
+                    if (difference < computedDiff)
+                        template = ResourceLoader.getString("ec.move.nodes.time.problem");
+                }
+                result.append(String.format(template,item.first.getTrain().getName(),item.first.getToInterval().getOwnerAsNode().getName(),item.second.getTrain().getName(),item.second.getFromInterval().getOwnerAsNode().getName()));
                 result.append("\n");
             }
             if (item.first.getEndTime() >= item.second.getStartTime()) {

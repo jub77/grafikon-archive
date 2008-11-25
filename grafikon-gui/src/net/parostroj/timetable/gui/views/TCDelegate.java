@@ -11,6 +11,7 @@ import javax.swing.JComponent;
 import net.parostroj.timetable.gui.ApplicationModel;
 import net.parostroj.timetable.gui.ApplicationModelEventType;
 import net.parostroj.timetable.model.Train;
+import net.parostroj.timetable.model.TrainDiagram;
 import net.parostroj.timetable.model.TrainsCycle;
 import net.parostroj.timetable.model.TrainsCycleItem;
 import net.parostroj.timetable.model.TrainsCycleType;
@@ -37,7 +38,7 @@ public interface TCDelegate {
     
     public List<TrainsCycleItem> getTrainCycles(Train train);
     
-    public String getTrainCycleErrors(TrainsCycle cycle);
+    public String getTrainCycleErrors(TrainsCycle cycle, TrainDiagram diagram);
     
     public void showEditDialog(JComponent component, ApplicationModel model);
     

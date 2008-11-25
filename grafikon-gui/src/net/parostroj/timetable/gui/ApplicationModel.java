@@ -113,6 +113,9 @@ public class ApplicationModel {
         
         this.diagram = diagram;
 
+        // after set checker
+        (new AfterSetChecker()).check(diagram);
+
         this.fireEvent(new ApplicationModelEvent(ApplicationModelEventType.SET_DIAGRAM_CHANGED,this));
     }
 

@@ -73,7 +73,7 @@ public class EngineCycleDelegate implements TCDelegate {
     }
 
     @Override
-    public String getTrainCycleErrors(TrainsCycle cycle) {
+    public String getTrainCycleErrors(TrainsCycle cycle, TrainDiagram diagram) {
         StringBuilder result = new StringBuilder();
         List<Tuple<TrainsCycleItem>> conflicts = cycle.checkConflicts();
         for (Tuple<TrainsCycleItem> item : conflicts) {

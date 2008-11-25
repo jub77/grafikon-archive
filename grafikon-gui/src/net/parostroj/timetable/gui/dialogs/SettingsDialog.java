@@ -72,6 +72,15 @@ public class SettingsDialog extends javax.swing.JDialog implements ApplicationMo
             completeNameTemplateTextField.setCaretPosition(0);
             nameTemplateTextField.setText(trainsData.getTrainNameTemplate());
             nameTemplateTextField.setCaretPosition(0);
+
+            // set crossing time in minutes
+            Integer transferTime = (Integer)model.getDiagram().getAttribute("station.transfer.time");
+            if (transferTime != null) {
+                stationTransferTextField.setText(transferTime.toString());
+            } else {
+                LOG.warning("Station transfer time information missing.");
+                stationTransferTextField.setText("");
+            }
         }
     }
 
@@ -106,6 +115,8 @@ public class SettingsDialog extends javax.swing.JDialog implements ApplicationMo
         completeNameTemplateTextField = new javax.swing.JTextField();
         javax.swing.JLabel jLabel5 = new javax.swing.JLabel();
         sortComboBox = new javax.swing.JComboBox();
+        jLabel6 = new javax.swing.JLabel();
+        stationTransferTextField = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         setTitle(ResourceLoader.getString("modelinfo")); // NOI18N
@@ -156,7 +167,7 @@ public class SettingsDialog extends javax.swing.JDialog implements ApplicationMo
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 7;
+        gridBagConstraints.gridy = 9;
         gridBagConstraints.gridwidth = 3;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
         gridBagConstraints.insets = new java.awt.Insets(0, 0, 10, 5);
@@ -212,6 +223,23 @@ public class SettingsDialog extends javax.swing.JDialog implements ApplicationMo
         gridBagConstraints.insets = new java.awt.Insets(0, 2, 5, 10);
         getContentPane().add(sortComboBox, gridBagConstraints);
 
+        jLabel6.setText(ResourceLoader.getString("modelinfo.crossing")); // NOI18N
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 7;
+        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(0, 10, 5, 0);
+        getContentPane().add(jLabel6, gridBagConstraints);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 8;
+        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(0, 10, 5, 10);
+        getContentPane().add(stationTransferTextField, gridBagConstraints);
+
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
@@ -260,6 +288,15 @@ public class SettingsDialog extends javax.swing.JDialog implements ApplicationMo
         }
         trainsData.setTrainSortPattern(sPattern);
         
+        // set transfer time
+        try {
+            Integer difference = Integer.valueOf(stationTransferTextField.getText());
+            if (difference != null)
+                model.getDiagram().setAttribute("station.transfer.time", difference);
+        } catch (NumberFormatException e) {
+            LOG.warning("Cannot parse station transfer time: " + stationTransferTextField.getText());
+        }
+
         // update model
         for (Train train : model.getDiagram().getTrains()) {
             train.recalculate(model.getDiagram());
@@ -283,12 +320,14 @@ public class SettingsDialog extends javax.swing.JDialog implements ApplicationMo
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton cancelButton;
     private javax.swing.JTextField completeNameTemplateTextField;
+    private javax.swing.JLabel jLabel6;
     private javax.swing.JTextField nameTemplateTextField;
     private javax.swing.JButton okButton;
     private javax.swing.JPanel panel1;
     private javax.swing.JComboBox ratioComboBox;
     private javax.swing.JComboBox scaleComboBox;
     private javax.swing.JComboBox sortComboBox;
+    private javax.swing.JTextField stationTransferTextField;
     // End of variables declaration//GEN-END:variables
     
 }

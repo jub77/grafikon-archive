@@ -120,7 +120,7 @@ public class TCTrainListView extends javax.swing.JPanel implements ApplicationMo
     private void updateErrors() {
         TrainsCycle selectedCycle = delegate.getSelectedCycle(model);
         if (selectedCycle != null) {
-            infoTextArea.setText(delegate.getTrainCycleErrors(selectedCycle));
+            infoTextArea.setText(delegate.getTrainCycleErrors(selectedCycle, model.getDiagram()));
         } else {
             infoTextArea.setText("");
         }
