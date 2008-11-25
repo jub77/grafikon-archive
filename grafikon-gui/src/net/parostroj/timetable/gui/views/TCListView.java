@@ -48,7 +48,6 @@ public class TCListView extends javax.swing.JPanel implements ApplicationModelLi
         switch(event.getType()) {
             case SET_DIAGRAM_CHANGED:
                 this.updateView();
-                deleteButton.setEnabled(delegate.getSelectedCycle(model) != null);
                 break;
             default:
                 // nothing
@@ -58,13 +57,11 @@ public class TCListView extends javax.swing.JPanel implements ApplicationModelLi
             switch (action) {
                 case NEW_CYCLE: case DELETE_CYCLE:
                     this.updateView();
-                    deleteButton.setEnabled(delegate.getSelectedCycle(model) != null);
                     break;
                 case MODIFIED_CYCLE:
                     ecList.repaint();
                     break;
                 case SELECTED_CHANGED:
-                    deleteButton.setEnabled(delegate.getSelectedCycle(model) != null);
                     break;
                 default:
                     // nothing
@@ -87,13 +84,18 @@ public class TCListView extends javax.swing.JPanel implements ApplicationModelLi
         
         boolean modelExists = model.getDiagram() != null;
         createButton.setEnabled(modelExists);
-        deleteButton.setEnabled(modelExists);
     }
 
     @Override
     public void valueChanged(ListSelectionEvent e) {
         // set selected engine
-        delegate.setSelectedCycle(model,(TrainsCycle)ecList.getSelectedValue());
+        Object[] selectedValues = ecList.getSelectedValues();
+        if (selectedValues.length == 1)
+            delegate.setSelectedCycle(model,(TrainsCycle)ecList.getSelectedValue());
+        else
+            delegate.setSelectedCycle(model, null);
+        deleteButton.setEnabled(selectedValues.length > 0);
+
     }
             
     /** This method is called from within the constructor to
@@ -112,7 +114,6 @@ public class TCListView extends javax.swing.JPanel implements ApplicationModelLi
 
         scrollPane.setPreferredSize(new java.awt.Dimension(0, 132));
 
-        ecList.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         ecList.setPrototypeCellValue("mmmmmmmmmmm");
         ecList.setVisibleRowCount(3);
         scrollPane.setViewportView(ecList);
@@ -127,6 +128,7 @@ public class TCListView extends javax.swing.JPanel implements ApplicationModelLi
         });
 
         deleteButton.setText(ResourceLoader.getString("button.delete")); // NOI18N
+        deleteButton.setEnabled(false);
         deleteButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 deleteButtonActionPerformed(evt);
@@ -158,13 +160,16 @@ public class TCListView extends javax.swing.JPanel implements ApplicationModelLi
     }// </editor-fold>//GEN-END:initComponents
 
 private void deleteButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteButtonActionPerformed
-    // get selected cycle ...
-    TrainsCycle cycle = (TrainsCycle)ecList.getSelectedValue();
-    if (cycle != null) {
-        // remove from diagram
-        model.getDiagram().removeCycle(cycle);
-        // fire event
-        delegate.fireEvent(TCDelegate.Action.DELETE_CYCLE, model, cycle);
+    // get selected cycles ...
+    Object[] selectedValues = ecList.getSelectedValues();
+    for (Object selectedObject : selectedValues) {
+        TrainsCycle cycle = (TrainsCycle)selectedObject;
+        if (cycle != null) {
+            // remove from diagram
+            model.getDiagram().removeCycle(cycle);
+            // fire event
+            delegate.fireEvent(TCDelegate.Action.DELETE_CYCLE, model, cycle);
+        }
     }
 }//GEN-LAST:event_deleteButtonActionPerformed
 

@@ -7,6 +7,7 @@ package net.parostroj.timetable.gui.views;
 
 import java.awt.Color;
 import java.util.*;
+import javax.swing.ButtonModel;
 import javax.swing.DefaultListModel;
 import net.parostroj.timetable.actions.TrainComparator;
 import net.parostroj.timetable.actions.TrainSort;
@@ -27,6 +28,7 @@ public class TCTrainListView extends javax.swing.JPanel implements ApplicationMo
     private ApplicationModel model;
     private TCDelegate delegate;
     private TrainSort sort;
+    private TrainFilter filter;
 
     /** Creates new form ECTrainListView */
     public TCTrainListView() {
@@ -69,6 +71,7 @@ public class TCTrainListView extends javax.swing.JPanel implements ApplicationMo
         if (action != null) {
             switch (action) {
                 case SELECTED_CHANGED:
+                    addButton.setEnabled(delegate.getSelectedCycle(model) != null && !allTrainsList.isSelectionEmpty());
                     this.updateListCycle();
                     this.updateErrors();
                     break;
@@ -90,7 +93,8 @@ public class TCTrainListView extends javax.swing.JPanel implements ApplicationMo
             List<Train> getTrains = new ArrayList<Train>();
             for (Train train : model.getDiagram().getTrains()) {
                 if (!train.isCovered(delegate.getType())) {
-                    getTrains.add(train);
+                    if (filter == null || filter.filter(train))
+                        getTrains.add(train);
                 }
             }
             // sort them
@@ -150,6 +154,12 @@ public class TCTrainListView extends javax.swing.JPanel implements ApplicationMo
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        filterMenu = new javax.swing.JPopupMenu();
+        allRadioButtonMenuItem = new javax.swing.JRadioButtonMenuItem();
+        passengerRadioButtonMenuItem = new javax.swing.JRadioButtonMenuItem();
+        freightRadioButtonMenuItem = new javax.swing.JRadioButtonMenuItem();
+        customRadioButtonMenuItem = new javax.swing.JRadioButtonMenuItem();
+        filterbuttonGroup = new javax.swing.ButtonGroup();
         scrollPane1 = new javax.swing.JScrollPane();
         allTrainsList = new javax.swing.JList();
         scrollPane2 = new javax.swing.JScrollPane();
@@ -168,7 +178,48 @@ public class TCTrainListView extends javax.swing.JPanel implements ApplicationMo
         coverageScrollPane = new javax.swing.JScrollPane();
         coverageTextPane = new net.parostroj.timetable.gui.views.ColorTextPane();
 
-        allTrainsList.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        filterbuttonGroup.add(allRadioButtonMenuItem);
+        allRadioButtonMenuItem.setSelected(true);
+        allRadioButtonMenuItem.setText(ResourceLoader.getString("filter.trains.all")); // NOI18N
+        allRadioButtonMenuItem.setActionCommand("A");
+        allRadioButtonMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                filterChangedActionPerformed(evt);
+            }
+        });
+        filterMenu.add(allRadioButtonMenuItem);
+
+        filterbuttonGroup.add(passengerRadioButtonMenuItem);
+        passengerRadioButtonMenuItem.setText(ResourceLoader.getString("filter.trains.passenger")); // NOI18N
+        passengerRadioButtonMenuItem.setActionCommand("P");
+        passengerRadioButtonMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                filterChangedActionPerformed(evt);
+            }
+        });
+        filterMenu.add(passengerRadioButtonMenuItem);
+
+        filterbuttonGroup.add(freightRadioButtonMenuItem);
+        freightRadioButtonMenuItem.setText(ResourceLoader.getString("filter.trains.freight")); // NOI18N
+        freightRadioButtonMenuItem.setActionCommand("F");
+        freightRadioButtonMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                filterChangedActionPerformed(evt);
+            }
+        });
+        filterMenu.add(freightRadioButtonMenuItem);
+
+        filterbuttonGroup.add(customRadioButtonMenuItem);
+        customRadioButtonMenuItem.setText(ResourceLoader.getString("filter.trains.custom")); // NOI18N
+        customRadioButtonMenuItem.setActionCommand("C");
+        customRadioButtonMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                filterChangedActionPerformed(evt);
+            }
+        });
+        filterMenu.add(customRadioButtonMenuItem);
+
+        allTrainsList.setComponentPopupMenu(filterMenu);
         allTrainsList.setPrototypeCellValue("mmmmmmmmmmmmm");
         allTrainsList.setVisibleRowCount(5);
         allTrainsList.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
@@ -178,7 +229,6 @@ public class TCTrainListView extends javax.swing.JPanel implements ApplicationMo
         });
         scrollPane1.setViewportView(allTrainsList);
 
-        ecTrainsList.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         ecTrainsList.setPrototypeCellValue("mmmmmmmmmmmmm");
         ecTrainsList.setVisibleRowCount(5);
         ecTrainsList.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
@@ -355,35 +405,45 @@ private void upButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRS
 }//GEN-LAST:event_upButtonActionPerformed
 
 private void removeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeButtonActionPerformed
-    TrainsCycleItemWrapper selected = (TrainsCycleItemWrapper) ecTrainsList.getSelectedValue();
-    if (selected != null) {
-        TrainsCycleItem item = selected.getItem();
-        item.getCycle().removeItem(item);
+    Object[] selectedValues = ecTrainsList.getSelectedValues();
+    for (Object selectedObject : selectedValues) {
+        TrainsCycleItemWrapper selected = (TrainsCycleItemWrapper) selectedObject;
+        if (selected != null) {
+            TrainsCycleItem item = selected.getItem();
+            item.getCycle().removeItem(item);
+            model.fireEvent(new ApplicationModelEvent(ApplicationModelEventType.MODIFIED_TRAIN, model, item.getTrain()));
+
+            delegate.fireEvent(TCDelegate.Action.MODIFIED_CYCLE, model, delegate.getSelectedCycle(model));
+        }
+    }
+    if (selectedValues.length > 0) {
         this.updateListAllTrains();
         this.updateListCycle();
         this.updateErrors();
-        model.fireEvent(new ApplicationModelEvent(ApplicationModelEventType.MODIFIED_TRAIN, model, item.getTrain()));
-
-        delegate.fireEvent(TCDelegate.Action.MODIFIED_CYCLE, model, delegate.getSelectedCycle(model));
     }
 }//GEN-LAST:event_removeButtonActionPerformed
 
 private void addButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addButtonActionPerformed
-    TrainWrapper selected = (TrainWrapper) allTrainsList.getSelectedValue();
-    if (selected != null) {
-        Train t = selected.getTrain();
-        TrainsCycle cycle = delegate.getSelectedCycle(model);
-        if (cycle != null) {
-            Tuple<TimeInterval> tuple = t.getFirstUncoveredPart(delegate.getType());
-            TrainsCycleItem item = new TrainsCycleItem(cycle, t, null, tuple.first, tuple.second);
-            cycle.addItem(item);
-            this.updateListAllTrains();
-            this.updateListCycle();
-            this.updateErrors();
-            model.fireEvent(new ApplicationModelEvent(ApplicationModelEventType.MODIFIED_TRAIN, model, t));
+    Object[] selectedValues = allTrainsList.getSelectedValues();
+    for (Object objectSelected : selectedValues) {
+        TrainWrapper selected = (TrainWrapper) objectSelected;
+        if (selected != null) {
+            Train t = selected.getTrain();
+            TrainsCycle cycle = delegate.getSelectedCycle(model);
+            if (cycle != null) {
+                Tuple<TimeInterval> tuple = t.getFirstUncoveredPart(delegate.getType());
+                TrainsCycleItem item = new TrainsCycleItem(cycle, t, null, tuple.first, tuple.second);
+                cycle.addItem(item);
+                model.fireEvent(new ApplicationModelEvent(ApplicationModelEventType.MODIFIED_TRAIN, model, t));
 
-            delegate.fireEvent(TCDelegate.Action.MODIFIED_CYCLE, model, delegate.getSelectedCycle(model));
+                delegate.fireEvent(TCDelegate.Action.MODIFIED_CYCLE, model, delegate.getSelectedCycle(model));
+            }
         }
+    }
+    if (selectedValues.length > 0) {
+        this.updateListAllTrains();
+        this.updateListCycle();
+        this.updateErrors();
     }
 }//GEN-LAST:event_addButtonActionPerformed
 
@@ -417,18 +477,19 @@ private void changeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-
 
 private void ecTrainsListValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_ecTrainsListValueChanged
     if (!evt.getValueIsAdjusting()) {
+        boolean selectedOne = ecTrainsList.getSelectedIndex() != -1 && ecTrainsList.getMaxSelectionIndex() == ecTrainsList.getMinSelectionIndex();
         boolean selected = ecTrainsList.getSelectedIndex() != -1;
         fromComboBox.removeAllItems();
         toComboBox.removeAllItems();
-        TrainsCycleItem item = selected ? ((TrainsCycleItemWrapper) ecTrainsList.getSelectedValue()).getItem() : null;
+        TrainsCycleItem item = selectedOne ? ((TrainsCycleItemWrapper) ecTrainsList.getSelectedValue()).getItem() : null;
         this.updateSelectedTrainsCycleItem(item);
-        detailsTextField.setEnabled(selected);
-        changeButton.setEnabled(selected);
-        fromComboBox.setEnabled(selected);
-        toComboBox.setEnabled(selected);
+        detailsTextField.setEnabled(selectedOne);
+        changeButton.setEnabled(selectedOne);
+        fromComboBox.setEnabled(selectedOne);
+        toComboBox.setEnabled(selectedOne);
         removeButton.setEnabled(selected);
-        upButton.setEnabled(selected);
-        downButton.setEnabled(selected);
+        upButton.setEnabled(selectedOne);
+        downButton.setEnabled(selectedOne);
     }
 }//GEN-LAST:event_ecTrainsListValueChanged
 
@@ -480,22 +541,47 @@ private void ecTrainsListValueChanged(javax.swing.event.ListSelectionEvent evt) 
 private void allTrainsListValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_allTrainsListValueChanged
     // until now nothing here
     if (!evt.getValueIsAdjusting()) {
-        addButton.setEnabled(!allTrainsList.isSelectionEmpty());
+        addButton.setEnabled(!allTrainsList.isSelectionEmpty() && delegate.getSelectedCycle(model) != null);
     }
 }//GEN-LAST:event_allTrainsListValueChanged
 
+private void filterChangedActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_filterChangedActionPerformed
+    ButtonModel selected = filterbuttonGroup.getSelection();
+    if (selected != null)
+        this.setFilter(selected.getActionCommand());
+}//GEN-LAST:event_filterChangedActionPerformed
+
+    private void setFilter(String type) {
+        if ("P".equals(type)) {
+            filter = TrainFilter.getTrainFilter(TrainFilter.PredefinedType.PASSENGER);
+        } else if ("F".equals(type)) {
+            filter = TrainFilter.getTrainFilter(TrainFilter.PredefinedType.FREIGHT);
+        } else if ("C".equals(type)) {
+            // something
+        } else {
+            filter = null;
+        }
+        this.updateListAllTrains();
+    }
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton addButton;
+    private javax.swing.JRadioButtonMenuItem allRadioButtonMenuItem;
     private javax.swing.JList allTrainsList;
     private javax.swing.JButton changeButton;
     private javax.swing.JScrollPane coverageScrollPane;
     private net.parostroj.timetable.gui.views.ColorTextPane coverageTextPane;
+    private javax.swing.JRadioButtonMenuItem customRadioButtonMenuItem;
     private javax.swing.JTextField detailsTextField;
     private javax.swing.JButton downButton;
     private javax.swing.JList ecTrainsList;
     private javax.swing.JScrollPane errorsScrollPane;
+    private javax.swing.JPopupMenu filterMenu;
+    private javax.swing.ButtonGroup filterbuttonGroup;
+    private javax.swing.JRadioButtonMenuItem freightRadioButtonMenuItem;
     private javax.swing.JComboBox fromComboBox;
     private javax.swing.JTextArea infoTextArea;
+    private javax.swing.JRadioButtonMenuItem passengerRadioButtonMenuItem;
     private javax.swing.JButton removeButton;
     private javax.swing.JScrollPane scrollPane1;
     private javax.swing.JScrollPane scrollPane2;
