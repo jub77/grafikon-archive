@@ -43,4 +43,8 @@ public enum TimeIntervalType {
             return LINE_THROUGH;
         return this;
     }
+
+    public boolean isStop() {
+        return this==NODE_END || this==NODE_START || this==NODE_STOP;
+    }
 }
