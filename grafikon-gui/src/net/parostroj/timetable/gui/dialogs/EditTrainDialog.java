@@ -41,6 +41,7 @@ public class EditTrainDialog extends javax.swing.JDialog {
             typeComboBox.setSelectedItem(train.getType());
             dieselCheckBox.setSelected((Boolean)train.getAttribute("diesel"));
             electricCheckBox.setSelected((Boolean)train.getAttribute("electric"));
+            showLengthCheckBox.setSelected(Boolean.TRUE.equals(train.getAttribute("show.station.length")));
             
             numberTextField.setText(train.getNumber());
             
@@ -80,6 +81,7 @@ public class EditTrainDialog extends javax.swing.JDialog {
         javax.swing.JLabel jLabel6 = new javax.swing.JLabel();
         cancelButton = new javax.swing.JButton();
         okButton = new javax.swing.JButton();
+        showLengthCheckBox = new javax.swing.JCheckBox();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         setTitle(ResourceLoader.getString("edit.train")); // NOI18N
@@ -123,6 +125,10 @@ public class EditTrainDialog extends javax.swing.JDialog {
             }
         });
 
+        showLengthCheckBox.setText(ResourceLoader.getString("create.train.show.station.length")); // NOI18N
+        showLengthCheckBox.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 0, 0, 0));
+        showLengthCheckBox.setMargin(new java.awt.Insets(0, 0, 0, 0));
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -141,15 +147,16 @@ public class EditTrainDialog extends javax.swing.JDialog {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(speedTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(dieselCheckBox)
-                                .addGap(18, 18, 18)
-                                .addComponent(electricCheckBox))
                             .addComponent(typeComboBox, 0, 200, Short.MAX_VALUE)
                             .addComponent(numberTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 200, Short.MAX_VALUE)
                             .addComponent(descriptionTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 200, Short.MAX_VALUE)
                             .addComponent(weightTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 200, Short.MAX_VALUE)
-                            .addComponent(routeTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 200, Short.MAX_VALUE)))
+                            .addComponent(routeTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 200, Short.MAX_VALUE)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(dieselCheckBox)
+                                .addGap(18, 18, 18)
+                                .addComponent(electricCheckBox))
+                            .addComponent(showLengthCheckBox)))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addComponent(okButton)
                         .addGap(18, 18, 18)
@@ -167,6 +174,8 @@ public class EditTrainDialog extends javax.swing.JDialog {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(dieselCheckBox)
                     .addComponent(electricCheckBox))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(showLengthCheckBox)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(numberTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -207,7 +216,10 @@ private void okButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRS
     train.setType((TrainType)typeComboBox.getSelectedItem());
     train.setAttribute("diesel", dieselCheckBox.isSelected());
     train.setAttribute("electric", electricCheckBox.isSelected());
-    
+    if (showLengthCheckBox.isSelected())
+        train.setAttribute("show.station.length", Boolean.TRUE);
+    else
+        train.removeAttribute("show.station.length");
     train.setNumber(numberTextField.getText());
     train.setDescription(descriptionTextField.getText());
     train.setAttribute("weight.info", weightTextField.getText());
@@ -237,6 +249,7 @@ private void okButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRS
     private javax.swing.JTextField numberTextField;
     private javax.swing.JButton okButton;
     private javax.swing.JTextField routeTextField;
+    private javax.swing.JCheckBox showLengthCheckBox;
     private javax.swing.JTextField speedTextField;
     private javax.swing.JComboBox typeComboBox;
     private javax.swing.JTextField weightTextField;

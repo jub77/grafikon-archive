@@ -12,6 +12,7 @@
   <AuxValues>
     <AuxValue name="FormSettings_autoResourcing" type="java.lang.Integer" value="0"/>
     <AuxValue name="FormSettings_autoSetComponentName" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_generateFQN" type="java.lang.Boolean" value="true"/>
     <AuxValue name="FormSettings_generateMnemonicsCode" type="java.lang.Boolean" value="false"/>
     <AuxValue name="FormSettings_i18nAutoMode" type="java.lang.Boolean" value="false"/>
     <AuxValue name="FormSettings_layoutCodeTarget" type="java.lang.Integer" value="1"/>
@@ -24,44 +25,46 @@
     <DimensionLayout dim="0">
       <Group type="103" groupAlignment="0" attributes="0">
           <Group type="102" alignment="0" attributes="0">
-              <EmptySpace min="-2" max="-2" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" alignment="0" attributes="0">
                       <Component id="platformCheckBox" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="lineEndCheckBox" min="-2" max="-2" attributes="0"/>
                   </Group>
-                  <Component id="scrollPane" alignment="0" pref="265" max="32767" attributes="0"/>
+                  <Component id="scrollPane" alignment="0" pref="305" max="32767" attributes="0"/>
                   <Component id="trapezoidCheckBox" alignment="0" min="-2" max="-2" attributes="0"/>
                   <Group type="102" alignment="0" attributes="0">
-                      <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                          <Component id="jLabel3" max="32767" attributes="1"/>
-                          <Component id="jLabel2" alignment="0" max="32767" attributes="1"/>
-                          <Component id="jLabel1" alignment="0" max="32767" attributes="1"/>
-                      </Group>
-                      <EmptySpace max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="abbrTextField" pref="221" max="32767" attributes="0"/>
-                          <Component id="nameTextField" alignment="0" pref="221" max="32767" attributes="0"/>
-                          <Component id="typeComboBox" alignment="0" pref="221" max="32767" attributes="0"/>
-                      </Group>
-                  </Group>
-                  <Group type="102" alignment="0" attributes="0">
-                      <Component id="newNodeTrackButton" max="32767" attributes="0"/>
+                      <Component id="newNodeTrackButton" pref="94" max="32767" attributes="0"/>
                       <EmptySpace min="-2" max="-2" attributes="0"/>
-                      <Component id="renameNodeTrackButton" max="32767" attributes="0"/>
+                      <Component id="renameNodeTrackButton" pref="112" max="32767" attributes="0"/>
                       <EmptySpace min="-2" max="-2" attributes="0"/>
-                      <Component id="deleteNodeTrackButton" max="32767" attributes="0"/>
+                      <Component id="deleteNodeTrackButton" pref="87" max="32767" attributes="0"/>
                   </Group>
                   <Group type="102" alignment="1" attributes="0">
                       <Component id="okButton" min="-2" max="-2" attributes="0"/>
                       <EmptySpace min="-2" max="-2" attributes="0"/>
                       <Component id="cancelButton" min="-2" max="-2" attributes="0"/>
                   </Group>
-                  <Group type="102" alignment="0" attributes="0">
+                  <Group type="102" attributes="0">
                       <Component id="signalsCheckBox" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="controlCheckBox" min="-2" max="-2" attributes="0"/>
+                  </Group>
+                  <Group type="102" alignment="0" attributes="0">
+                      <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                          <Component id="jLabel4" max="32767" attributes="1"/>
+                          <Component id="jLabel3" max="32767" attributes="1"/>
+                          <Component id="jLabel2" alignment="0" max="32767" attributes="1"/>
+                          <Component id="jLabel1" alignment="0" max="32767" attributes="1"/>
+                      </Group>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Component id="lengthTextField" alignment="0" pref="261" max="32767" attributes="0"/>
+                          <Component id="abbrTextField" pref="261" max="32767" attributes="0"/>
+                          <Component id="nameTextField" alignment="0" pref="261" max="32767" attributes="0"/>
+                          <Component id="typeComboBox" alignment="1" pref="261" max="32767" attributes="0"/>
+                      </Group>
                   </Group>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
@@ -85,6 +88,11 @@
               <Group type="103" groupAlignment="3" attributes="0">
                   <Component id="jLabel3" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="typeComboBox" alignment="3" min="-2" max="-2" attributes="0"/>
+              </Group>
+              <EmptySpace max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="3" attributes="0">
+                  <Component id="jLabel4" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="lengthTextField" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
@@ -276,6 +284,15 @@
       <Events>
         <EventHandler event="itemStateChanged" listener="java.awt.event.ItemListener" parameters="java.awt.event.ItemEvent" handler="lineEndCheckBoxItemStateChanged"/>
       </Events>
+    </Component>
+    <Component class="javax.swing.JTextField" name="lengthTextField">
+    </Component>
+    <Component class="javax.swing.JLabel" name="jLabel4">
+      <Properties>
+        <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+          <ResourceString bundle="gt_texts.properties" key="ne.length" replaceFormat="ResourceLoader.getString(&quot;{key}&quot;)"/>
+        </Property>
+      </Properties>
     </Component>
   </SubComponents>
 </Form>

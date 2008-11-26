@@ -75,6 +75,14 @@ public class EditNodeDialog extends javax.swing.JDialog {
         controlCheckBox.setSelected(Boolean.TRUE.equals(node.getAttribute("control.station")));
         trapezoidCheckBox.setSelected(Boolean.TRUE.equals(node.getAttribute("trapezoid.sign")));
 
+        // set node length
+        Integer length = (Integer)node.getAttribute("length");
+        if (length != null) {
+            lengthTextField.setText(length.toString());
+        } else {
+            lengthTextField.setText("");
+        }
+
         // get node tracks
         DefaultListModel listModel = new DefaultListModel();
         for (NodeTrack track : node.getTracks()) {
@@ -99,6 +107,18 @@ public class EditNodeDialog extends javax.swing.JDialog {
         node.setType(((NodeTypeWrapper) typeComboBox.getSelectedItem()).getType());
         node.setAttribute("control.station", controlCheckBox.isSelected());
         node.setAttribute("trapezoid.sign", trapezoidCheckBox.isSelected());
+
+        // length
+        String lengthStr = lengthTextField.getText().trim();
+        node.removeAttribute("length");
+        if (!"".equals(lengthStr)) {
+            try {
+                Integer length = Integer.valueOf(lengthStr);
+                node.setAttribute("length", length);
+            } catch (NumberFormatException e) {
+                LOG.warning("Cannot convert length to integer: " + lengthStr);
+            }
+        }
 
         // wipe out all previous tracks
         node.removeAllTracks();
@@ -137,6 +157,8 @@ public class EditNodeDialog extends javax.swing.JDialog {
         trapezoidCheckBox = new javax.swing.JCheckBox();
         platformCheckBox = new javax.swing.JCheckBox();
         lineEndCheckBox = new javax.swing.JCheckBox();
+        lengthTextField = new javax.swing.JTextField();
+        jLabel4 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         setModal(true);
@@ -219,6 +241,8 @@ public class EditNodeDialog extends javax.swing.JDialog {
             }
         });
 
+        jLabel4.setText(ResourceLoader.getString("ne.length")); // NOI18N
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -230,24 +254,14 @@ public class EditNodeDialog extends javax.swing.JDialog {
                         .addComponent(platformCheckBox)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(lineEndCheckBox))
-                    .addComponent(scrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 259, Short.MAX_VALUE)
+                    .addComponent(scrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 305, Short.MAX_VALUE)
                     .addComponent(trapezoidCheckBox)
                     .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addComponent(newNodeTrackButton, javax.swing.GroupLayout.DEFAULT_SIZE, 94, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(abbrTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 215, Short.MAX_VALUE)
-                            .addComponent(nameTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 215, Short.MAX_VALUE)
-                            .addComponent(typeComboBox, 0, 215, Short.MAX_VALUE)))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(newNodeTrackButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(renameNodeTrackButton, javax.swing.GroupLayout.DEFAULT_SIZE, 112, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(renameNodeTrackButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(deleteNodeTrackButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addComponent(deleteNodeTrackButton, javax.swing.GroupLayout.DEFAULT_SIZE, 87, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addComponent(okButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -255,7 +269,19 @@ public class EditNodeDialog extends javax.swing.JDialog {
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(signalsCheckBox)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(controlCheckBox)))
+                        .addComponent(controlCheckBox))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(lengthTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 261, Short.MAX_VALUE)
+                            .addComponent(abbrTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 261, Short.MAX_VALUE)
+                            .addComponent(nameTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 261, Short.MAX_VALUE)
+                            .addComponent(typeComboBox, javax.swing.GroupLayout.Alignment.TRAILING, 0, 261, Short.MAX_VALUE))))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -273,6 +299,10 @@ public class EditNodeDialog extends javax.swing.JDialog {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel3)
                     .addComponent(typeComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel4)
+                    .addComponent(lengthTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(signalsCheckBox)
@@ -388,6 +418,8 @@ public class EditNodeDialog extends javax.swing.JDialog {
     private javax.swing.JButton cancelButton;
     private javax.swing.JCheckBox controlCheckBox;
     private javax.swing.JButton deleteNodeTrackButton;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JTextField lengthTextField;
     private javax.swing.JCheckBox lineEndCheckBox;
     private javax.swing.JTextField nameTextField;
     private javax.swing.JButton newNodeTrackButton;
