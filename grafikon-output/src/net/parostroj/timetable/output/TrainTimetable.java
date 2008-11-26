@@ -287,22 +287,49 @@ public class TrainTimetable {
     private void writeHeader(Formatter formatter) {
         List<TrainEWDataRow> rows = weightRows.getData();
         String weightRowTemplate = d3 ? templates.getTimetableHeaderWeightLineD3() : templates.getTimetableHeaderWeightLine();
-        String weightString = null;
+        String headerDataString = null;
         if (rows.size() == 0) {
-            weightString = "";
+            headerDataString = "";
         } else if (rows.size() == 1 && rows.get(0).getFrom() == null) {
-            weightString = createOneWeightLine(weightRowTemplate, rows.get(0));
+            headerDataString = createOneWeightLine(weightRowTemplate, rows.get(0));
         } else {
             StringBuilder builder = new StringBuilder();
             for (TrainEWDataRow row : rows) {
                 builder.append(createOneWeightLine(weightRowTemplate, row));
             }
-            weightString = builder.toString();
+            headerDataString = builder.toString();
         }
+        String lengthStr = this.createLengthLine();
+        if (lengthStr != null)
+            headerDataString += lengthStr;
         String trainLine = train.getCompleteName();
         String rString = this.createRouteInfo();
         String headerTemplate = d3 ? templates.getTimetableHeaderD3() : templates.getTimetableHeader();
-        formatter.format(headerTemplate, trainLine, rString, weightString);
+        formatter.format(headerTemplate, trainLine, rString, headerDataString);
+    }
+
+    private String createLengthLine() {
+        String result = null;
+        if (Boolean.TRUE.equals(train.getAttribute("show.station.length"))) {
+            // compute maximal length
+            List<Integer> lengths = new LinkedList<Integer>();
+            for (TimeInterval interval : train.getTimeIntervalList()) {
+                if (interval.isNodeOwner() && interval.getType().isStop())
+                    lengths.add((Integer)interval.getOwnerAsNode().getAttribute("length"));
+            }
+            // check if all lengths are set and choose the minimum
+            Integer minLength = null;
+            for (Integer sLength : lengths) {
+                if (sLength == null)
+                    return null;
+                else {
+                    if (minLength == null || sLength.intValue() < minLength.intValue())
+                        minLength = sLength;
+                }
+            }
+            result = String.format(templates.getTimetableHeaderLengthLine(), TrainTimetablesListTemplates.getString("length"), minLength.toString());
+        }
+        return result;
     }
 
     private String createOneWeightLine(String template, TrainEWDataRow row) {
