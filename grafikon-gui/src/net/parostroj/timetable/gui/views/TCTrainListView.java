@@ -12,6 +12,7 @@ import javax.swing.DefaultListModel;
 import net.parostroj.timetable.actions.TrainComparator;
 import net.parostroj.timetable.actions.TrainSort;
 import net.parostroj.timetable.gui.*;
+import net.parostroj.timetable.gui.dialogs.TrainsFilterDialog;
 import net.parostroj.timetable.model.*;
 import net.parostroj.timetable.utils.Pair;
 import net.parostroj.timetable.utils.ResourceLoader;
@@ -557,12 +558,21 @@ private void filterChangedActionPerformed(java.awt.event.ActionEvent evt) {//GEN
         } else if ("F".equals(type)) {
             filter = TrainFilter.getTrainFilter(TrainFilter.PredefinedType.FREIGHT);
         } else if ("C".equals(type)) {
-            // something
+            // custom filter
+            TrainsFilterDialog dialog = new TrainsFilterDialog((java.awt.Frame)this.getTopLevelAncestor(), true);
+            dialog.setTrainTypes(model.getDiagram(), selectedTypes);
+            dialog.setLocationRelativeTo(scrollPane1);
+            dialog.setVisible(true);
+
+            this.selectedTypes = dialog.getSelectedTypes();
+            this.filter = TrainFilter.getTrainFilter(selectedTypes);
         } else {
             filter = null;
         }
         this.updateListAllTrains();
     }
+
+    private Set<TrainType> selectedTypes = new HashSet<TrainType>();
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton addButton;
