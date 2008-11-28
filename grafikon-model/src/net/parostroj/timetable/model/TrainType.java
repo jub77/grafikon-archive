@@ -3,7 +3,7 @@ package net.parostroj.timetable.model;
 import java.awt.Color;
 import java.util.HashMap;
 import java.util.Map;
-import org.mvel.TemplateInterpreter;
+import org.mvel2.templates.TemplateRuntime;
 
 /**
  * Train type.
@@ -162,7 +162,7 @@ public class TrainType {
         String template = (trainNameTemplate == null) ?
             trainsData.getTrainNameTemplate() :
             trainNameTemplate;
-        return (String)TemplateInterpreter.eval(template, this.createVariablesForTemplate(train));
+        return (String)TemplateRuntime.eval(template, this.createVariablesForTemplate(train));
     }
 
     /**
@@ -175,7 +175,7 @@ public class TrainType {
         String template = (trainCompleteNameTemplate == null) ?
             trainsData.getTrainCompleteNameTemplate() :
             trainCompleteNameTemplate;
-        return (String)TemplateInterpreter.eval(template, this.createVariablesForTemplate(train));
+        return (String)TemplateRuntime.eval(template, this.createVariablesForTemplate(train));
     }
     
     private Map<String,Object> createVariablesForTemplate(Train train) {
