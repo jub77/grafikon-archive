@@ -327,7 +327,16 @@ public class TrainTimetable {
                         minLength = sLength;
                 }
             }
-            result = String.format(templates.getTimetableHeaderLengthLine(), TrainTimetablesListTemplates.getString("length"), minLength.toString());
+            // get length unit
+            String lengthUnit = null;
+            if (Boolean.TRUE.equals(diagram.getAttribute("station.length.in.axles"))) {
+                lengthUnit = TrainTimetablesListTemplates.getString("length.axles");
+            } else {
+                lengthUnit = (String)diagram.getAttribute("station.length.unit");
+            }
+            if (lengthUnit == null)
+                lengthUnit = "";
+            result = String.format(templates.getTimetableHeaderLengthLine(), TrainTimetablesListTemplates.getString("length"), minLength.toString(), lengthUnit);
         }
         return result;
     }
