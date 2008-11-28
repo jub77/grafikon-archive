@@ -78,6 +78,8 @@ public class TrainsCycle implements AttributesHolder, ObjectWithId, Iterable<Tra
 
     @Override
     public boolean equals(Object obj) {
+        if (obj == null || !(obj instanceof TrainsCycle))
+            return false;
         return this == obj;
     }
 

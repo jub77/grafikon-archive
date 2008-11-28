@@ -1,10 +1,6 @@
 package net.parostroj.timetable.actions;
 
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.ListIterator;
+import java.util.*;
 import net.parostroj.timetable.model.*;
 import net.parostroj.timetable.utils.Pair;
 import net.parostroj.timetable.utils.Tuple;
@@ -21,19 +17,25 @@ public class TrainsCycleHelper {
     private TrainsCycleHelper() {
     }
 
-    public static TrainsCycleHelper getHelper(TrainsCycleType type) {
+    public static TrainsCycleHelper getHelper() {
         // currently one type of helper for all types
         return instance;
     }
 
-    public void addCycleItem(Train train, List<TrainsCycleItem> items, TrainsCycleItem item) {
-        if (!checkNodes(train, item))
-            throw new IllegalArgumentException("Invalid item.");
-        if (!testAddCycle(train, items, item, null))
+    /**
+     * adds trains cycle item to the list.
+     *
+     * @param timeIntervalList time interval list
+     * @param items list of trains cycle items
+     * @param item item to be added
+     * @param overlapping of the overlapping is allowed
+     */
+    public void addCycleItem(List<TimeInterval> timeIntervalList, List<TrainsCycleItem> items, TrainsCycleItem item, boolean overlapping) {
+        if (!testAddCycle(timeIntervalList, items, item, null, overlapping))
             throw new IllegalArgumentException("Overlapping item.");
         ListIterator<TrainsCycleItem> i = items.listIterator();
         TrainsCycleItem current = getNext(i, null);
-        for (TimeInterval interval : train.getTimeIntervalList()) {
+        for (TimeInterval interval : timeIntervalList) {
             if (interval.isNodeOwner()) {
                 if (current != null && interval == current.getFromInterval())
                     current = getNext(i, null);
@@ -48,215 +50,236 @@ public class TrainsCycleHelper {
         throw new IllegalArgumentException("Cannot include item: " + item);
     }
 
-    public boolean isTrainCovered(Train train, List<TrainsCycleItem> items) {
+    /**
+     * @param timeIntervalList time interval list
+     * @param items trains cycle items
+     * @return if the time interval list is covered
+     */
+    public boolean isTimeIntervalListCovered(List<TimeInterval> timeIntervalList, List<TrainsCycleItem> items) {
         if (items == null) {
             throw new IllegalArgumentException("List cannot be null.");
         }
         if (items.isEmpty()) {
             return false;
         }
-        Iterator<TrainsCycleItem> i = items.iterator();
-        TrainsCycleItem fi = i.next();
-        TrainsCycleItem si = fi;
-        if (train.getFirstInterval() != fi.getFromInterval()) {
-            return false;
-        }
-        while (i.hasNext()) {
-            si = i.next();
-            if (fi.getToInterval() != si.getFromInterval()) {
+        Map<TimeInterval, Boolean> map = this.getTimeIntervalListMapCoverage(timeIntervalList, items);
+        for (Boolean cover : map.values()) {
+            if (cover == Boolean.FALSE)
                 return false;
-            }
-            fi = si;
-        }
-        return si.getToInterval() == train.getLastInterval();
-    }
-    
-    public boolean isTrainIntervalCovered(Train train, List<TrainsCycleItem> items, TimeInterval interval) {
-        if (items == null)
-            throw new IllegalArgumentException("List cannot be null");
-        if (items.isEmpty())
-            return false;
-        Iterator<TrainsCycleItem> i = items.iterator();
-        TrainsCycleItem fi = getNextTrainsCycleItem(i, train);
-        if (fi == null)
-            return false;
-        boolean in = false;
-        for (TimeInterval curr : train.getTimeIntervalList()) {
-            if (fi.getFromInterval() == curr)
-                in = true;
-            if (curr == interval) {
-                return in;
-            }
-            if (fi.getToInterval() == curr) {
-                in = false;
-                fi = getNextTrainsCycleItem(i, train);
-                if (fi == null)
-                    break;
-                if (fi.getFromInterval() == curr)
-                    in = true;
-            }
-        }
-        return false;
-    }
-    
-    private TrainsCycleItem getNextTrainsCycleItem(Iterator<TrainsCycleItem> i, Train train) {
-        TrainsCycleItem fi = null;
-        do {
-            if (i.hasNext())
-                fi = i.next();
-            else
-                fi = null;
-        } while (fi != null && fi.getTrain() != train);
-        return fi;
-    }
-    
-    public Tuple<TimeInterval> getFirstUncoveredPart(Train train, List<TrainsCycleItem> items) {
-        if (items == null) {
-            throw new IllegalArgumentException("List cannot be null.");
-        }
-        if (items.isEmpty()) {
-            return new Tuple<TimeInterval>(train.getFirstInterval(), train.getLastInterval());
-        }
-        Iterator<TrainsCycleItem> i = items.iterator();
-        TrainsCycleItem fi = i.next();
-        TrainsCycleItem si = fi;
-        if (fi.getFromInterval() != train.getFirstInterval()) {
-            return new Tuple<TimeInterval>(train.getFirstInterval(), fi.getFromInterval());
-        }
-        while (i.hasNext()) {
-            si = i.next();
-            if (fi.getToInterval() != si.getFromInterval()) {
-                return new Tuple<TimeInterval>(fi.getToInterval(), si.getFromInterval());
-            }
-            fi = si;
-        }
-        if (si.getToInterval() != train.getLastInterval()) {
-            return new Tuple<TimeInterval>(si.getToInterval(), train.getLastInterval());
-        } else {
-            return new Tuple<TimeInterval>(null, null);
-        }
-    }
-
-    public List<Tuple<TimeInterval>> getAllUncoveredParts(Train train, List<TrainsCycleItem> items) {
-        if (items == null) {
-            throw new IllegalArgumentException("List cannot be null.");
-        }
-        if (items.isEmpty()) {
-            return Collections.singletonList(new Tuple<TimeInterval>(train.getFirstInterval(), train.getLastInterval()));
-        }
-        List<Tuple<TimeInterval>> result = new LinkedList<Tuple<TimeInterval>>();
-        Iterator<TrainsCycleItem> i = items.iterator();
-        TrainsCycleItem fi = i.next();
-        TrainsCycleItem si = fi;
-        if (fi.getFromInterval() != train.getFirstInterval()) {
-            result.add(new Tuple<TimeInterval>(train.getFirstInterval(), fi.getFromInterval()));
-        }
-        while (i.hasNext()) {
-            si = i.next();
-            if (fi.getToInterval() != si.getFromInterval()) {
-                result.add(new Tuple<TimeInterval>(fi.getToInterval(), si.getFromInterval()));
-            }
-            fi = si;
-        }
-        if (si.getToInterval() != train.getLastInterval()) {
-            result.add(new Tuple<TimeInterval>(si.getToInterval(), train.getLastInterval()));
-        }
-        return result;
-    }
-
-    public List<List<TimeInterval>> getAllUncoveredLists(Train train, List<TrainsCycleItem> items) {
-        List<Tuple<TimeInterval>> tuples = this.getAllUncoveredParts(train, items);
-        List<List<TimeInterval>> result = new LinkedList<List<TimeInterval>>();
-        for (Tuple<TimeInterval> tuple : tuples) {
-            List<TimeInterval> nodes = new LinkedList<TimeInterval>();
-            boolean collect = false;
-            for (TimeInterval interval : train.getTimeIntervalList()) {
-                if (interval.getOwner() instanceof Node) {
-                    if (interval == tuple.first) {
-                        collect = true;
-                    }
-                    if (collect) {
-                        nodes.add(interval);
-                    }
-                    if (interval == tuple.second) {
-                        collect = false;
-                    }
-                }
-            }
-            result.add(nodes);
-        }
-        return result;
-    }
-
-    public List<Pair<TimeInterval, Boolean>> getRouteCoverage(Train train, List<TrainsCycleItem> items) {
-        List<Pair<TimeInterval, Boolean>> result = new LinkedList<Pair<TimeInterval, Boolean>>();
-        Iterator<TrainsCycleItem> i = items.iterator();
-        TrainsCycleItem current = i.hasNext() ? i.next() : null;
-        boolean in = false;
-        for (TimeInterval interval : train.getTimeIntervalList()) {
-            Pair<TimeInterval, Boolean> pair = new Pair<TimeInterval, Boolean>(interval, Boolean.FALSE);
-            if (pair.first.isNodeOwner()) {
-                if (current != null && pair.first == current.getFromInterval()) {
-                    in = true;
-                }
-                if (in) {
-                    pair.second = true;
-                }
-                if (current != null && pair.first == current.getToInterval()) {
-                    in = false;
-                    current = i.hasNext() ? i.next() : null;
-                    if (current != null && pair.first == current.getFromInterval()) {
-                        in = true;
-                    }
-                }
-            } else {
-                if (in) {
-                    pair.second = true;
-                }
-            }
-
-            result.add(pair);
-        }
-        return result;
-    }
-
-    public boolean testAddCycle(Train train, List<TrainsCycleItem> items, TrainsCycleItem newItem, TrainsCycleItem ignoredItem) {
-        if (!checkNodes(train, newItem)) {
-            return false;
-        }
-        Iterator<TrainsCycleItem> i = items.iterator();
-        TrainsCycleItem ftci = getNext(i, ignoredItem);
-        boolean inserted = false;
-        boolean occupied = false;
-        for (TimeInterval interval : newItem.getTrain().getTimeIntervalList()) {
-            if (ftci == null) {
-                return true;
-            }
-            if (interval.isNodeOwner()) {
-                if (ftci.getFromInterval() == interval) {
-                    occupied = true;
-                }
-                if (newItem.getFromInterval() == interval) {
-                    inserted = true;
-                }
-                if (newItem.getToInterval() == interval) {
-                    inserted = false;
-                }
-                if (ftci.getToInterval() == interval) {
-                    occupied = false;
-                    ftci = getNext(i, ignoredItem);
-                    if (ftci != null && ftci.getFromInterval() == interval) {
-                        occupied = true;
-                    }
-                }
-                if (occupied && inserted) {
-                    return false;
-                }
-            }
         }
         return true;
     }
 
+    /**
+     * @param timeIntervalList time interval list
+     * @param items trains cycle items
+     * @param interval checked interval
+     * @return if the time interval is covered by given items
+     */
+    public boolean isTimeIntervalCovered(List<TimeInterval> timeIntervalList, List<TrainsCycleItem> items, TimeInterval interval) {
+        if (items == null)
+            throw new IllegalArgumentException("List cannot be null");
+        if (items.isEmpty())
+            return false;
+        Map<TimeInterval, Boolean> map = this.getTimeIntervalListMapCoverage(timeIntervalList, items);
+        Boolean result = map.get(interval);
+        if (result == null)
+            throw new IllegalArgumentException("Time interval is not in list.");
+        return result.booleanValue();
+    }
+
+    /**
+     * returns list of uncovered time intervals.
+     * @param timeIntervalList time interval list of the train
+     * @param items trains cycle items
+     * @return uncovered intervals
+     */
+    public List<Tuple<TimeInterval>> getAllUncoveredParts(List<TimeInterval> timeIntervalList, List<TrainsCycleItem> items) {
+        if (items == null) {
+            throw new IllegalArgumentException("List cannot be null.");
+        }
+        List<Tuple<TimeInterval>> result = new LinkedList<Tuple<TimeInterval>>();
+        Map<TimeInterval, Boolean> map = this.createMapFromTimeIntervalList(timeIntervalList);
+        this.addCoverageToMap(map, items);
+        Tuple<TimeInterval> current = null;
+        TimeInterval last = null;
+        for (Map.Entry<TimeInterval, Boolean> entry : map.entrySet()) {
+            if (entry.getValue() == Boolean.FALSE) {
+                if (current == null)
+                    current = new Tuple<TimeInterval>((last == null) ? entry.getKey() : last, null);
+            }
+            if (entry.getValue() == Boolean.TRUE) {
+                if (current != null) {
+                    current.second = entry.getKey();
+                    result.add(current);
+                    current = null;
+                }
+            }
+            last = entry.getKey();
+        }
+        if (current != null) {
+            current.second = last;
+            result.add(current);
+        }
+        return result;
+    }
+
+    /**
+     * returns list of uncovered time intervals.
+     * @param timeIntervalList time interval list of the train
+     * @param items trains cycle items
+     * @return uncovered intervals
+     */
+    public List<List<TimeInterval>> getAllUncoveredLists(List<TimeInterval> timeIntervalList, List<TrainsCycleItem> items) {
+        if (items == null) {
+            throw new IllegalArgumentException("List cannot be null.");
+        }
+        List<List<TimeInterval>> result = new LinkedList<List<TimeInterval>>();
+        Map<TimeInterval, Boolean> map = this.createMapFromTimeIntervalList(timeIntervalList);
+        this.addCoverageToMap(map, items);
+        List<TimeInterval> current = null;
+        TimeInterval last = null;
+        for (Map.Entry<TimeInterval, Boolean> entry : map.entrySet()) {
+            if (entry.getValue() == Boolean.FALSE) {
+                if (current == null) {
+                    current = new LinkedList<TimeInterval>();
+                    if (last != null)
+                        current.add(last);
+                }
+                current.add(entry.getKey());
+            }
+            if (entry.getValue() == Boolean.TRUE) {
+                if (current != null) {
+                    current.add(entry.getKey());
+                    result.add(current);
+                    current = null;
+                }
+            }
+            last = entry.getKey();
+        }
+        if (current != null) {
+            current.add(last);
+            result.add(current);
+        }
+        return result;
+    }
+
+    /**
+     * returns list with time interval coverage.
+     * @param timeIntervalList time interval list
+     * @param items trains cycle items
+     * @return coverage
+     */
+    public List<Pair<TimeInterval, Boolean>> getTimeIntervalListCoverage(List<TimeInterval> timeIntervalList, List<TrainsCycleItem> items) {
+        List<Pair<TimeInterval, Boolean>> result = new LinkedList<Pair<TimeInterval, Boolean>>();
+        Map<TimeInterval, Boolean> map = this.getTimeIntervalListMapCoverage(timeIntervalList, items);
+        for (Map.Entry<TimeInterval, Boolean> entry : map.entrySet()) {
+            result.add(new Pair<TimeInterval, Boolean>(entry.getKey(), entry.getValue()));
+        }
+        return result;
+    }
+
+    /**
+     * returns ordered map with coverage of time intervals.
+     * @param timeIntervalList time interval list
+     * @param items trains cycle items
+     * @return coverage
+     */
+    public Map<TimeInterval, Boolean> getTimeIntervalListMapCoverage(List<TimeInterval> timeIntervalList, List<TrainsCycleItem> items) {
+        Map<TimeInterval, Boolean> map = this.createMapFromTimeIntervalList(timeIntervalList);
+        this.addCoverageToMap(map, items);
+        return map;
+    }
+
+    /**
+     * tests if the trains cycle item can be safely added.
+     * @param timeIntervalList time interval list
+     * @param items list of current trains cycle items
+     * @param newItem item to be added
+     * @param ignoredItem item that should be ignored in the test
+     * @param overlapping if the new item can be overlapped
+     * @return result of the test
+     */
+    public boolean testAddCycle(List<TimeInterval> timeIntervalList, List<TrainsCycleItem> items, TrainsCycleItem newItem, TrainsCycleItem ignoredItem, boolean overlapping) {
+        // check if the new item can be projected on interval
+        if (!checkNodes(timeIntervalList, newItem)) {
+            return false;
+        }
+        // if overlapping is allowed return true
+        if (overlapping)
+            return true;
+
+        // test not overlapping cycle item
+        Map<TimeInterval, Boolean> map = this.createMapFromTimeIntervalList(timeIntervalList);
+        Set<TrainsCycleItem> itemsSet = new HashSet(items);
+        // remove ignored item
+        if (ignoredItem != null)
+            itemsSet.remove(ignoredItem);
+        this.addCoverageToMap(map, itemsSet);
+
+        boolean in = false;
+        for (Map.Entry<TimeInterval, Boolean> entry : map.entrySet()) {
+            if (entry.getKey() == newItem.getToInterval()) {
+                break;
+            }
+            // do not test first and last interval of the trains cycle
+            if (in && Boolean.TRUE.equals(entry.getValue()))
+                return false;
+            if (!in && (entry.getKey() == newItem.getFromInterval())) {
+                in = true;
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * adds coverage to map of time intervals.
+     * @param map map of time intervals
+     * @param items collection of trains cycle items
+     */
+    private void addCoverageToMap(Map<TimeInterval, Boolean> map, Collection<TrainsCycleItem> items) {
+        for (TrainsCycleItem item : items) {
+            this.addCoverageToMap(map, item);
+        }
+    }
+
+    /**
+     * adds coverage to map of time intervals. It expects ordered map (LinkedHashMap).
+     * @param map map of time intervals
+     * @param item trains cycle item
+     */
+    private void addCoverageToMap(Map<TimeInterval, Boolean> map, TrainsCycleItem item) {
+        boolean in = false;
+        for (Map.Entry<TimeInterval, Boolean> entry : map.entrySet()) {
+            if (!in && (entry.getKey() == item.getFromInterval())) {
+                in = true;
+            }
+            if (in)
+                entry.setValue(Boolean.TRUE);
+            if (entry.getKey() == item.getToInterval()) {
+                break;
+            }
+        }
+    }
+
+    /**
+     * @param timeIntervalList time interval list
+     * @return map with intervals (keys are in insert-order)
+     */
+    private Map<TimeInterval,Boolean> createMapFromTimeIntervalList(List<TimeInterval> timeIntervalList) {
+        Map<TimeInterval, Boolean> map = new LinkedHashMap<TimeInterval, Boolean>();
+        for (TimeInterval interval : timeIntervalList) {
+            map.put(interval, Boolean.FALSE);
+        }
+        return map;
+    }
+
+    /**
+     * @param i iterator of trains cycle items
+     * @param ignored cycle item which should be ignored
+     * @return next item or <code>null</code> in any other case
+     */
     private TrainsCycleItem getNext(Iterator<TrainsCycleItem> i, TrainsCycleItem ignored) {
         while (i.hasNext()) {
             TrainsCycleItem item = i.next();
@@ -267,12 +290,19 @@ public class TrainsCycleHelper {
         return null;
     }
 
-    private boolean checkNodes(Train train, TrainsCycleItem item) {
+    /**
+     * @param timeIntervalList time interval list
+     * @param item trains cycle item
+     * @return if the nodes of trains cycle item belong to time interval in correct order
+     */
+    private boolean checkNodes(List<TimeInterval> timeIntervalList, TrainsCycleItem item) {
+        if (!item.getFromInterval().isNodeOwner() || !item.getToInterval().isNodeOwner())
+            throw new IllegalArgumentException("TrainsCycleItem intervals doesn't belong to nodes.");
         if (item.getFromInterval() == item.getToInterval()) {
             return false;
         }
         boolean in = false;
-        for (TimeInterval interval : train.getTimeIntervalList()) {
+        for (TimeInterval interval : timeIntervalList) {
             if (interval.isNodeOwner()) {
                 if (!in && (interval == item.getFromInterval())) {
                     in = true;

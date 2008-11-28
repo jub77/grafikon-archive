@@ -5,6 +5,8 @@
  */
 package net.parostroj.timetable.model;
 
+import java.util.LinkedList;
+import java.util.List;
 import net.parostroj.timetable.model.events.TrainEvent;
 
 /**
@@ -39,6 +41,20 @@ public class TrainsCycleItem {
                 in = false;
         }
         return false;
+    }
+
+    public List<TimeInterval> getIntervals() {
+        List<TimeInterval> intervals = new LinkedList<TimeInterval>();
+        boolean in = false;
+        for (TimeInterval currentInterval : train.getTimeIntervalList()) {
+            if (getFromInterval() == currentInterval)
+                in = true;
+            if (in)
+                intervals.add(currentInterval);
+            if (getToInterval() == currentInterval)
+                in = false;
+        }
+        return intervals;
     }
 
     public String getComment() {

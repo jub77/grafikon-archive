@@ -459,7 +459,7 @@ private void changeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-
         boolean oldCovered = train.isCovered(delegate.getType());
         if (from != item.getFromInterval() || to != item.getToInterval()) {
             TrainsCycleItem newItem = new TrainsCycleItem(item.getCycle(), train, item.getComment(), from, to);
-            if (train.testAddCycle(newItem, item)) {
+            if (train.testAddCycle(newItem, item, false)) {
                 TrainsCycle cycle = item.getCycle();
                 cycle.replaceItem(newItem, item);
                 ((TrainsCycleItemWrapper)ecTrainsList.getSelectedValue()).setItem(newItem);

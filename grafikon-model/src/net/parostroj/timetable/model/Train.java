@@ -211,7 +211,7 @@ public class Train implements AttributesHolder, ObjectWithId {
 
     protected void addCycleItem(TrainsCycleItem item) {
         TrainsCycleType cycleType = item.getCycle().getType();
-        TrainsCycleHelper.getHelper(cycleType).addCycleItem(this, this.getCyclesIntern(cycleType), item);
+        TrainsCycleHelper.getHelper().addCycleItem(this.getTimeIntervalList(), this.getCyclesIntern(cycleType), item, true);
         this.listenerSupport.fireEvent(new TrainEvent(this, TrainEvent.Type.CYCLE_ITEM));
     }
 
@@ -572,6 +572,27 @@ public class Train implements AttributesHolder, ObjectWithId {
     }
 
     /**
+     * returns list of interval.
+     *
+     * @param from from interval
+     * @param to to interval
+     * @return list of intervals
+     */
+    public List<TimeInterval> getIntervals(TimeInterval from, TimeInterval to) {
+        List<TimeInterval> intervals = new LinkedList<TimeInterval>();
+        boolean in = false;
+        for (TimeInterval currentInterval : this.getTimeIntervalList()) {
+            if (from == currentInterval)
+                in = true;
+            if (in)
+                intervals.add(currentInterval);
+            if (to == currentInterval)
+                in = false;
+        }
+        return intervals;
+    }
+
+    /**
      * checks if all lines have given attribute.
      * 
      * @param key key
@@ -643,6 +664,9 @@ public class Train implements AttributesHolder, ObjectWithId {
         return false;
     }
 
+    /**
+     * attaches the train to the net. It adds time intervals to nodes and lines.
+     */
     protected void attach() {
         if (attached)
             throw new IllegalStateException("Train already attached.");
@@ -652,6 +676,10 @@ public class Train implements AttributesHolder, ObjectWithId {
         attached = true;
     }
 
+    /**
+     * detaches the train from the net. It removes time intervals from the nodes
+     * and lines.
+     */
     protected void detach() {
         if (!attached)
             throw new IllegalStateException("Train already detached.");
@@ -678,7 +706,7 @@ public class Train implements AttributesHolder, ObjectWithId {
      * @return covered
      */
     public boolean isCovered(TrainsCycleType type) {
-        return TrainsCycleHelper.getHelper(type).isTrainCovered(this, this.getCyclesIntern(type));
+        return TrainsCycleHelper.getHelper().isTimeIntervalListCovered(this.getTimeIntervalList(), this.getCyclesIntern(type));
     }
     
     /**
@@ -689,11 +717,18 @@ public class Train implements AttributesHolder, ObjectWithId {
      * @return covered
      */
     public boolean isCovered(TrainsCycleType type, TimeInterval interval) {
-        return TrainsCycleHelper.getHelper(type).isTrainIntervalCovered(this, this.getCycles(type), interval);
+        return TrainsCycleHelper.getHelper().isTimeIntervalCovered(this.getTimeIntervalList(), this.getCycles(type), interval);
     }
-    
+
+    /**
+     * returns if the train interval is covered by specified type
+     *
+     * @param cycle trains cycle
+     * @param interval interval
+     * @return covered
+     */
     public boolean isCovered(TrainsCycle cycle, TimeInterval interval) {
-        return TrainsCycleHelper.getHelper(cycle.getType()).isTrainIntervalCovered(this, cycle.getItems(), interval);
+        return TrainsCycleHelper.getHelper().isTimeIntervalCovered(this.getTimeIntervalList(), cycle.getItems(), interval);
     }
     
     /**
@@ -703,7 +738,8 @@ public class Train implements AttributesHolder, ObjectWithId {
      * @return interval
      */
     public Tuple<TimeInterval> getFirstUncoveredPart(TrainsCycleType type) {
-        return TrainsCycleHelper.getHelper(type).getFirstUncoveredPart(this, this.getCyclesIntern(type));
+        List<Tuple<TimeInterval>> tuples = TrainsCycleHelper.getHelper().getAllUncoveredParts(this.getTimeIntervalList(), this.getCyclesIntern(type));
+        return tuples.size() == 0 ? null : tuples.get(0);
     }
     
     /**
@@ -713,7 +749,7 @@ public class Train implements AttributesHolder, ObjectWithId {
      * @return list of intervals
      */
     public List<Tuple<TimeInterval>> getAllUncoveredParts(TrainsCycleType type) {
-        return TrainsCycleHelper.getHelper(type).getAllUncoveredParts(this, this.getCyclesIntern(type));
+        return TrainsCycleHelper.getHelper().getAllUncoveredParts(this.getTimeIntervalList(), this.getCyclesIntern(type));
     }
     
     /**
@@ -723,11 +759,17 @@ public class Train implements AttributesHolder, ObjectWithId {
      * @return list of intervals (as list of nodes)
      */
     public List<List<TimeInterval>> getAllUncoveredLists(TrainsCycleType type) {
-        return TrainsCycleHelper.getHelper(type).getAllUncoveredLists(this, this.getCyclesIntern(type));
+        return TrainsCycleHelper.getHelper().getAllUncoveredLists(this.getTimeIntervalList(), this.getCyclesIntern(type));
     }
-    
+
+    /**
+     * returns coverage.
+     *
+     * @param type trains cycle type
+     * @return list of intervals
+     */
     public List<Pair<TimeInterval, Boolean>> getRouteCoverage(TrainsCycleType type) {
-        return TrainsCycleHelper.getHelper(type).getRouteCoverage(this, this.getCyclesIntern(type));
+        return TrainsCycleHelper.getHelper().getTimeIntervalListCoverage(this.getTimeIntervalList(), this.getCyclesIntern(type));
     }
     
     /**
@@ -753,19 +795,38 @@ public class Train implements AttributesHolder, ObjectWithId {
         }
         return nodes;
     }
-    
-    public boolean testAddCycle(TrainsCycleItem newItem, TrainsCycleItem ignoredItem) {
-        return TrainsCycleHelper.getHelper(newItem.getCycle().getType()).testAddCycle(this, getCyclesIntern(newItem.getCycle().getType()), newItem, ignoredItem);
+
+    /**
+     * tests if the item can be safely added.
+     * @param newItem trains cycle item
+     * @param ignoredItem ignored trains cycle item
+     * @param overlapping if the new item can be overlapped with the existing ones
+     * @return if can be safely added
+     */
+    public boolean testAddCycle(TrainsCycleItem newItem, TrainsCycleItem ignoredItem, boolean overlapping) {
+        return TrainsCycleHelper.getHelper().testAddCycle(this.getTimeIntervalList(), getCyclesIntern(newItem.getCycle().getType()), newItem, ignoredItem, overlapping);
     }
-    
+
+    /**
+     * @return first time interval of the train
+     */
     public TimeInterval getFirstInterval() {
         return timeIntervalList.get(0);
     }
-    
+
+    /**
+     * return last time interval of the train.
+     * @return last time interval
+     */
     public TimeInterval getLastInterval() {
         return timeIntervalList.get(timeIntervalList.size() - 1);
     }
-    
+
+    /**
+     * return interval specified by id.
+     * @param id id of the interval
+     * @return interval
+     */
     public TimeInterval getIntervalById(String id) {
         for (TimeInterval interval : timeIntervalList) {
             if (interval.getId().equals(id))
@@ -774,6 +835,10 @@ public class Train implements AttributesHolder, ObjectWithId {
         return null;
     }
 
+    /**
+     * returns if the train is attached to net.
+     * @return attached
+     */
     public boolean isAttached() {
         return attached;
     }
