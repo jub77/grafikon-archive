@@ -81,6 +81,11 @@ public class SettingsDialog extends javax.swing.JDialog implements ApplicationMo
                 LOG.warning("Station transfer time information missing.");
                 stationTransferTextField.setText("");
             }
+            // set station lengths information
+            lengthInAxlesCheckBox.setSelected(Boolean.TRUE.equals(model.getDiagram().getAttribute("station.length.in.axles")));
+            stationLengthUnitTextField.setEnabled(!lengthInAxlesCheckBox.isSelected());
+            String stationLengthUnit = (String)model.getDiagram().getAttribute("station.length.unit");
+            stationLengthUnitTextField.setText(stationLengthUnit == null ? "" : stationLengthUnit);
         }
     }
 
@@ -117,6 +122,9 @@ public class SettingsDialog extends javax.swing.JDialog implements ApplicationMo
         sortComboBox = new javax.swing.JComboBox();
         jLabel6 = new javax.swing.JLabel();
         stationTransferTextField = new javax.swing.JTextField();
+        lengthInAxlesCheckBox = new javax.swing.JCheckBox();
+        jLabel7 = new javax.swing.JLabel();
+        stationLengthUnitTextField = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         setTitle(ResourceLoader.getString("modelinfo")); // NOI18N
@@ -167,9 +175,10 @@ public class SettingsDialog extends javax.swing.JDialog implements ApplicationMo
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 9;
+        gridBagConstraints.gridy = 12;
         gridBagConstraints.gridwidth = 3;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+        gridBagConstraints.weighty = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(0, 0, 10, 5);
         getContentPane().add(panel1, gridBagConstraints);
 
@@ -240,6 +249,38 @@ public class SettingsDialog extends javax.swing.JDialog implements ApplicationMo
         gridBagConstraints.insets = new java.awt.Insets(0, 10, 5, 10);
         getContentPane().add(stationTransferTextField, gridBagConstraints);
 
+        lengthInAxlesCheckBox.setText(ResourceLoader.getString("modelinfo.station.length.in.axles")); // NOI18N
+        lengthInAxlesCheckBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                lengthInAxlesCheckBoxActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 9;
+        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(0, 10, 5, 10);
+        getContentPane().add(lengthInAxlesCheckBox, gridBagConstraints);
+
+        jLabel7.setText(ResourceLoader.getString("modelinfo.station.length.unit")); // NOI18N
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 10;
+        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(0, 10, 5, 10);
+        getContentPane().add(jLabel7, gridBagConstraints);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 11;
+        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(0, 10, 5, 10);
+        getContentPane().add(stationLengthUnitTextField, gridBagConstraints);
+
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
@@ -297,6 +338,13 @@ public class SettingsDialog extends javax.swing.JDialog implements ApplicationMo
             LOG.warning("Cannot parse station transfer time: " + stationTransferTextField.getText());
         }
 
+        // get back values for stations' lengths
+        model.getDiagram().setAttribute("station.length.in.axles", Boolean.valueOf(lengthInAxlesCheckBox.isSelected()));
+        if (lengthInAxlesCheckBox.isSelected())
+            model.getDiagram().removeAttribute("station.length.unit");
+        else
+            model.getDiagram().setAttribute("station.length.unit", stationLengthUnitTextField.getText());
+
         // update model
         for (Train train : model.getDiagram().getTrains()) {
             train.recalculate(model.getDiagram());
@@ -316,17 +364,26 @@ public class SettingsDialog extends javax.swing.JDialog implements ApplicationMo
         this.updateValues();
         this.setVisible(false);
     }//GEN-LAST:event_cancelButtonActionPerformed
+
+    private void lengthInAxlesCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_lengthInAxlesCheckBoxActionPerformed
+        // enable/disable custom unit for station length depending on this value
+        boolean customUnitEnabled = !lengthInAxlesCheckBox.isSelected();
+        stationLengthUnitTextField.setEnabled(customUnitEnabled);
+    }//GEN-LAST:event_lengthInAxlesCheckBoxActionPerformed
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton cancelButton;
     private javax.swing.JTextField completeNameTemplateTextField;
     private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
+    private javax.swing.JCheckBox lengthInAxlesCheckBox;
     private javax.swing.JTextField nameTemplateTextField;
     private javax.swing.JButton okButton;
     private javax.swing.JPanel panel1;
     private javax.swing.JComboBox ratioComboBox;
     private javax.swing.JComboBox scaleComboBox;
     private javax.swing.JComboBox sortComboBox;
+    private javax.swing.JTextField stationLengthUnitTextField;
     private javax.swing.JTextField stationTransferTextField;
     // End of variables declaration//GEN-END:variables
     
