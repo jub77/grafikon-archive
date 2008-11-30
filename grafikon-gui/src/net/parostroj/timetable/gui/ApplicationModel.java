@@ -190,7 +190,8 @@ public class ApplicationModel {
             case MODIFIED_TRAIN: case MODIFIED_TRAIN_NAME_TYPE: case MODIFIED_TRAIN_UNIT_CYCLE:
             case NEW_DRIVER_CYCLE: case NEW_ENGINE_CYCLE: case NEW_TRAIN: case NEW_TRAIN_UNIT_CYCLE:
             case ROUTES_MODIFIED: case NEW_LINE: case NEW_NODE: case MODIFIED_TRAIN_ATTRIBUTE:
-            case TRAIN_TYPES_CHANGED: case LINE_CLASSES_CHANGED: case ENGINE_CLASSES_CHANGED:
+            case TRAIN_TYPES_CHANGED: case LINE_CLASSES_CHANGED: case ENGINE_CLASSES_CHANGED: case DELETE_LINE:
+            case DELETE_NODE:
                 this.setModelChanged(true);
                 break;
             case SET_DIAGRAM_CHANGED:

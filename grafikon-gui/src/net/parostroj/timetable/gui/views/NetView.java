@@ -40,6 +40,11 @@ public class NetView extends javax.swing.JPanel implements ApplicationModelListe
         jGraph.setSizeable(false);
         jGraph.setDisconnectable(false);
         jGraph.setEdgeLabelsMovable(false);
+        jGraph.getSelectionModel().setSelectionMode(GraphSelectionModel.SINGLE_GRAPH_SELECTION);
+    }
+
+    public void setNetEditModel(NetSelectionModel netEditModel) {
+        jGraph.addGraphSelectionListener(netEditModel);
     }
     
     public void setModel(ApplicationModel model) {
