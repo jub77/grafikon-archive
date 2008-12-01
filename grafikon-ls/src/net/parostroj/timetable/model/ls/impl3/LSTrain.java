@@ -22,8 +22,8 @@ import net.parostroj.timetable.model.TrainDiagram;
  * @author jub
  */
 @XmlRootElement(name = "train")
-@XmlType(propOrder = {"id", "number", "desc", "type", "topSpeed", "start", "attributes",
-    "timeBefore", "timeAfter", "route"})
+@XmlType(propOrder = {"id", "number", "desc", "type", "topSpeed", "start",
+    "timeBefore", "timeAfter", "attributes", "route"})
 public class LSTrain {
 
     private String id;
