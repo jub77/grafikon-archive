@@ -106,20 +106,16 @@ public class TrainView extends javax.swing.JPanel implements ApplicationModelLis
     }
 
     private String createTechTimeString(Train train) {
-        String before = ResourceLoader.getString("create.train.time.before") + ": " + Integer.toString(train.getTimeBefore() / 60);
-        String after = ResourceLoader.getString("create.train.time.after") + ": " + Integer.toString(train.getTimeAfter() / 60);
-        if (train.getTimeIntervalBefore() != null)
-            System.out.println("TEST: " + train.getTimeIntervalBefore().isOverlapping());
-        if (train.getTimeIntervalAfter() != null)
-            System.out.println("TEST(2): " + train.getTimeIntervalAfter().isOverlapping());
+        StringBuilder before = new StringBuilder(ResourceLoader.getString("create.train.time.before")).append(": ").append(train.getTimeBefore() / 60);
+        StringBuilder after = new StringBuilder(ResourceLoader.getString("create.train.time.after")).append(": ").append(train.getTimeAfter() / 60);
 
         if (train.getTimeIntervalBefore() != null && train.getTimeIntervalBefore().isOverlapping()) {
-            before = before + " [" + this.getConflicts(train.getTimeIntervalBefore()) + "]";
+            before.append(" [").append(this.getConflicts(train.getTimeIntervalBefore())).append("]");
         }
         if (train.getTimeIntervalAfter() != null && train.getTimeIntervalAfter().isOverlapping()) {
-            after = after + " [" + this.getConflicts(train.getTimeIntervalAfter()) + "]";
+            after.append(" [").append(this.getConflicts(train.getTimeIntervalAfter())).append("]");
         }
-        return "(" + before + ", " + after + ")";
+        return before.append(", ").append(after).toString();
     }
     
     private String getConflicts(TimeInterval interval) {
