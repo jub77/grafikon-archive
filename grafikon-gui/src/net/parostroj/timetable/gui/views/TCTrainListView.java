@@ -30,6 +30,7 @@ public class TCTrainListView extends javax.swing.JPanel implements ApplicationMo
     private TCDelegate delegate;
     private TrainSort sort;
     private TrainFilter filter;
+    private boolean overlappingEnabled;
 
     /** Creates new form ECTrainListView */
     public TCTrainListView() {
@@ -41,6 +42,9 @@ public class TCTrainListView extends javax.swing.JPanel implements ApplicationMo
         model.addListener(this);
         this.model = model;
         this.delegate = delegate;
+        this.overlappingCheckBoxMenuItem.setEnabled(delegate.isOverlappingEnabled());
+        overlappingEnabled = false;
+        overlappingCheckBoxMenuItem.setSelected(false);
 
         this.updateListAllTrains();
     }
@@ -93,7 +97,7 @@ public class TCTrainListView extends javax.swing.JPanel implements ApplicationMo
             // get all trains (sort)
             List<Train> getTrains = new ArrayList<Train>();
             for (Train train : model.getDiagram().getTrains()) {
-                if (!train.isCovered(delegate.getType())) {
+                if (overlappingEnabled || !train.isCovered(delegate.getType())) {
                     if (filter == null || filter.filter(train))
                         getTrains.add(train);
                 }
@@ -160,6 +164,8 @@ public class TCTrainListView extends javax.swing.JPanel implements ApplicationMo
         passengerRadioButtonMenuItem = new javax.swing.JRadioButtonMenuItem();
         freightRadioButtonMenuItem = new javax.swing.JRadioButtonMenuItem();
         customRadioButtonMenuItem = new javax.swing.JRadioButtonMenuItem();
+        javax.swing.JSeparator separator = new javax.swing.JSeparator();
+        overlappingCheckBoxMenuItem = new javax.swing.JCheckBoxMenuItem();
         filterbuttonGroup = new javax.swing.ButtonGroup();
         scrollPane1 = new javax.swing.JScrollPane();
         allTrainsList = new javax.swing.JList();
@@ -219,6 +225,15 @@ public class TCTrainListView extends javax.swing.JPanel implements ApplicationMo
             }
         });
         filterMenu.add(customRadioButtonMenuItem);
+        filterMenu.add(separator);
+
+        overlappingCheckBoxMenuItem.setText(ResourceLoader.getString("filter.trains.overlapping")); // NOI18N
+        overlappingCheckBoxMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                overlappingCheckBoxMenuItemActionPerformed(evt);
+            }
+        });
+        filterMenu.add(overlappingCheckBoxMenuItem);
 
         allTrainsList.setComponentPopupMenu(filterMenu);
         allTrainsList.setPrototypeCellValue("mmmmmmmmmmmmm");
@@ -432,8 +447,13 @@ private void addButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIR
             Train t = selected.getTrain();
             TrainsCycle cycle = delegate.getSelectedCycle(model);
             if (cycle != null) {
-                Tuple<TimeInterval> tuple = t.getFirstUncoveredPart(delegate.getType());
-                TrainsCycleItem item = new TrainsCycleItem(cycle, t, null, tuple.first, tuple.second);
+                TrainsCycleItem item = null;
+                if (overlappingEnabled) {
+                    item = new TrainsCycleItem(cycle, t, null, t.getFirstInterval(), t.getLastInterval());
+                } else {
+                    Tuple<TimeInterval> tuple = t.getFirstUncoveredPart(delegate.getType());
+                    item = new TrainsCycleItem(cycle, t, null, tuple.first, tuple.second);
+                }
                 cycle.addItem(item);
                 model.fireEvent(new ApplicationModelEvent(ApplicationModelEventType.MODIFIED_TRAIN, model, t));
 
@@ -452,20 +472,20 @@ private void changeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-
     if (ecTrainsList.getSelectedIndex() != -1) {
         TrainsCycleItem item = ((TrainsCycleItemWrapper) ecTrainsList.getSelectedValue()).getItem();
         Train train = item.getTrain();
-        item.setComment(detailsTextField.getText());
+        item.setComment("".equals(detailsTextField.getText().trim()) ? null : detailsTextField.getText());
         TimeInterval from = ((TimeIntervalWrapper)fromComboBox.getSelectedItem()).getInterval();
         TimeInterval to = ((TimeIntervalWrapper)toComboBox.getSelectedItem()).getInterval();
         // new trains cycle item
         boolean oldCovered = train.isCovered(delegate.getType());
         if (from != item.getFromInterval() || to != item.getToInterval()) {
             TrainsCycleItem newItem = new TrainsCycleItem(item.getCycle(), train, item.getComment(), from, to);
-            if (train.testAddCycle(newItem, item, false)) {
+            if (train.testAddCycle(newItem, item, overlappingEnabled)) {
                 TrainsCycle cycle = item.getCycle();
                 cycle.replaceItem(newItem, item);
                 ((TrainsCycleItemWrapper)ecTrainsList.getSelectedValue()).setItem(newItem);
                 this.updateSelectedTrainsCycleItem(newItem);
                 this.updateErrors();
-                if (oldCovered != train.isCovered(delegate.getType()))
+                if (!overlappingEnabled && oldCovered != train.isCovered(delegate.getType()))
                     this.updateListAllTrains();
                 ecTrainsList.repaint();
             } else {
@@ -552,6 +572,12 @@ private void filterChangedActionPerformed(java.awt.event.ActionEvent evt) {//GEN
         this.setFilter(selected.getActionCommand());
 }//GEN-LAST:event_filterChangedActionPerformed
 
+private void overlappingCheckBoxMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_overlappingCheckBoxMenuItemActionPerformed
+    // enable/disable overlapping (refresh list of all trains)
+    overlappingEnabled = overlappingCheckBoxMenuItem.isSelected();
+    this.updateListAllTrains();
+}//GEN-LAST:event_overlappingCheckBoxMenuItemActionPerformed
+
     private void setFilter(String type) {
         if ("P".equals(type)) {
             filter = TrainFilter.getTrainFilter(TrainFilter.PredefinedType.PASSENGER);
@@ -591,6 +617,7 @@ private void filterChangedActionPerformed(java.awt.event.ActionEvent evt) {//GEN
     private javax.swing.JRadioButtonMenuItem freightRadioButtonMenuItem;
     private javax.swing.JComboBox fromComboBox;
     private javax.swing.JTextArea infoTextArea;
+    private javax.swing.JCheckBoxMenuItem overlappingCheckBoxMenuItem;
     private javax.swing.JRadioButtonMenuItem passengerRadioButtonMenuItem;
     private javax.swing.JButton removeButton;
     private javax.swing.JScrollPane scrollPane1;

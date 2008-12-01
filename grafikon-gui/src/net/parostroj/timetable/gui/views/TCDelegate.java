@@ -10,11 +10,7 @@ import java.util.List;
 import javax.swing.JComponent;
 import net.parostroj.timetable.gui.ApplicationModel;
 import net.parostroj.timetable.gui.ApplicationModelEventType;
-import net.parostroj.timetable.model.Train;
-import net.parostroj.timetable.model.TrainDiagram;
-import net.parostroj.timetable.model.TrainsCycle;
-import net.parostroj.timetable.model.TrainsCycleItem;
-import net.parostroj.timetable.model.TrainsCycleType;
+import net.parostroj.timetable.model.*;
 
 /**
  * Delegate for actions over trains cycles.
@@ -43,4 +39,6 @@ public interface TCDelegate {
     public void showEditDialog(JComponent component, ApplicationModel model);
     
     public String getCycleDescription(ApplicationModel model);
+
+    public boolean isOverlappingEnabled();
 }

@@ -109,4 +109,9 @@ public class EngineCycleDelegate implements TCDelegate {
         TrainsCycle cycle = getSelectedCycle(model);
         return TransformUtil.getEngineCycleDescription(cycle);
     }
+
+    @Override
+    public boolean isOverlappingEnabled() {
+        return false;
+    }
 }

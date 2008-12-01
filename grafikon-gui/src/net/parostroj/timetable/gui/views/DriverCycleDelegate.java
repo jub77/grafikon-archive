@@ -124,4 +124,9 @@ public class DriverCycleDelegate implements TCDelegate {
     public String getCycleDescription(ApplicationModel model) {
         return getSelectedCycle(model).getDescription();
     }
+
+    @Override
+    public boolean isOverlappingEnabled() {
+        return false;
+    }
 }
