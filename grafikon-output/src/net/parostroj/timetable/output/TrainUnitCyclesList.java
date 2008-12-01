@@ -53,7 +53,10 @@ public class TrainUnitCyclesList {
         
         for (TrainsCycleItem item : cycle) {
             Train t = item.getTrain();
-            f.format(templates.getTucLine(), t.getName(),TimeConverter.convertFromIntToText(item.getStartTime()),item.getFromInterval().getOwnerAsNode().getAbbr(),item.getToInterval().getOwnerAsNode().getAbbr(), (item.getComment() != null) ? item.getComment() : "&nbsp;");
+            String comment = item.getComment();
+            if (comment != null && "".equals(comment.trim()))
+                comment = null;
+            f.format(templates.getTucLine(), t.getName(),TimeConverter.convertFromIntToText(item.getStartTime()),item.getFromInterval().getOwnerAsNode().getAbbr(),item.getToInterval().getOwnerAsNode().getAbbr(), (comment != null) ? comment : "&nbsp;");
         }
         
         writer.write(templates.getTucFooter());
