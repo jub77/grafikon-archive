@@ -5,11 +5,9 @@
  */
 package net.parostroj.timetable.gui.dialogs;
 
-import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.AbstractListModel;
-import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
@@ -19,6 +17,7 @@ import net.parostroj.timetable.gui.ApplicationModelEventType;
 import net.parostroj.timetable.model.EngineClass;
 import net.parostroj.timetable.model.LineClass;
 import net.parostroj.timetable.model.WeightTableRow;
+import net.parostroj.timetable.utils.IdGenerator;
 import net.parostroj.timetable.utils.ResourceLoader;
 
 /**
@@ -357,7 +356,7 @@ public class EngineClassesDialog extends javax.swing.JDialog {
 private void newButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newButtonActionPerformed
     if (nameTextField != null && !"".equals(nameTextField.getText())) {
         // create new LineClass
-        EngineClass clazz = new EngineClass(UUID.randomUUID().toString(), nameTextField.getText());
+        EngineClass clazz = new EngineClass(IdGenerator.getInstance().getId(), nameTextField.getText());
         listModel.addEngineClass(clazz);
         nameTextField.setText("");
         model.fireEvent(new ApplicationModelEvent(ApplicationModelEventType.ENGINE_CLASSES_CHANGED, model));

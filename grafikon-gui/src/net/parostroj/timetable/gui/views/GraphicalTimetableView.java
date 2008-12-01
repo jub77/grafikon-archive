@@ -164,6 +164,8 @@ public class GraphicalTimetableView extends javax.swing.JPanel implements Applic
                 gtDraw.setPreference(GTDrawPreference.EXTENDED_LINES, true);
             if (trainNamesCheckBoxMenuItem.isSelected())
                 gtDraw.setPreference(GTDrawPreference.TRAIN_NAMES, true);
+            if (techTimeCheckBoxMenuItem.isSelected())
+                gtDraw.setPreference(GTDrawPreference.TECHNOLOGICAL_TIME, true);
         }
     }
     
@@ -210,6 +212,7 @@ public class GraphicalTimetableView extends javax.swing.JPanel implements Applic
         addigitsCheckBoxMenuItem = new javax.swing.JCheckBoxMenuItem();
         extendedLinesCheckBoxMenuItem = new javax.swing.JCheckBoxMenuItem();
         trainNamesCheckBoxMenuItem = new javax.swing.JCheckBoxMenuItem();
+        techTimeCheckBoxMenuItem = new javax.swing.JCheckBoxMenuItem();
         javax.swing.JSeparator jSeparator2 = new javax.swing.JSeparator();
         saveMenuItem = new javax.swing.JMenuItem();
         typesButtonGroup = new javax.swing.ButtonGroup();
@@ -279,6 +282,14 @@ public class GraphicalTimetableView extends javax.swing.JPanel implements Applic
             }
         });
         preferencesMenu.add(trainNamesCheckBoxMenuItem);
+
+        techTimeCheckBoxMenuItem.setText(ResourceLoader.getString("gt.technological.time")); // NOI18N
+        techTimeCheckBoxMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                preferencesCheckBoxMenuItemActionPerformed(evt);
+            }
+        });
+        preferencesMenu.add(techTimeCheckBoxMenuItem);
 
         popupMenu.add(preferencesMenu);
         popupMenu.add(jSeparator2);
@@ -568,6 +579,7 @@ private void preferencesCheckBoxMenuItemActionPerformed(java.awt.event.ActionEve
     private javax.swing.JMenu routesMenu;
     private javax.swing.JMenuItem saveMenuItem;
     private javax.swing.JMenu sizesMenu;
+    private javax.swing.JCheckBoxMenuItem techTimeCheckBoxMenuItem;
     private javax.swing.JCheckBoxMenuItem trainNamesCheckBoxMenuItem;
     private javax.swing.ButtonGroup typesButtonGroup;
     private javax.swing.JRadioButtonMenuItem withTracksMenuItem;

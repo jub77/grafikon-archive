@@ -5,12 +5,12 @@
  */
 package net.parostroj.timetable.gui.dialogs;
 
-import java.util.UUID;
 import javax.swing.AbstractListModel;
 import net.parostroj.timetable.gui.ApplicationModel;
 import net.parostroj.timetable.gui.ApplicationModelEvent;
 import net.parostroj.timetable.gui.ApplicationModelEventType;
 import net.parostroj.timetable.model.LineClass;
+import net.parostroj.timetable.utils.IdGenerator;
 import net.parostroj.timetable.utils.ResourceLoader;
 
 /**
@@ -187,7 +187,7 @@ public class LineClassesDialog extends javax.swing.JDialog {
 private void newButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newButtonActionPerformed
     if (nameTextField != null && !"".equals(nameTextField.getText())) {
         // create new LineClass
-        LineClass lineClass = new LineClass(UUID.randomUUID().toString(), nameTextField.getText());
+        LineClass lineClass = new LineClass(IdGenerator.getInstance().getId(), nameTextField.getText());
         listModel.addLineClass(lineClass);
         nameTextField.setText("");
         model.fireEvent(new ApplicationModelEvent(ApplicationModelEventType.LINE_CLASSES_CHANGED, model));

@@ -5,6 +5,7 @@
  */
 package net.parostroj.timetable.gui.dialogs;
 
+import java.util.logging.Logger;
 import javax.swing.DefaultComboBoxModel;
 import net.parostroj.timetable.gui.ApplicationModel;
 import net.parostroj.timetable.gui.ApplicationModelEvent;
@@ -12,6 +13,7 @@ import net.parostroj.timetable.gui.ApplicationModelEventType;
 import net.parostroj.timetable.model.Train;
 import net.parostroj.timetable.model.TrainType;
 import net.parostroj.timetable.utils.ResourceLoader;
+import net.parostroj.timetable.utils.TimeConverter;
 
 /**
  * Dialog for editation of train's properties.
@@ -20,6 +22,8 @@ import net.parostroj.timetable.utils.ResourceLoader;
  */
 public class EditTrainDialog extends javax.swing.JDialog {
     
+    private static final Logger LOG = Logger.getLogger(EditTrainDialog.class.getName());
+
     public ApplicationModel model;
     
     /** 
@@ -32,7 +36,10 @@ public class EditTrainDialog extends javax.swing.JDialog {
         super(parent, modal);
         initComponents();
     }
-    
+
+    /**
+     * fills the dialog with train's data.
+     */
     public void getSelectedTrainData() {
         if (model != null && model.getSelectedTrain() != null)  {
             Train train = model.getSelectedTrain();
@@ -50,6 +57,9 @@ public class EditTrainDialog extends javax.swing.JDialog {
             
             weightTextField.setText((String)train.getAttribute("weight.info"));
             routeTextField.setText((String)train.getAttribute("route.info"));
+
+            timeBeforeTextField.setText(Integer.toString(train.getTimeBefore() / 60));
+            timeAfterTextField.setText(Integer.toString(train.getTimeAfter() / 60));
         }
     }
     
@@ -82,6 +92,11 @@ public class EditTrainDialog extends javax.swing.JDialog {
         cancelButton = new javax.swing.JButton();
         okButton = new javax.swing.JButton();
         showLengthCheckBox = new javax.swing.JCheckBox();
+        timeBeforeTextField = new javax.swing.JTextField();
+        timeAfterTextField = new javax.swing.JTextField();
+        javax.swing.JLabel jLabel7 = new javax.swing.JLabel();
+        javax.swing.JLabel jLabel8 = new javax.swing.JLabel();
+        javax.swing.JLabel jLabel9 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         setTitle(ResourceLoader.getString("edit.train")); // NOI18N
@@ -129,6 +144,12 @@ public class EditTrainDialog extends javax.swing.JDialog {
         showLengthCheckBox.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 0, 0, 0));
         showLengthCheckBox.setMargin(new java.awt.Insets(0, 0, 0, 0));
 
+        jLabel7.setText(ResourceLoader.getString("create.train.technological.time")); // NOI18N
+
+        jLabel8.setText(ResourceLoader.getString("create.train.time.before")); // NOI18N
+
+        jLabel9.setText(ResourceLoader.getString("create.train.time.after")); // NOI18N
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -147,11 +168,11 @@ public class EditTrainDialog extends javax.swing.JDialog {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(speedTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(typeComboBox, 0, 200, Short.MAX_VALUE)
-                            .addComponent(numberTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 200, Short.MAX_VALUE)
-                            .addComponent(descriptionTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 200, Short.MAX_VALUE)
-                            .addComponent(weightTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 200, Short.MAX_VALUE)
-                            .addComponent(routeTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 200, Short.MAX_VALUE)
+                            .addComponent(typeComboBox, 0, 257, Short.MAX_VALUE)
+                            .addComponent(numberTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 257, Short.MAX_VALUE)
+                            .addComponent(descriptionTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 257, Short.MAX_VALUE)
+                            .addComponent(weightTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 257, Short.MAX_VALUE)
+                            .addComponent(routeTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 257, Short.MAX_VALUE)
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(dieselCheckBox)
                                 .addGap(18, 18, 18)
@@ -160,7 +181,17 @@ public class EditTrainDialog extends javax.swing.JDialog {
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addComponent(okButton)
                         .addGap(18, 18, 18)
-                        .addComponent(cancelButton)))
+                        .addComponent(cancelButton))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabel7)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jLabel8)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(timeBeforeTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 99, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jLabel9)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(timeAfterTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 99, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -198,6 +229,13 @@ public class EditTrainDialog extends javax.swing.JDialog {
                     .addComponent(jLabel6))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel7)
+                    .addComponent(jLabel8)
+                    .addComponent(timeBeforeTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel9)
+                    .addComponent(timeAfterTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(cancelButton)
                     .addComponent(okButton))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -224,17 +262,41 @@ private void okButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRS
     train.setDescription(descriptionTextField.getText());
     train.setAttribute("weight.info", weightTextField.getText());
     train.setAttribute("route.info", routeTextField.getText());
-    
-    // check max speed - modifiy if changed
-    int maxSpeed = Integer.parseInt(speedTextField.getText());
-    if (maxSpeed != train.getTopSpeed()) {
-        // modify top speed
-        train.setTopSpeed(maxSpeed);
-        train.recalculate(model.getDiagram());
-        // fire event
-        model.fireEvent(new ApplicationModelEvent(ApplicationModelEventType.MODIFIED_TRAIN,model,train));
+
+    boolean changed = false;
+    // check max speed - modify if changed
+    try {
+        int maxSpeed = Integer.parseInt(speedTextField.getText());
+        if (maxSpeed != train.getTopSpeed()) {
+            // modify top speed
+            train.setTopSpeed(maxSpeed);
+            train.recalculate(model.getDiagram());
+            // fire event
+            changed = true;
+        }
+    } catch (NumberFormatException e) {
+        LOG.warning("Cannot convert speed to number: " + speedTextField.getText());
     }
-    
+
+    // technological times
+    try {
+        int timeBefore = Integer.parseInt(timeBeforeTextField.getText()) * 60;
+        int timeAfter = Integer.parseInt(timeAfterTextField.getText()) * 60;
+        if (timeBefore != train.getTimeBefore()) {
+            train.setTimeBefore(timeBefore);
+            changed = true;
+        }
+        if (timeAfter != train.getTimeAfter()) {
+            train.setTimeAfter(timeAfter);
+            changed = true;
+        }
+    } catch (NumberFormatException e) {
+        LOG.warning("Cannot convert technological time: " + timeBeforeTextField.getText() + ", "+ timeAfterTextField.getText());
+    }
+
+    // fire changed event
+    if (changed)
+        model.fireEvent(new ApplicationModelEvent(ApplicationModelEventType.MODIFIED_TRAIN,model,train));
     // fire event
     model.fireEvent(new ApplicationModelEvent(ApplicationModelEventType.MODIFIED_TRAIN_NAME_TYPE,model,train));
 
@@ -251,6 +313,8 @@ private void okButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRS
     private javax.swing.JTextField routeTextField;
     private javax.swing.JCheckBox showLengthCheckBox;
     private javax.swing.JTextField speedTextField;
+    private javax.swing.JTextField timeAfterTextField;
+    private javax.swing.JTextField timeBeforeTextField;
     private javax.swing.JComboBox typeComboBox;
     private javax.swing.JTextField weightTextField;
     // End of variables declaration//GEN-END:variables

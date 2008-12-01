@@ -27,7 +27,7 @@
     <DimensionLayout dim="0">
       <Group type="103" groupAlignment="0" attributes="0">
           <Group type="102" attributes="0">
-              <EmptySpace max="-2" attributes="0"/>
+              <EmptySpace min="-2" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" alignment="0" attributes="0">
                       <Group type="103" groupAlignment="1" max="-2" attributes="0">
@@ -41,11 +41,11 @@
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Component id="speedTextField" alignment="0" min="-2" max="-2" attributes="0"/>
-                          <Component id="typeComboBox" alignment="0" pref="200" max="32767" attributes="0"/>
-                          <Component id="numberTextField" alignment="0" pref="200" max="32767" attributes="0"/>
-                          <Component id="descriptionTextField" alignment="0" pref="200" max="32767" attributes="0"/>
-                          <Component id="weightTextField" alignment="0" pref="200" max="32767" attributes="0"/>
-                          <Component id="routeTextField" alignment="0" pref="200" max="32767" attributes="0"/>
+                          <Component id="typeComboBox" alignment="0" pref="257" max="32767" attributes="0"/>
+                          <Component id="numberTextField" alignment="0" pref="257" max="32767" attributes="0"/>
+                          <Component id="descriptionTextField" alignment="0" pref="257" max="32767" attributes="0"/>
+                          <Component id="weightTextField" alignment="0" pref="257" max="32767" attributes="0"/>
+                          <Component id="routeTextField" alignment="0" pref="257" max="32767" attributes="0"/>
                           <Group type="102" alignment="0" attributes="0">
                               <Component id="dieselCheckBox" min="-2" max="-2" attributes="1"/>
                               <EmptySpace type="separate" max="-2" attributes="0"/>
@@ -59,8 +59,19 @@
                       <EmptySpace type="separate" max="-2" attributes="0"/>
                       <Component id="cancelButton" min="-2" max="-2" attributes="0"/>
                   </Group>
+                  <Group type="102" alignment="0" attributes="0">
+                      <Component id="jLabel7" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace min="-2" max="-2" attributes="0"/>
+                      <Component id="jLabel8" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace min="-2" max="-2" attributes="0"/>
+                      <Component id="timeBeforeTextField" pref="99" max="32767" attributes="0"/>
+                      <EmptySpace min="-2" max="-2" attributes="0"/>
+                      <Component id="jLabel9" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace min="-2" max="-2" attributes="0"/>
+                      <Component id="timeAfterTextField" pref="99" max="32767" attributes="0"/>
+                  </Group>
               </Group>
-              <EmptySpace max="-2" attributes="0"/>
+              <EmptySpace min="-2" max="-2" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -103,6 +114,14 @@
               <Group type="103" groupAlignment="3" attributes="0">
                   <Component id="routeTextField" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="jLabel6" alignment="3" min="-2" max="-2" attributes="0"/>
+              </Group>
+              <EmptySpace max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="3" attributes="0">
+                  <Component id="jLabel7" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="jLabel8" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="timeBeforeTextField" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="jLabel9" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="timeAfterTextField" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
@@ -268,6 +287,43 @@
           <Insets value="[0, 0, 0, 0]"/>
         </Property>
       </Properties>
+    </Component>
+    <Component class="javax.swing.JTextField" name="timeBeforeTextField">
+    </Component>
+    <Component class="javax.swing.JTextField" name="timeAfterTextField">
+    </Component>
+    <Component class="javax.swing.JLabel" name="jLabel7">
+      <Properties>
+        <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+          <ResourceString bundle="gt_texts.properties" key="create.train.technological.time" replaceFormat="ResourceLoader.getString(&quot;{key}&quot;)"/>
+        </Property>
+      </Properties>
+      <AuxValues>
+        <AuxValue name="JavaCodeGenerator_VariableLocal" type="java.lang.Boolean" value="true"/>
+        <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="0"/>
+      </AuxValues>
+    </Component>
+    <Component class="javax.swing.JLabel" name="jLabel8">
+      <Properties>
+        <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+          <ResourceString bundle="gt_texts.properties" key="create.train.time.before" replaceFormat="ResourceLoader.getString(&quot;{key}&quot;)"/>
+        </Property>
+      </Properties>
+      <AuxValues>
+        <AuxValue name="JavaCodeGenerator_VariableLocal" type="java.lang.Boolean" value="true"/>
+        <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="0"/>
+      </AuxValues>
+    </Component>
+    <Component class="javax.swing.JLabel" name="jLabel9">
+      <Properties>
+        <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+          <ResourceString bundle="gt_texts.properties" key="create.train.time.after" replaceFormat="ResourceLoader.getString(&quot;{key}&quot;)"/>
+        </Property>
+      </Properties>
+      <AuxValues>
+        <AuxValue name="JavaCodeGenerator_VariableLocal" type="java.lang.Boolean" value="true"/>
+        <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="0"/>
+      </AuxValues>
     </Component>
   </SubComponents>
 </Form>

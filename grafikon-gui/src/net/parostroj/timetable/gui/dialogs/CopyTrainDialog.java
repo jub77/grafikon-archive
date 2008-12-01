@@ -6,12 +6,12 @@
 package net.parostroj.timetable.gui.dialogs;
 
 import java.awt.Frame;
-import java.util.UUID;
 import net.parostroj.timetable.actions.TrainBuilder;
 import net.parostroj.timetable.gui.ApplicationModel;
 import net.parostroj.timetable.gui.ApplicationModelEvent;
 import net.parostroj.timetable.gui.ApplicationModelEventType;
 import net.parostroj.timetable.model.Train;
+import net.parostroj.timetable.utils.IdGenerator;
 import net.parostroj.timetable.utils.ResourceLoader;
 import net.parostroj.timetable.utils.TimeConverter;
 
@@ -132,7 +132,7 @@ public class CopyTrainDialog extends javax.swing.JDialog {
         // create copy of the train
         int time = TimeConverter.convertFromTextToInt(timeTextField.getText());
         TrainBuilder builder = new TrainBuilder();
-        Train newTrain = builder.createTrain(UUID.randomUUID().toString(), nameTextField.getText(), time, train);
+        Train newTrain = builder.createTrain(IdGenerator.getInstance().getId(), nameTextField.getText(), time, train);
 
         // add train to diagram
         model.getDiagram().addTrain(newTrain);

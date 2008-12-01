@@ -3,13 +3,11 @@
  *
  * Created on 28. září 2007, 15:03
  */
-
 package net.parostroj.timetable.gui.views;
 
 import java.awt.Frame;
 import java.util.Collection;
 import java.util.List;
-import java.util.UUID;
 import javax.swing.DefaultListModel;
 import javax.swing.JOptionPane;
 import javax.swing.event.ListSelectionEvent;
@@ -24,6 +22,7 @@ import net.parostroj.timetable.model.Node;
 import net.parostroj.timetable.model.NodeTrack;
 import net.parostroj.timetable.model.NodeType;
 import net.parostroj.timetable.model.Route;
+import net.parostroj.timetable.utils.IdGenerator;
 import net.parostroj.timetable.utils.ResourceLoader;
 
 /**
@@ -202,8 +201,8 @@ public class NodeListView extends javax.swing.JPanel implements ApplicationModel
             // do not create if empty or cancel selected
             if (result == null || result.equals(""))
                 return;
-            Node n = new Node(UUID.randomUUID().toString(), NodeType.STATION, result, result);
-            NodeTrack track = new NodeTrack(UUID.randomUUID().toString(), "1");
+            Node n = new Node(IdGenerator.getInstance().getId(), NodeType.STATION, result, result);
+            NodeTrack track = new NodeTrack(IdGenerator.getInstance().getId(), "1");
             track.setPlatform(true);
             n.addTrack(track);
             model.getDiagram().getNet().addNode(n);

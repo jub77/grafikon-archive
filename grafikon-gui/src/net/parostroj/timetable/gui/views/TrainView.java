@@ -15,6 +15,7 @@ import net.parostroj.timetable.gui.ApplicationModelEventType;
 import net.parostroj.timetable.gui.ApplicationModelListener;
 import net.parostroj.timetable.gui.dialogs.CopyTrainDialog;
 import net.parostroj.timetable.gui.dialogs.EditTrainDialog;
+import net.parostroj.timetable.model.TimeInterval;
 import net.parostroj.timetable.model.Train;
 import net.parostroj.timetable.utils.ResourceLoader;
 
@@ -73,7 +74,7 @@ public class TrainView extends javax.swing.JPanel implements ApplicationModelLis
         if (event.getType() == ApplicationModelEventType.SELECTED_TRAIN_CHANGED || event.getType() == ApplicationModelEventType.SET_DIAGRAM_CHANGED) {
             this.train = model.getSelectedTrain();
             this.updateView();
-        } else if (event.getType() == ApplicationModelEventType.MODIFIED_TRAIN_NAME_TYPE && event.getObject() == model.getSelectedTrain()) {
+        } else if ((event.getType() == ApplicationModelEventType.MODIFIED_TRAIN_NAME_TYPE || event.getType() == ApplicationModelEventType.MODIFIED_TRAIN) && event.getObject() == model.getSelectedTrain()) {
             this.updateView();
         }
     }
@@ -82,6 +83,7 @@ public class TrainView extends javax.swing.JPanel implements ApplicationModelLis
         if (train == null) {
             trainTextField.setText(null);
             speedTextField.setText(null);
+            techTimeTextField.setText(null);
             speedTextField.setEnabled(false);
             
             editButton.setEnabled(false);
@@ -90,6 +92,7 @@ public class TrainView extends javax.swing.JPanel implements ApplicationModelLis
             // train type
             trainTextField.setText(train.getCompleteName());
             speedTextField.setText(Integer.toString(train.getTopSpeed()));
+            techTimeTextField.setText(this.createTechTimeString(train));
             speedTextField.setEnabled(true);
 
             editButton.setEnabled(true);
@@ -101,7 +104,34 @@ public class TrainView extends javax.swing.JPanel implements ApplicationModelLis
         
         this.invalidate();
     }
+
+    private String createTechTimeString(Train train) {
+        String before = ResourceLoader.getString("create.train.time.before") + ": " + Integer.toString(train.getTimeBefore() / 60);
+        String after = ResourceLoader.getString("create.train.time.after") + ": " + Integer.toString(train.getTimeAfter() / 60);
+        if (train.getTimeIntervalBefore() != null)
+            System.out.println("TEST: " + train.getTimeIntervalBefore().isOverlapping());
+        if (train.getTimeIntervalAfter() != null)
+            System.out.println("TEST(2): " + train.getTimeIntervalAfter().isOverlapping());
+
+        if (train.getTimeIntervalBefore() != null && train.getTimeIntervalBefore().isOverlapping()) {
+            before = before + " [" + this.getConflicts(train.getTimeIntervalBefore()) + "]";
+        }
+        if (train.getTimeIntervalAfter() != null && train.getTimeIntervalAfter().isOverlapping()) {
+            after = after + " [" + this.getConflicts(train.getTimeIntervalAfter()) + "]";
+        }
+        return "(" + before + ", " + after + ")";
+    }
     
+    private String getConflicts(TimeInterval interval) {
+        StringBuilder builder = new StringBuilder();
+        for (TimeInterval overlap : interval.getOverlappingIntervals()) {
+            if (builder.length() != 0)
+                builder.append(", ");
+            builder.append(overlap.getTrain().getName());
+        }
+        return builder.toString();
+    }
+
     /** This method is called from within the constructor to
      * initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is
@@ -118,6 +148,8 @@ public class TrainView extends javax.swing.JPanel implements ApplicationModelLis
         speedTextField = new javax.swing.JTextField();
         editButton = new javax.swing.JButton();
         copyButton = new javax.swing.JButton();
+        javax.swing.JLabel jLabel3 = new javax.swing.JLabel();
+        techTimeTextField = new javax.swing.JTextField();
 
         jLabel1.setText(ResourceLoader.getString("create.train.number")); // NOI18N
 
@@ -129,6 +161,7 @@ public class TrainView extends javax.swing.JPanel implements ApplicationModelLis
 
         jLabel2.setText(ResourceLoader.getString("create.train.speed")); // NOI18N
 
+        speedTextField.setColumns(5);
         speedTextField.setEditable(false);
 
         editButton.setText(ResourceLoader.getString("button.edit")); // NOI18N
@@ -147,6 +180,10 @@ public class TrainView extends javax.swing.JPanel implements ApplicationModelLis
             }
         });
 
+        jLabel3.setText(ResourceLoader.getString("create.train.technological.time")); // NOI18N
+
+        techTimeTextField.setEditable(false);
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -162,7 +199,11 @@ public class TrainView extends javax.swing.JPanel implements ApplicationModelLis
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                .addComponent(speedTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 239, Short.MAX_VALUE)
+                                .addComponent(speedTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jLabel3)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(techTimeTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 129, Short.MAX_VALUE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(copyButton)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -182,7 +223,9 @@ public class TrainView extends javax.swing.JPanel implements ApplicationModelLis
                     .addComponent(jLabel2)
                     .addComponent(editButton)
                     .addComponent(copyButton)
-                    .addComponent(speedTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(speedTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel3)
+                    .addComponent(techTimeTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(trainTableScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 430, Short.MAX_VALUE)
                 .addContainerGap())
@@ -191,13 +234,13 @@ public class TrainView extends javax.swing.JPanel implements ApplicationModelLis
 
 private void editButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editButtonActionPerformed
     editDialog.getSelectedTrainData();
-    editDialog.setLocationRelativeTo(editButton);
+    editDialog.setLocationRelativeTo(this);
     editDialog.setVisible(true);
 }//GEN-LAST:event_editButtonActionPerformed
 
 private void copyButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_copyButtonActionPerformed
     CopyTrainDialog dialog = new CopyTrainDialog((java.awt.Frame)this.getTopLevelAncestor(), true, model, train);
-    dialog.setLocationRelativeTo(copyButton);
+    dialog.setLocationRelativeTo(this);
     dialog.setVisible(true);
 }//GEN-LAST:event_copyButtonActionPerformed
     
@@ -206,6 +249,7 @@ private void copyButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FI
     private javax.swing.JButton copyButton;
     private javax.swing.JButton editButton;
     private javax.swing.JTextField speedTextField;
+    private javax.swing.JTextField techTimeTextField;
     private javax.swing.JTable trainTable;
     private javax.swing.JScrollPane trainTableScrollPane;
     private javax.swing.JTextField trainTextField;

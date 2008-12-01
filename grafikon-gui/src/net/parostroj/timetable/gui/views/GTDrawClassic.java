@@ -3,7 +3,6 @@
  * 
  * Created on 9.9.2007, 8:51:28
  */
-
 package net.parostroj.timetable.gui.views;
 
 import java.awt.*;

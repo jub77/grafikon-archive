@@ -8,7 +8,6 @@ package net.parostroj.timetable.gui.dialogs;
 import java.awt.event.ItemEvent;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.UUID;
 import java.util.logging.Logger;
 import javax.swing.DefaultListModel;
 import javax.swing.JOptionPane;
@@ -17,6 +16,7 @@ import net.parostroj.timetable.gui.views.NodeTypeWrapper;
 import net.parostroj.timetable.model.Node;
 import net.parostroj.timetable.model.NodeTrack;
 import net.parostroj.timetable.model.NodeType;
+import net.parostroj.timetable.utils.IdGenerator;
 import net.parostroj.timetable.utils.ResourceLoader;
 
 /**
@@ -342,7 +342,7 @@ public class EditNodeDialog extends javax.swing.JDialog {
     private void newNodeTrackButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newNodeTrackButtonActionPerformed
         String name = JOptionPane.showInputDialog(this, "");
         if (name != null && !name.equals("")) {
-            NodeTrack track = new NodeTrack(UUID.randomUUID().toString(), name);
+            NodeTrack track = new NodeTrack(IdGenerator.getInstance().getId(), name);
             track.setPlatform(true);
             ((DefaultListModel) nodeTrackList.getModel()).addElement(track);
         }

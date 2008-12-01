@@ -3,13 +3,11 @@
  *
  * Created on 28. září 2007, 15:03
  */
-
 package net.parostroj.timetable.gui.views;
 
 import java.awt.Frame;
 import java.util.Collection;
 import java.util.List;
-import java.util.UUID;
 import javax.swing.DefaultListModel;
 import javax.swing.JOptionPane;
 import javax.swing.event.ListSelectionEvent;
@@ -24,6 +22,7 @@ import net.parostroj.timetable.model.Line;
 import net.parostroj.timetable.model.LineTrack;
 import net.parostroj.timetable.model.Node;
 import net.parostroj.timetable.model.Route;
+import net.parostroj.timetable.utils.IdGenerator;
 import net.parostroj.timetable.utils.ResourceLoader;
 import net.parostroj.timetable.utils.Tuple;
 
@@ -207,8 +206,8 @@ public class LineListView extends javax.swing.JPanel implements ApplicationModel
             
             Tuple<Node> selected = createLineDialog.getSelectedNodes();
             // create new line
-            Line l = new Line(UUID.randomUUID().toString(), 1000, selected.first, selected.second, Line.UNLIMITED_SPEED);
-            LineTrack track = new LineTrack(UUID.randomUUID().toString(), "1");
+            Line l = new Line(IdGenerator.getInstance().getId(), 1000, selected.first, selected.second, Line.UNLIMITED_SPEED);
+            LineTrack track = new LineTrack(IdGenerator.getInstance().getId(), "1");
             l.addTrack(track);
             model.getDiagram().getNet().addLine(selected.first, selected.second, l);
             

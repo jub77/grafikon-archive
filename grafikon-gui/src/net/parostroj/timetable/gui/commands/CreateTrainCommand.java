@@ -3,12 +3,10 @@
  * 
  * Created on 4.9.2007, 9:24:24
  */
-
 package net.parostroj.timetable.gui.commands;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 import net.parostroj.timetable.actions.RouteBuilder;
 import net.parostroj.timetable.actions.TrainBuilder;
 import net.parostroj.timetable.gui.ApplicationModel;
@@ -18,6 +16,7 @@ import net.parostroj.timetable.model.Node;
 import net.parostroj.timetable.model.Route;
 import net.parostroj.timetable.model.Train;
 import net.parostroj.timetable.model.TrainType;
+import net.parostroj.timetable.utils.IdGenerator;
 
 /**
  * Command for creating trains.
@@ -92,7 +91,7 @@ public class CreateTrainCommand extends Command {
             route = routeBuilder.createRoute(null, model.getDiagram().getNet(), r);
         }
 
-        Train train = trainBuilder.createTrain(UUID.randomUUID().toString(), number, type, topSpeed, route, time, model.getDiagram(), defaultStop);
+        Train train = trainBuilder.createTrain(IdGenerator.getInstance().getId(), number, type, topSpeed, route, time, model.getDiagram(), defaultStop);
         
         train.setDescription(description);
         train.setAttribute("diesel", diesel);

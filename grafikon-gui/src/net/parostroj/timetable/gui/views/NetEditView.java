@@ -6,13 +6,13 @@
 package net.parostroj.timetable.gui.views;
 
 import java.awt.Frame;
-import java.util.UUID;
 import javax.swing.JOptionPane;
 import net.parostroj.timetable.gui.*;
 import net.parostroj.timetable.gui.dialogs.*;
 import net.parostroj.timetable.gui.views.NetSelectionModel.Action;
 import net.parostroj.timetable.model.*;
 import net.parostroj.timetable.utils.CheckingUtils;
+import net.parostroj.timetable.utils.IdGenerator;
 import net.parostroj.timetable.utils.ResourceLoader;
 import net.parostroj.timetable.utils.Tuple;
 
@@ -144,8 +144,8 @@ public class NetEditView extends javax.swing.JPanel implements NetSelectionModel
             // do not create if empty or cancel selected
             if (result == null || result.equals(""))
                 return;
-            Node n = new Node(UUID.randomUUID().toString(), NodeType.STATION, result, result);
-            NodeTrack track = new NodeTrack(UUID.randomUUID().toString(), "1");
+            Node n = new Node(IdGenerator.getInstance().getId(), NodeType.STATION, result, result);
+            NodeTrack track = new NodeTrack(IdGenerator.getInstance().getId(), "1");
             track.setPlatform(true);
             n.addTrack(track);
             model.getDiagram().getNet().addNode(n);
@@ -166,8 +166,8 @@ public class NetEditView extends javax.swing.JPanel implements NetSelectionModel
 
             Tuple<Node> selected = createLineDialog.getSelectedNodes();
             // create new line
-            Line l = new Line(UUID.randomUUID().toString(), 1000, selected.first, selected.second, Line.UNLIMITED_SPEED);
-            LineTrack track = new LineTrack(UUID.randomUUID().toString(), "1");
+            Line l = new Line(IdGenerator.getInstance().getId(), 1000, selected.first, selected.second, Line.UNLIMITED_SPEED);
+            LineTrack track = new LineTrack(IdGenerator.getInstance().getId(), "1");
             l.addTrack(track);
             model.getDiagram().getNet().addLine(selected.first, selected.second, l);
 

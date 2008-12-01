@@ -6,5 +6,5 @@ package net.parostroj.timetable.gui.views;
  * @author jub
  */
 public enum GTDrawPreference {
-    ARRIVAL_DEPARTURE_DIGITS, EXTENDED_LINES, TRAIN_NAMES;
+    ARRIVAL_DEPARTURE_DIGITS, EXTENDED_LINES, TRAIN_NAMES, TECHNOLOGICAL_TIME;
 }

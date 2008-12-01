@@ -4,8 +4,7 @@ TODO
     - more scales (including 1:1)
     - adding output points to nodes (especially stations :)
     - lines - adding different parts (different speed and possibly other information) ...
-    - editing net - remove list and incorporate the editing possibilities into net itself
-    - support overlapping cycles' items in gui
     - technological times (before and after train)
+    - technological times for trains have missing events implementation
 
 BUGS

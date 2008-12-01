@@ -3,13 +3,11 @@
  *
  * Created on 12. říjen 2007, 13:55
  */
-
 package net.parostroj.timetable.gui.dialogs;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.UUID;
 import javax.swing.DefaultListModel;
 import net.parostroj.timetable.actions.NodeSort;
 import net.parostroj.timetable.actions.RouteBuilder;
@@ -19,6 +17,7 @@ import net.parostroj.timetable.gui.ApplicationModelEventType;
 import net.parostroj.timetable.model.Node;
 import net.parostroj.timetable.model.NodeType;
 import net.parostroj.timetable.model.Route;
+import net.parostroj.timetable.utils.IdGenerator;
 import net.parostroj.timetable.utils.ResourceLoader;
 
 /**
@@ -239,7 +238,7 @@ public class EditRoutesDialog extends javax.swing.JDialog {
         nodes.add((Node)fromComboBox.getSelectedItem());
         nodes.addAll(throughNodes);
         nodes.add((Node)toComboBox.getSelectedItem());
-        newRoute = builder.createRoute(UUID.randomUUID().toString(), model.getDiagram().getNet(), nodes);
+        newRoute = builder.createRoute(IdGenerator.getInstance().getId(), model.getDiagram().getNet(), nodes);
         // check if the returned route is null - no route available
         if (newRoute == null)
             return;

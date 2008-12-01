@@ -7,7 +7,6 @@ package net.parostroj.timetable.gui.dialogs;
 
 import java.awt.Color;
 import java.util.List;
-import java.util.UUID;
 import javax.swing.AbstractListModel;
 import javax.swing.JColorChooser;
 import javax.swing.JOptionPane;
@@ -16,6 +15,7 @@ import net.parostroj.timetable.gui.ApplicationModelEvent;
 import net.parostroj.timetable.gui.ApplicationModelEventType;
 import net.parostroj.timetable.utils.Conversions;
 import net.parostroj.timetable.model.*;
+import net.parostroj.timetable.utils.IdGenerator;
 import net.parostroj.timetable.utils.ResourceLoader;
 
 /**
@@ -434,7 +434,7 @@ public class TrainTypesDialog extends javax.swing.JDialog {
                 this.showErrorDialog("dialog.error.missingvalues");
                 return;
             }
-            TrainType type = new TrainType(UUID.randomUUID().toString());
+            TrainType type = new TrainType(IdGenerator.getInstance().getId());
             type.setAbbr(abbr);
             type.setDesc(desc);
             type.setColor(Conversions.convertTextToColor(colorLabel.getText()));

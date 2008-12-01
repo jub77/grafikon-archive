@@ -1,12 +1,11 @@
 /*
- * ECListView.java
+ * TCListView.java
  *
  * Created on 12. září 2007, 13:35
  */
 package net.parostroj.timetable.gui.views;
 
 import java.util.List;
-import java.util.UUID;
 import javax.swing.DefaultListModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -15,6 +14,7 @@ import net.parostroj.timetable.gui.ApplicationModel;
 import net.parostroj.timetable.gui.ApplicationModelEvent;
 import net.parostroj.timetable.gui.ApplicationModelListener;
 import net.parostroj.timetable.model.TrainsCycle;
+import net.parostroj.timetable.utils.IdGenerator;
 import net.parostroj.timetable.utils.ResourceLoader;
 
 /**
@@ -176,7 +176,7 @@ private void deleteButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-
 private void createButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_createButtonActionPerformed
     // get name from text field (ignore shorter than one character
     if (newNameTextField.getText().length() > 0) {
-        TrainsCycle cycle = new TrainsCycle(UUID.randomUUID().toString(), newNameTextField.getText(),newNameTextField.getText(), delegate.getType());
+        TrainsCycle cycle = new TrainsCycle(IdGenerator.getInstance().getId(), newNameTextField.getText(),newNameTextField.getText(), delegate.getType());
         model.getDiagram().addCycle(cycle);
         
         // clear field

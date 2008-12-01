@@ -13,6 +13,7 @@ import javax.swing.DefaultListModel;
 import javax.swing.JOptionPane;
 import net.parostroj.timetable.gui.ApplicationModel;
 import net.parostroj.timetable.model.*;
+import net.parostroj.timetable.utils.IdGenerator;
 import net.parostroj.timetable.utils.ResourceLoader;
 import net.parostroj.timetable.utils.Tuple;
 
@@ -406,7 +407,7 @@ public class EditLineDialog extends javax.swing.JDialog {
         // show dialog with name question
         String name = JOptionPane.showInputDialog(this,"");
         if (name != null && !name.equals("")) {
-            LineTrack track = new LineTrack(UUID.randomUUID().toString(), name);
+            LineTrack track = new LineTrack(IdGenerator.getInstance().getId(), name);
             ((DefaultListModel)trackList.getModel()).addElement(track);
             connections.put(track, new Tuple<NodeTrack>(null, null));
             this.updateSelectedTrack(track);
