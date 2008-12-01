@@ -22,7 +22,8 @@ import net.parostroj.timetable.model.TrainDiagram;
  * @author jub
  */
 @XmlRootElement(name = "train")
-@XmlType(propOrder = {"id", "number", "desc", "type", "topSpeed", "start", "attributes", "route"})
+@XmlType(propOrder = {"id", "number", "desc", "type", "topSpeed", "start", "attributes",
+    "timeBefore", "timeAfter", "route"})
 public class LSTrain {
 
     private String id;
@@ -33,6 +34,8 @@ public class LSTrain {
     private int start;
     private LSAttributes attributes;
     private List<Object> route;
+    private int timeBefore;
+    private int timeAfter;
 
     public LSTrain() {
     }
@@ -44,6 +47,8 @@ public class LSTrain {
         this.type = train.getType().getId();
         this.topSpeed = train.getTopSpeed();
         this.start = train.getStartTime();
+        this.timeBefore = train.getTimeBefore();
+        this.timeAfter = train.getTimeAfter();
         this.attributes = new LSAttributes(train.getAttributes());
 
         // create route parts ...
@@ -107,6 +112,22 @@ public class LSTrain {
         this.type = type;
     }
 
+    public int getTimeAfter() {
+        return timeAfter;
+    }
+
+    public void setTimeAfter(int timeAfter) {
+        this.timeAfter = timeAfter;
+    }
+
+    public int getTimeBefore() {
+        return timeBefore;
+    }
+
+    public void setTimeBefore(int timeBefore) {
+        this.timeBefore = timeBefore;
+    }
+
     @XmlElementWrapper
     @XmlElements({
         @XmlElement(name = "node", type = LSTrainRoutePartNode.class),
@@ -149,6 +170,9 @@ public class LSTrain {
             }
         }
         builder.finish();
+        // set technological time
+        train.setTimeBefore(this.timeBefore);
+        train.setTimeAfter(this.timeAfter);
         return train;
     }
 }

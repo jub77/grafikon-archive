@@ -28,7 +28,7 @@ public class LSFileFactory {
         if (!initizalized) {
             registerWithClass(new ModelVersion(1, 0), "net.parostroj.timetable.model.save.LoadSave");
             registerWithClass(new ModelVersion(2, 0), "net.parostroj.timetable.model.save.LoadSave");
-            registerWithClass(new ModelVersion(3,0), "net.parostroj.timetable.model.ls.impl3.FileLoadSaveImpl");
+            registerWithClass(new ModelVersion(3, 0), "net.parostroj.timetable.model.ls.impl3.FileLoadSaveImpl");
             initizalized = true;
         }
         return instance;

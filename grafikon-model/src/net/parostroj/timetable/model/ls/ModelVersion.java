@@ -5,7 +5,7 @@ package net.parostroj.timetable.model.ls;
  * 
  * @author jub
  */
-public class ModelVersion {
+public class ModelVersion implements Comparable<ModelVersion> {
     private final String version;
     
     private final int majorVersion;
@@ -66,5 +66,20 @@ public class ModelVersion {
         hash = 47 * hash + this.majorVersion;
         hash = 47 * hash + this.minorVersion;
         return hash;
+    }
+
+    @Override
+    public int compareTo(ModelVersion o) {
+        if (this.majorVersion == o.majorVersion) {
+            if (this.minorVersion == o.minorVersion)
+                return 0;
+            else if (this.minorVersion < o.minorVersion)
+                return -1;
+            else
+                return 1;
+        } else if (this.majorVersion < o.majorVersion)
+            return -1;
+        else
+            return 1;
     }
 }

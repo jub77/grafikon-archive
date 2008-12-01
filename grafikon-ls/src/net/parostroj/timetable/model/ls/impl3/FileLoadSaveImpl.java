@@ -8,6 +8,7 @@ import java.util.zip.*;
 import net.parostroj.timetable.model.*;
 import net.parostroj.timetable.model.ls.FileLoadSave;
 import net.parostroj.timetable.model.ls.LSException;
+import net.parostroj.timetable.model.ls.ModelVersion;
 
 /**
  * Implementation of FileLoadSave for model versions 3.x.
@@ -18,7 +19,7 @@ public class FileLoadSaveImpl implements FileLoadSave {
 
     private static final String METADATA = "metadata.properties";
     private static final String METADATA_KEY_MODEL_VERSION = "model.version";
-    private static final String METADATA_MODEL_VERSION = "3.0";
+    private static final String METADATA_MODEL_VERSION = "3.1";
     private static final String DATA_TRAIN_DIAGRAM = "train_diagram.xml";
     private static final String DATA_NET = "net.xml";
     private static final String DATA_ROUTES = "routes/";
@@ -66,6 +67,15 @@ public class FileLoadSaveImpl implements FileLoadSave {
         return metadata;
     }
 
+    private void checkVersion(Properties props) throws LSException {
+        ModelVersion current = new ModelVersion(METADATA_MODEL_VERSION);
+        ModelVersion loaded = new ModelVersion(props.getProperty(METADATA_KEY_MODEL_VERSION));
+        System.out.println("Current: " + current);
+        System.out.println("Loaded: " + loaded);
+        if (current.compareTo(loaded) < 0)
+            throw new LSException(String.format("Current version [%s] is older than the version of loaded file [%s].", current.toString(), loaded.toString()));
+    }
+
     @Override
     public TrainDiagram load(ZipInputStream zipInput) throws LSException {
         try {
@@ -73,9 +83,13 @@ public class FileLoadSaveImpl implements FileLoadSave {
             TrainDiagramBuilder builder = null;
             FileLoadSaveImages loadImages = new FileLoadSaveImages(DATA_IMAGES);
             while ((entry = zipInput.getNextEntry()) != null) {
-                if (entry.getName().equals(METADATA))
-                    // skip metadata
+                if (entry.getName().equals(METADATA)) {
+                    // check major and minor version (do not allow load newer versions)
+                    Properties props = new Properties();
+                    props.load(zipInput);
+                    checkVersion(props);
                     continue;
+                }
                 if (entry.getName().equals(DATA_TRAIN_DIAGRAM)) {
                     LSTrainDiagram lstd = lss.load(zipInput, LSTrainDiagram.class);
                     builder = new TrainDiagramBuilder(lstd);
