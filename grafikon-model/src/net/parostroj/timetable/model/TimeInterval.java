@@ -254,6 +254,9 @@ public class TimeInterval implements AttributesHolder, ObjectWithId {
         end += timeShift;
     }
 
+    /**
+     * moves interval to specified starting time.
+     */
     public void move(int aStart) {
         int length = this.getLength();
         this.start = aStart;

@@ -4,8 +4,7 @@ import java.util.*;
 import net.parostroj.timetable.actions.TrainsCycleHelper;
 import net.parostroj.timetable.model.events.TrainEvent;
 import net.parostroj.timetable.model.events.TrainListener;
-import net.parostroj.timetable.utils.Pair;
-import net.parostroj.timetable.utils.Tuple;
+import net.parostroj.timetable.utils.*;
 
 /**
  * Train.
@@ -38,6 +37,10 @@ public class Train implements AttributesHolder, ObjectWithId {
     private GTListenerSupport<TrainListener, TrainEvent> listenerSupport;
     private boolean attached;
 
+    /* Technological times. */
+    private TimeInterval timeBefore;
+    private TimeInterval timeAfter;
+
     /**
      * Constructor.
      * 
@@ -56,6 +59,8 @@ public class Train implements AttributesHolder, ObjectWithId {
             }
         });
         attached = false;
+        timeBefore = null;
+        timeAfter = null;
     }
 
     /**
@@ -79,10 +84,18 @@ public class Train implements AttributesHolder, ObjectWithId {
         return id;
     }
 
+    /**
+     * adds listener to train.
+     * @param listener listener
+     */
     public void addListener(TrainListener listener) {
         listenerSupport.addListener(listener);
     }
 
+    /**
+     * removes listener from train.
+     * @param listener listener
+     */
     public void removeListener(TrainListener listener) {
         listenerSupport.removeListener(listener);
     }
@@ -190,6 +203,9 @@ public class Train implements AttributesHolder, ObjectWithId {
         return Collections.unmodifiableList(timeIntervalList);
     }
 
+    /**
+     * @return map with trains' cycle items
+     */
     public Map<TrainsCycleType, List<TrainsCycleItem>> getCyclesMap() {
         EnumMap<TrainsCycleType, List<TrainsCycleItem>> modMap = new EnumMap<TrainsCycleType, List<TrainsCycleItem>>(TrainsCycleType.class);
         for (Map.Entry<TrainsCycleType, List<TrainsCycleItem>> entry : cycles.entrySet()) {
@@ -198,10 +214,18 @@ public class Train implements AttributesHolder, ObjectWithId {
         return Collections.unmodifiableMap(cycles);
     }
 
+    /**
+     * @param type type of the cycles
+     * @return list with trains' cycle items of specified type (list cannot be modified)
+     */
     public List<TrainsCycleItem> getCycles(TrainsCycleType type) {
         return Collections.unmodifiableList(this.getCyclesIntern(type));
     }
 
+    /**
+     * @param type type of the cycles
+     * @return list with trains' cycle items - for internal use only, the list can be modified
+     */
     private List<TrainsCycleItem> getCyclesIntern(TrainsCycleType type) {
         if (!cycles.containsKey(type)) {
             cycles.put(type, new LinkedList<TrainsCycleItem>());
@@ -209,18 +233,30 @@ public class Train implements AttributesHolder, ObjectWithId {
         return cycles.get(type);
     }
 
+    /**
+     * @param item train's cycle item to be added
+     */
     protected void addCycleItem(TrainsCycleItem item) {
         TrainsCycleType cycleType = item.getCycle().getType();
         TrainsCycleHelper.getHelper().addCycleItem(this.getTimeIntervalList(), this.getCyclesIntern(cycleType), item, true);
         this.listenerSupport.fireEvent(new TrainEvent(this, TrainEvent.Type.CYCLE_ITEM));
     }
 
+    /**
+     * @param item train's cycle item to be removed
+     */
     protected void removeCycleItem(TrainsCycleItem item) {
         TrainsCycleType cycleType = item.getCycle().getType();
         this.getCyclesIntern(cycleType).remove(item);
         this.listenerSupport.fireEvent(new TrainEvent(this, TrainEvent.Type.CYCLE_ITEM));
     }
-    
+
+    /**
+     * @param type trains' cycle type
+     * @param interval time interval
+     * @return train's cycle item that covers given interval (if there are more than one interval,
+     * it returns the first one)
+     */
     public TrainsCycleItem getCycleItemForInterval(TrainsCycleType type, TimeInterval interval) {
         List<TrainsCycleItem> items = this.getCyclesIntern(type);
         for (TrainsCycleItem item : items) {
@@ -230,10 +266,16 @@ public class Train implements AttributesHolder, ObjectWithId {
         return null;
     }
 
+    /**
+     * @return attributes
+     */
     public Attributes getAttributes() {
         return attributes;
     }
 
+    /**
+     * @param attributes attributes to be set
+     */
     public void setAttributes(Attributes attributes) {
         this.clearCachedData();
         this.attributes = attributes;
@@ -264,10 +306,15 @@ public class Train implements AttributesHolder, ObjectWithId {
      */
     public boolean isConflicting() {
         for (TimeInterval interval : timeIntervalList) {
-            if (interval.getOverlappingIntervals() != null && interval.getOverlappingIntervals().size() != 0) {
+            if (interval.isOverlapping()) {
                 return true;
             }
         }
+        // test technological times
+        if ((timeBefore != null && timeBefore.isOverlapping()) ||
+                (timeAfter != null && timeAfter.isOverlapping()))
+            return true;
+        // no conflict found
         return false;
     }
 
@@ -275,21 +322,34 @@ public class Train implements AttributesHolder, ObjectWithId {
      * @return set of train with conflicts with this train
      */
     public Set<Train> getConflictingTrains() {
-        Set<Train> conflictingTrains = null;
+        ReferenceHolder<Set<Train>> conflictsRef = new ReferenceHolder<Set<Train>>();
         for (TimeInterval interval : timeIntervalList) {
-            if (interval.getOverlappingIntervals() != null && interval.getOverlappingIntervals().size() != 0) {
-                for (TimeInterval i2 : interval.getOverlappingIntervals()) {
-                    if (conflictingTrains == null) {
-                        conflictingTrains = new HashSet<Train>();
-                    }
-                    conflictingTrains.add(i2.getTrain());
-                }
-            }
+            this.addOverlappingTrains(interval, conflictsRef);
         }
-        if (conflictingTrains == null) {
+        // test technologic intervals
+        this.addOverlappingTrains(timeBefore, conflictsRef);
+        this.addOverlappingTrains(timeAfter, conflictsRef);
+        // return result
+        if (conflictsRef.get() == null) {
             return Collections.emptySet();
         } else {
-            return conflictingTrains;
+            return conflictsRef.get();
+        }
+    }
+
+    /**
+     * adds conflicting trains into the set
+     * @param interval time interval
+     * @param conflictsRef set of trains
+     */
+    private void addOverlappingTrains(TimeInterval interval, ReferenceHolder<Set<Train>> conflictsRef) {
+        if (interval != null && interval.isOverlapping()) {
+            for (TimeInterval i2 : interval.getOverlappingIntervals()) {
+                if (conflictsRef.get() == null) {
+                    conflictsRef.set(new HashSet<Train>());
+                }
+                conflictsRef.get().add(i2.getTrain());
+            }
         }
     }
 
@@ -342,6 +402,98 @@ public class Train implements AttributesHolder, ObjectWithId {
     }
 
     /**
+     * @param length technological time before train's start
+     */
+    public void setTimeBefore(int length) {
+        if (length == 0 && timeBefore != null) {
+            if (isAttached())
+                timeBefore.removeFromOwner();
+            timeBefore = null;
+        } else if (length != 0 && timeBefore == null) {
+            TimeInterval firstInterval = this.getFirstInterval();
+            timeBefore = new TimeInterval(IdGenerator.getInstance().getId(), this, firstInterval.getOwner(),
+                    firstInterval.getStart() - length, firstInterval.getStart() - 1,
+                    TimeIntervalType.TIME_BEFORE, firstInterval.getTrack());
+            if (isAttached())
+                timeBefore.addToOwner();
+        } else if (length != 0 && timeBefore != null) {
+            TimeInterval firstInterval = this.getFirstInterval();
+            if (isAttached())
+                timeBefore.removeFromOwner();
+            // recalculate time
+            timeBefore.setStart(firstInterval.getStart() - length);
+            timeBefore.setLength(length - 1);
+            timeBefore.setTrack(firstInterval.getTrack());
+            if (isAttached())
+                timeBefore.addToOwner();
+        }
+    }
+
+    /**
+     * @param length technological time after train's end
+     */
+    public void setTimeAfter(int length) {
+        if (length == 0 && timeAfter != null) {
+            if (isAttached())
+                timeAfter.removeFromOwner();
+            timeAfter = null;
+        } else if (length != 0 && timeAfter == null) {
+            TimeInterval lastInterval = this.getLastInterval();
+            timeAfter = new TimeInterval(IdGenerator.getInstance().getId(), this, lastInterval.getOwner(),
+                    lastInterval.getEnd() + 1, lastInterval.getEnd() + length,
+                    TimeIntervalType.TIME_AFTER, lastInterval.getTrack());
+            if (isAttached())
+                timeAfter.addToOwner();
+        } else if (length != 0 && timeAfter != null) {
+            TimeInterval lastInterval = this.getLastInterval();
+            if (isAttached())
+                timeAfter.removeFromOwner();
+            // recalculate time
+            timeAfter.setStart(lastInterval.getEnd() + 1);
+            timeAfter.setLength(length - 1);
+            timeAfter.setTrack(lastInterval.getTrack());
+            if (isAttached())
+                timeAfter.addToOwner();
+        }
+    }
+
+    /**
+     * @return technological time before train's start
+     */
+    public int getTimeBefore() {
+        return (timeBefore == null) ? 0 : timeBefore.getLength() + 1;
+    }
+
+    /**
+     * @return technological time after train's end
+     */
+    public int getTimeAfter() {
+        return (timeAfter == null) ? 0 : timeAfter.getLength() + 1;
+    }
+
+    /**
+     * @return technological time interval before train's start
+     */
+    public TimeInterval getTimeIntervalBefore() {
+        return timeBefore;
+    }
+
+    /**
+     * @return technological time interval after train's end
+     */
+    public TimeInterval getTimeIntervalAfter() {
+        return timeAfter;
+    }
+
+    /**
+     * updates technological times.
+     */
+    private void updateTechnologicalTimes() {
+        this.setTimeBefore(this.getTimeBefore());
+        this.setTimeAfter(this.getTimeAfter());
+    }
+
+    /**
      * shifts train with specified amount of time. The value can be
      * positive for shifting forwards or negative for 
      * 
@@ -349,6 +501,7 @@ public class Train implements AttributesHolder, ObjectWithId {
      */
     public void shift(int timeShift) {
         timeIntervalList.shift(timeShift, isAttached());
+        this.updateTechnologicalTimes();
         this.listenerSupport.fireEvent(new TrainEvent(this, TrainEvent.Type.TIME_INTERVAL_LIST));
     }
 
@@ -359,6 +512,7 @@ public class Train implements AttributesHolder, ObjectWithId {
      */
     public void move(int time) {
         timeIntervalList.move(time, isAttached());
+        this.updateTechnologicalTimes();
         this.listenerSupport.fireEvent(new TrainEvent(this, TrainEvent.Type.TIME_INTERVAL_LIST));
     }
 
@@ -422,6 +576,7 @@ public class Train implements AttributesHolder, ObjectWithId {
             changed = false;
             nextStart = interval.getEnd();
         }
+        this.updateTechnologicalTimes();
         this.listenerSupport.fireEvent(new TrainEvent(this, TrainEvent.Type.TIME_INTERVAL_LIST));
     }
 
@@ -462,6 +617,7 @@ public class Train implements AttributesHolder, ObjectWithId {
                 moveNext = true;
             }
         }
+        this.updateTechnologicalTimes();
         this.listenerSupport.fireEvent(new TrainEvent(this, TrainEvent.Type.TIME_INTERVAL_LIST));
     }
 
@@ -481,6 +637,7 @@ public class Train implements AttributesHolder, ObjectWithId {
             if (isAttached())
                 nodeInterval.addToOwner();
         }
+        this.updateTechnologicalTimes();
         this.listenerSupport.fireEvent(new TrainEvent(this, TrainEvent.Type.TIME_INTERVAL_LIST));
     }
 
@@ -500,6 +657,7 @@ public class Train implements AttributesHolder, ObjectWithId {
             if (isAttached())
                 lineInterval.addToOwner();
         }
+        // we do not need to update technological times
         this.listenerSupport.fireEvent(new TrainEvent(this, TrainEvent.Type.TIME_INTERVAL_LIST));
     }
 
@@ -542,6 +700,7 @@ public class Train implements AttributesHolder, ObjectWithId {
             }
             nextStart = interval.getEnd();
         }
+        this.updateTechnologicalTimes();
         this.listenerSupport.fireEvent(new TrainEvent(this, TrainEvent.Type.TIME_INTERVAL_LIST));
     }
 
@@ -673,6 +832,10 @@ public class Train implements AttributesHolder, ObjectWithId {
         for (TimeInterval interval : timeIntervalList) {
             interval.addToOwner();
         }
+        if (timeBefore != null)
+            timeBefore.addToOwner();
+        if (timeAfter != null)
+            timeAfter.addToOwner();
         attached = true;
     }
 
@@ -686,6 +849,10 @@ public class Train implements AttributesHolder, ObjectWithId {
         for (TimeInterval interval : timeIntervalList) {
             interval.removeFromOwner();
         }
+        if (timeBefore != null)
+            timeBefore.removeFromOwner();
+        if (timeAfter != null)
+            timeAfter.removeFromOwner();
         attached = false;
     }
     

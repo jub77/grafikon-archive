@@ -16,7 +16,7 @@ import net.parostroj.timetable.model.events.TrainEvent;
  */
 public class TrainsCycleItem {
 
-    private Train train;
+    private final Train train;
     private String comment;
     private final TrainsCycle cycle;
     private final TimeInterval from;

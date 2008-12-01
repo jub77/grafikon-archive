@@ -2,7 +2,8 @@ package net.parostroj.timetable.model;
 
 public enum TimeIntervalType {
     
-    LINE_START_THROUGH, LINE_THROUGH_STOP, NODE_THROUGH, NODE_STOP, NODE_START, NODE_END, LINE_START_STOP, LINE_THROUGH;
+    LINE_START_THROUGH, LINE_THROUGH_STOP, NODE_THROUGH, NODE_STOP, NODE_START, NODE_END, LINE_START_STOP, LINE_THROUGH,
+    TIME_BEFORE, TIME_AFTER;
     
     public boolean isNextStop() {
         return (this == LINE_THROUGH_STOP || this == LINE_START_STOP);
@@ -46,5 +47,9 @@ public enum TimeIntervalType {
 
     public boolean isStop() {
         return this==NODE_END || this==NODE_START || this==NODE_STOP;
+    }
+
+    public boolean isTechnological() {
+        return this == TIME_BEFORE || this == TIME_AFTER;
     }
 }

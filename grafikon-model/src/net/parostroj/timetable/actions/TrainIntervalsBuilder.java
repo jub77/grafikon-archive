@@ -3,9 +3,9 @@ package net.parostroj.timetable.actions;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
-import java.util.UUID;
 import java.util.logging.Logger;
 import net.parostroj.timetable.model.*;
+import net.parostroj.timetable.utils.IdGenerator;
 
 /**
  * Builder for creating trains.
@@ -34,7 +34,7 @@ public class TrainIntervalsBuilder {
     public void addNode(String intervalId, Node node, NodeTrack track, int stop, Attributes attributes) {
         if (intervalId == null) {
             LOG.warning("Adding interval with not specified id (fix - generated): " + node);
-            intervalId = UUID.randomUUID().toString();
+            intervalId = IdGenerator.getInstance().getId();
         }
         if (finished) {
             throw new IllegalStateException("Cannot add node time interval to finished train.");
@@ -56,7 +56,7 @@ public class TrainIntervalsBuilder {
     public void addLine(String intervalId, Line line, LineTrack track, int speed, Attributes attributes) {
         if (intervalId == null) {
             LOG.warning("Adding interval with not specified id (fix - generated): " + line);
-            intervalId = UUID.randomUUID().toString();
+            intervalId = IdGenerator.getInstance().getId();
         }
         if (finished) {
             throw new IllegalStateException("Cannot add line time interval to finished train.");
