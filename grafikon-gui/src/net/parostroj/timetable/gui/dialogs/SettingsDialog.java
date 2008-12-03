@@ -86,6 +86,15 @@ public class SettingsDialog extends javax.swing.JDialog implements ApplicationMo
             stationLengthUnitTextField.setEnabled(!lengthInAxlesCheckBox.isSelected());
             String stationLengthUnit = (String)model.getDiagram().getAttribute("station.length.unit");
             stationLengthUnitTextField.setText(stationLengthUnit == null ? "" : stationLengthUnit);
+
+            // weight ratios
+            Double emptyRatio = (Double)model.getDiagram().getAttribute("weight.ratio.empty");
+            Double loadedRatio = (Double)model.getDiagram().getAttribute("weight.ratio.loaded");
+
+            if (emptyRatio != null)
+                emptyRatioTextField.setText(emptyRatio.toString());
+            if (loadedRatio != null)
+                loadedRatioTextField.setText(loadedRatio.toString());
         }
     }
 
@@ -125,6 +134,12 @@ public class SettingsDialog extends javax.swing.JDialog implements ApplicationMo
         lengthInAxlesCheckBox = new javax.swing.JCheckBox();
         jLabel7 = new javax.swing.JLabel();
         stationLengthUnitTextField = new javax.swing.JTextField();
+        ratioPanel = new javax.swing.JPanel();
+        javax.swing.JLabel jLabel8 = new javax.swing.JLabel();
+        javax.swing.JLabel jLabel9 = new javax.swing.JLabel();
+        emptyRatioTextField = new javax.swing.JTextField();
+        javax.swing.JLabel jLabel10 = new javax.swing.JLabel();
+        loadedRatioTextField = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         setTitle(ResourceLoader.getString("modelinfo")); // NOI18N
@@ -175,7 +190,7 @@ public class SettingsDialog extends javax.swing.JDialog implements ApplicationMo
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 12;
+        gridBagConstraints.gridy = 13;
         gridBagConstraints.gridwidth = 3;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
         gridBagConstraints.weighty = 1.0;
@@ -281,6 +296,31 @@ public class SettingsDialog extends javax.swing.JDialog implements ApplicationMo
         gridBagConstraints.insets = new java.awt.Insets(0, 10, 5, 10);
         getContentPane().add(stationLengthUnitTextField, gridBagConstraints);
 
+        ratioPanel.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
+
+        jLabel8.setText(ResourceLoader.getString("modelinfo.weight.ratio")); // NOI18N
+        ratioPanel.add(jLabel8);
+
+        jLabel9.setText(ResourceLoader.getString("modelinfo.weight.ratio.empty")); // NOI18N
+        ratioPanel.add(jLabel9);
+
+        emptyRatioTextField.setColumns(10);
+        ratioPanel.add(emptyRatioTextField);
+
+        jLabel10.setText(ResourceLoader.getString("modelinfo.weight.ratio.loaded")); // NOI18N
+        ratioPanel.add(jLabel10);
+
+        loadedRatioTextField.setColumns(10);
+        ratioPanel.add(loadedRatioTextField);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 12;
+        gridBagConstraints.gridwidth = 3;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        getContentPane().add(ratioPanel, gridBagConstraints);
+
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
@@ -345,6 +385,17 @@ public class SettingsDialog extends javax.swing.JDialog implements ApplicationMo
         else
             model.getDiagram().setAttribute("station.length.unit", stationLengthUnitTextField.getText());
 
+        // weight ratios
+        try {
+            Double emptyRatio = Double.valueOf(emptyRatioTextField.getText());
+            Double loadedRatio = Double.valueOf(loadedRatioTextField.getText());
+
+            model.getDiagram().setAttribute("weight.ratio.empty", emptyRatio);
+            model.getDiagram().setAttribute("weight.ratio.loaded", loadedRatio);
+        } catch (NumberFormatException e) {
+            LOG.warning("Cannot convert weight ratios to doubles: " + e.getMessage());
+        }
+
         // update model
         for (Train train : model.getDiagram().getTrains()) {
             train.recalculate(model.getDiagram());
@@ -374,13 +425,16 @@ public class SettingsDialog extends javax.swing.JDialog implements ApplicationMo
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton cancelButton;
     private javax.swing.JTextField completeNameTemplateTextField;
+    private javax.swing.JTextField emptyRatioTextField;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JCheckBox lengthInAxlesCheckBox;
+    private javax.swing.JTextField loadedRatioTextField;
     private javax.swing.JTextField nameTemplateTextField;
     private javax.swing.JButton okButton;
     private javax.swing.JPanel panel1;
     private javax.swing.JComboBox ratioComboBox;
+    private javax.swing.JPanel ratioPanel;
     private javax.swing.JComboBox scaleComboBox;
     private javax.swing.JComboBox sortComboBox;
     private javax.swing.JTextField stationLengthUnitTextField;
