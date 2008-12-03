@@ -10,6 +10,9 @@ import java.io.Writer;
 import java.util.Collection;
 import java.util.Formatter;
 import java.util.List;
+import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import net.parostroj.timetable.actions.NodeSort;
 import net.parostroj.timetable.actions.TrainsHelper;
 import net.parostroj.timetable.model.*;
@@ -22,13 +25,17 @@ import net.parostroj.timetable.utils.*;
  */
 public class NodeTimetablesList {
     
+    private static final Logger LOG = Logger.getLogger(NodeTimetablesList.class.getName());
+
     private List<Node> nodes;
     private NodeTimetablesListTemplates templates;
+    private TrainDiagram diagram;
 
-    public NodeTimetablesList(Collection<Node> aNodes) {
+    public NodeTimetablesList(Collection<Node> aNodes, TrainDiagram diagram) {
         NodeSort s = new NodeSort(NodeSort.Type.ASC);
         nodes = s.sortWithoutSignals(aNodes);
         templates = new NodeTimetablesListTemplates();
+        this.diagram = diagram;
     }
 
     public void writeTo(Writer writer) throws IOException {
@@ -146,6 +153,8 @@ public class NodeTimetablesList {
         }
     }
 
+    private static Pattern NUMBER = Pattern.compile("\\d+");
+
     private void generateCommentWithWeight(TimeInterval interval, StringBuilder comment) {
         Train train = interval.getTrain();
         TimeInterval nextInterval = train.getIntervalAfter(interval);
@@ -166,6 +175,33 @@ public class NodeTimetablesList {
                     comment.append(weightStr);
                     comment.append("t]");
                 }
+                // try to convert weight string to number
+                if (weightStr != null) {
+                    try {
+                        Matcher matcher = NUMBER.matcher(weightStr);
+                        if (matcher.find()) {
+                            String number = matcher.group(0);
+                            weight = Integer.valueOf(number);
+                        }
+                    } catch (NumberFormatException e) {
+                        LOG.fine("Cannot convert weight to number: " + weightStr);
+                    }
+                }
+            }
+            // if weight is computed the convert to length
+            Integer length = TrainsHelper.convertWeightToLengt(train, diagram, weight);
+            if (length != null) {
+                comment.append("[");
+                comment.append(length);
+                String lengthUnit = null;
+                if (Boolean.TRUE.equals(diagram.getAttribute("station.length.in.axles"))) {
+                    lengthUnit = " " + TrainTimetablesListTemplates.getString("length.axles");
+                } else {
+                    lengthUnit = (String)diagram.getAttribute("station.length.unit");
+                }
+                if (lengthUnit == null)
+                    lengthUnit = "";
+                comment.append(lengthUnit).append("]");
             }
         }
     }
