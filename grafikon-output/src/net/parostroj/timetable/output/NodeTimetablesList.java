@@ -157,9 +157,8 @@ public class NodeTimetablesList {
 
     private void generateCommentWithWeight(TimeInterval interval, StringBuilder comment) {
         Train train = interval.getTrain();
-        TimeInterval nextInterval = train.getIntervalAfter(interval);
-        if (nextInterval != null) {
-            Integer weight = TrainsHelper.getWeight(nextInterval);
+        if (interval.getTrain().getIntervalAfter(interval) != null) {
+            Integer weight = TrainsHelper.getNextWeight(interval.getOwnerAsNode(), train);
             if (weight != null) {
                 // new style of weight information
                 this.appendDelimiter(comment);

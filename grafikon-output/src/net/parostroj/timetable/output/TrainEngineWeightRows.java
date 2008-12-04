@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import net.parostroj.timetable.actions.TrainsHelper;
 import net.parostroj.timetable.model.*;
 import net.parostroj.timetable.utils.*;
 
@@ -24,18 +25,11 @@ public class TrainEngineWeightRows {
     }
 
     private void processData() {
-        // create list of lines ...
-        List<Pair<TimeInterval, TrainsCycleItem>> lines = new LinkedList<Pair<TimeInterval, TrainsCycleItem>>();
-        for (TimeInterval i : train.getTimeIntervalList()) {
-            if (i.isLineOwner()) {
-                lines.add(new Pair<TimeInterval, TrainsCycleItem>(i, null));
-            }
-        }
-
-        if (!this.checkLineClasses(lines) || !this.checkEngineClasses()) {
+        if (!this.checkLineClasses() || !this.checkEngineClasses()) {
             this.processOld();
         } else {
-            this.processNew(lines);
+            this.processNew();
+            this.collapseData();
         }
     }
 
@@ -52,76 +46,75 @@ public class TrainEngineWeightRows {
         }
     }
 
-    private void processNew(List<Pair<TimeInterval, TrainsCycleItem>> lines) {
-        // engines
-        List<TrainsCycleItem> items = train.getCycles(TrainsCycleType.ENGINE_CYCLE);
-        Iterator<TrainsCycleItem> i = items.iterator();
-        TrainsCycleItem current = i.next();
-        boolean in = false;
-        for (Pair<TimeInterval, TrainsCycleItem> pair : lines) {
-            Train modelTrain = pair.first.getTrain();
-            if (current != null && modelTrain.getIntervalBefore(pair.first) == current.getFromInterval()) {
-                in = true;
-            }
-            if (in) {
-                pair.second = current;
-            }
-            if (current != null && modelTrain.getIntervalAfter(pair.first) == current.getToInterval()) {
-                in = false;
-                current = i.hasNext() ? i.next() : null;
-            }
-        }
+    private void processNew() {
+        List<Pair<TimeInterval, Pair<Integer, TrainsCycleItem>>> list = TrainsHelper.getWeightList(train);
 
-        // generate data
-        Iterator<Pair<TimeInterval, TrainsCycleItem>> iter = lines.iterator();
-        Pair<TimeInterval, TrainsCycleItem> currentPair;
-        TrainsCycleItem lastItem = null;
-        TrainsCycleItem lastWrittenItem = null;
-        Integer lastWeight = null;
-        Node from = null;
-        in = false;
+        if (list == null)
+            return;
 
-        while (iter.hasNext()) {
-            currentPair = iter.next();
-            TimeInterval currentInterval = currentPair.first;
-            Train currentTrain = currentInterval.getTrain();
-            TrainsCycleItem currentCycleItem = currentPair.second;
-            LineClass currentLineClass = (LineClass) currentInterval.getOwnerAsLine().getAttribute("line.class");
-            Integer currentWeight = null;
-            if (currentCycleItem != null) {
-                currentWeight = ((EngineClass) currentCycleItem.getCycle().getAttribute("engine.class")).getWeightTableRowForSpeed(currentInterval.getSpeed()).getWeight(currentLineClass);
-            }
-            boolean written = false;
-            if (currentCycleItem != null && currentTrain.getIntervalBefore(currentInterval) == currentCycleItem.getFromInterval()) {
-                in = true;
-                from = currentInterval.getFrom();
-            }
+        Integer weight = null;
+        Node startNode = null;
+        TrainsCycle cycle = null;
+        for (int i = 0; i < list.size(); i++) {
+            Pair<TimeInterval, Pair<Integer, TrainsCycleItem>> item = list.get(i);
 
-            if (!written && in && lastWeight != null && currentWeight.intValue() != lastWeight.intValue()) {
-                data.add(new TrainEWDataRow(lastWrittenItem == lastItem ? null : lastItem, from, currentInterval.getFrom(), lastWeight));
-                lastWrittenItem = lastItem;
-                from = currentInterval.getFrom();
-                written = true;
+            if (item.first.isLineOwner()) {
+                // process line interval
+                if (weight == null || weight > item.second.first)
+                    weight = item.second.first;
+                cycle = item.second.second.getCycle();
+            } else {
+                // process node interval
+                if (startNode == null)
+                    startNode = item.first.getOwnerAsNode();
+                else {
+                    boolean process = false;
+                    if (item.first.getType() == TimeIntervalType.NODE_END)
+                        process = true;
+                    else {
+                        Pair<TimeInterval, Pair<Integer, TrainsCycleItem>> itemNext = list.get(i + 1);
+                        if (cycle != null && !cycle.equals(itemNext.second.second.getCycle()))
+                            process = true;
+                        if (weight != null && item.first.getType().isStop())
+                            process = true;
+                    }
+                    if (process) {
+                        // add data
+                        data.add(new TrainEWDataRow(cycle, startNode, item.first.getOwnerAsNode(), weight));
+                        // set new start node
+                        startNode = item.first.getOwnerAsNode();
+                    }
+                }
             }
-
-            if (in && currentTrain.getIntervalAfter(currentInterval) == currentCycleItem.getToInterval()) {
-                in = false;
-                data.add(new TrainEWDataRow(lastWrittenItem == currentCycleItem ? null : currentCycleItem, from, currentInterval.getTo(), currentWeight));
-                currentCycleItem = null;
-                currentWeight = null;
-                lastWrittenItem = null;
-                written = true;
-            }
-
-            lastItem = currentCycleItem;
-            lastWeight = currentWeight;
         }
     }
 
-    private boolean checkLineClasses(List<Pair<TimeInterval, TrainsCycleItem>> lines) {
-        for (Pair<TimeInterval, ?> pair : lines) {
-            if (pair.first.getOwnerAsLine().getAttribute("line.class") == null) {
-                return false;
+    private void collapseData() {
+        Iterator<TrainEWDataRow> i = data.listIterator();
+        TrainEWDataRow lastRow = i.next();
+        while (i.hasNext()) {
+            TrainEWDataRow row = i.next();
+            if (lastRow.getEngine().equals(row.getEngine()) && lastRow.getWeight().equals(row.getWeight())) {
+                lastRow.setTo(row.getTo());
+                i.remove();
+            } else {
+                if (lastRow.getEngine().equals(row.getEngine()))
+                    row.setEngine(null);
+                lastRow = row;
+            }
+        }
+        // set from to to null, where there is only one row
+        if (data.size() == 1) {
+            lastRow.setFrom(null);
+            lastRow.setTo(null);
+        }
+    }
+
+    private boolean checkLineClasses() {
+        for (TimeInterval interval : train.getTimeIntervalList()) {
+            if (interval.isLineOwner()) {
+                if (interval.getOwnerAsLine().getAttribute("line.class") == null)
+                    return false;
             }
         }
         return true;
@@ -147,13 +140,13 @@ public class TrainEngineWeightRows {
 
 class TrainEWDataRow {
 
-    private final String engine;
-    private final String from;
-    private final String to;
-    private final String weight;
+    private String engine;
+    private String from;
+    private String to;
+    private String weight;
 
-    public TrainEWDataRow(TrainsCycleItem item, Node from, Node to, Integer weight) {
-        this.engine = item != null ? TransformUtil.getEngineCycleDescription(item.getCycle()) : null;
+    public TrainEWDataRow(TrainsCycle cycle, Node from, Node to, Integer weight) {
+        this.engine = cycle != null ? TransformUtil.getEngineCycleDescription(cycle) : null;
         this.from = from.getName();
         this.to = to.getName();
         this.weight = weight.toString();
@@ -185,5 +178,21 @@ class TrainEWDataRow {
 
     public String getWeight() {
         return weight;
+    }
+
+    public void setTo(String to) {
+        this.to = to;
+    }
+
+    public void setEngine(String engine) {
+        this.engine = engine;
+    }
+
+    public void setFrom(String from) {
+        this.from = from;
+    }
+
+    public void setWeight(String weight) {
+        this.weight = weight;
     }
 }

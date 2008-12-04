@@ -296,8 +296,8 @@ public class TrainTimetable {
         String headerDataString = null;
         if (rows.size() == 0) {
             headerDataString = "";
-        } else if (rows.size() == 1 && rows.get(0).getFrom() == null) {
-            headerDataString = createOneWeightLine(weightRowTemplate, rows.get(0));
+        } else if (rows.size() == 1 && rows.get(0).getFrom() == null && rows.get(0).getEngine() == null) {
+            headerDataString = createOneWeightLineOneCell(rows.get(0).getWeight());
         } else {
             StringBuilder builder = new StringBuilder();
             for (TrainEWDataRow row : rows) {
@@ -356,6 +356,10 @@ public class TrainTimetable {
         String path = (row.getFrom() != null) ? row.getFrom() + " - " + row.getTo() + " &nbsp;" : "";
         String wString = (row.getWeight() == null) ? "" : (row.getWeight() + " " + TrainTimetablesListTemplates.getString("tons"));
         return String.format(template, engineCycleDesc, weightDescStr, path, wString);
+    }
+
+    private String createOneWeightLineOneCell(String weight) {
+        return String.format(templates.getTimetableHeaderWeightLineOneCell(), weight);
     }
     
     private String convertLastRunningTime(int time) {
