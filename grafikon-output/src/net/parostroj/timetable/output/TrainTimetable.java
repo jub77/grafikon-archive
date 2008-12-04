@@ -27,6 +27,7 @@ public class TrainTimetable {
     private TrainTimetablesListTemplates templates;
     private List<Pair<String, String>> comments;
     private TrainEngineWeightRows weightRows;
+    private String lengthStr;
 
     public TrainTimetable(Train train, TrainTimetablesListTemplates templates, TrainDiagram diagram) {
         this.train = train;
@@ -34,6 +35,7 @@ public class TrainTimetable {
         this.templates = templates;
         d3 = train.oneLineHasAttribute("line.controlled", Boolean.TRUE);
         weightRows = new TrainEngineWeightRows(train);
+        lengthStr = this.createLengthLine();
 
         this.computeLength();
     }
@@ -54,6 +56,10 @@ public class TrainTimetable {
         
         // route
         if (train.getAttribute("route.info") != null && !((String)train.getAttribute("route.info")).trim().equals(""))
+            length += templates.getTimetableHeaderRouteHeight();
+
+        // train's length information
+        if (lengthStr != null)
             length += templates.getTimetableHeaderRouteHeight();
 
         // compute comments
@@ -299,7 +305,7 @@ public class TrainTimetable {
             }
             headerDataString = builder.toString();
         }
-        String lengthStr = this.createLengthLine();
+        lengthStr = this.createLengthLine();
         if (lengthStr != null)
             headerDataString += lengthStr;
         String trainLine = train.getCompleteName();
