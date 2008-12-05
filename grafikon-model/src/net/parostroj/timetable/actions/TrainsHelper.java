@@ -34,7 +34,7 @@ public class TrainsHelper {
         return retValue;
     }
 
-    public static final Integer convertWeightToLengt(Train train, TrainDiagram diagram, Integer weight) {
+    public static final Integer convertWeightToLength(Train train, TrainDiagram diagram, Integer weight) {
         Double ratio = Boolean.TRUE.equals(train.getAttribute("empty")) ?
             (Double)diagram.getAttribute("weight.ratio.empty") :
             (Double)diagram.getAttribute("weight.ratio.loaded");
@@ -81,6 +81,18 @@ public class TrainsHelper {
         return result;
     }
 
+    public static final List<Pair<TimeInterval, Pair<Integer, TrainsCycleItem>>> getLengthList(Train train, TrainDiagram diagram) {
+        List<Pair<TimeInterval, Pair<Integer, TrainsCycleItem>>> result = getWeightList(train);
+        convertWeightToLength(result, diagram);
+        return result;
+    }
+
+    public static final void convertWeightToLength(List<Pair<TimeInterval, Pair<Integer, TrainsCycleItem>>> list, TrainDiagram diagram) {
+        for (Pair<TimeInterval, Pair<Integer, TrainsCycleItem>> pair : list) {
+            convertWeightToLength(pair.first.getTrain(), diagram, pair.second.first);
+        }
+    }
+
     public static final Integer getNextWeight(Node node, Train train) {
         List<Pair<TimeInterval, Pair<Integer, TrainsCycleItem>>> weightList = getWeightList(train);
         Integer retValue = null;
@@ -107,5 +119,46 @@ public class TrainsHelper {
             }
         }
         return retValue;
+    }
+
+    public static final Integer getNextLength(Node node, Train train, TrainDiagram diagram) {
+        Integer result = getNextWeight(node, train);
+        if (result != null) {
+            result = convertWeightToLength(train, diagram, result);
+        }
+        return result;
+    }
+
+    public static final Integer updateNextLengthWithStationLengths(Node node, Train train, Integer length) {
+        Iterator<TimeInterval> i = train.getTimeIntervalList().iterator();
+        // look for current node
+        while (i.hasNext()) {
+            TimeInterval interval = i.next();
+            if (interval.isNodeOwner()) {
+                if (interval.getOwnerAsNode() == node) {
+                    length = updateWithStationLength(node, length);
+                    break;
+                }
+            }
+        }
+        // check next stop
+        while (i.hasNext()) {
+            TimeInterval interval = i.next();
+            if (interval.isNodeOwner()) {
+                if (interval.getType().isStop()) {
+                    length = updateWithStationLength(interval.getOwnerAsNode(), length);
+                    break;
+                }
+            }
+        }
+        return length;
+    }
+
+    public static final Integer updateWithStationLength(Node node, Integer length) {
+        Integer nodeLength = (Integer)node.getAttribute("length");
+        if (nodeLength != null && nodeLength < length)
+            return nodeLength;
+        else
+            return length;
     }
 }
