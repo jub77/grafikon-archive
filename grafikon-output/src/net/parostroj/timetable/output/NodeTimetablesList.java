@@ -66,8 +66,8 @@ public class NodeTimetablesList {
         String fromNodeName = TransformUtil.getFromAbbr(i);
         String toNodeName = TransformUtil.getToAbbr(i);
         
-        String fromTime = (from == null) ? "&nbsp;" : TimeConverter.convertFromIntToText(i.getStart());
-        String toTime = (to == null) ? "&nbsp;" : TimeConverter.convertFromIntToText(i.getEnd());
+        String fromTime = (from == null && !i.getType().isTechnological()) ? "&nbsp;" : TimeConverter.convertFromIntToText(i.getStart());
+        String toTime = (to == null && !i.getType().isTechnological()) ? "&nbsp;" : TimeConverter.convertFromIntToText(i.getEnd());
         
         String comment = this.generateComment(i);
         
@@ -85,6 +85,10 @@ public class NodeTimetablesList {
     }
     
     private String generateComment(TimeInterval interval) {
+        // technological time handle differently
+        if (interval.getType().isTechnological())
+            return templates.getString("technological.time");
+
         StringBuilder comment = new StringBuilder();
         this.generateCommentWithWeight(interval, comment);
         this.generateCommentForEngineCycle(interval, comment);
@@ -137,7 +141,10 @@ public class NodeTimetablesList {
                 TrainsCycleItem itemNext = item.getCycle().getNextItem(item);
                 if (itemNext != null) {
                     this.appendDelimiter(comment);
-                    comment.append(templates.getString("train.unit.to"));
+                    comment.append(templates.getString("train.unit")).append(": ");
+                    comment.append(item.getCycle().getName()).append(" (");
+                    comment.append(item.getCycle().getDescription()).append(") ");
+                    comment.append(templates.getString("move.to"));
                     comment.append(' ').append(itemNext.getTrain().getName());
                     comment.append(" (").append(TimeConverter.convertFromIntToText(itemNext.getStartTime()));
                     comment.append(')');
