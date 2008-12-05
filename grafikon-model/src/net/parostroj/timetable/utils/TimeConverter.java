@@ -25,6 +25,10 @@ public class TimeConverter {
         return time;
     }
 
+    private static int adjustTimeForRounding(int time) {
+        return time + 20;
+    }
+
     /**
      * converts from seconds to textual representation. The string contains
      * two positions for hours.
@@ -98,6 +102,7 @@ public class TimeConverter {
      * @return minutes
      */
     public static int getMinutes(int time) {
+        time = adjustTimeForRounding(time);
         return (time % 3600) / 60;
     }
     
@@ -108,6 +113,7 @@ public class TimeConverter {
      * @return hours
      */
     public static int getHours(int time) {
+        time = adjustTimeForRounding(time);
         return time / 3600;
     }
     
@@ -128,6 +134,7 @@ public class TimeConverter {
      * @return string
      */
     public static String convertMinutesToText(int time) {
+        adjustTimeForOutput(time);
         Formatter formatter = new Formatter();
         formatter.format("%1$02d", getMinutes(time));
         return formatter.toString();
@@ -140,6 +147,7 @@ public class TimeConverter {
      * @return string
      */
     public static String convertAllMinutesToText(int time) {
+        time = adjustTimeForRounding(time);
         return Integer.toString(time / 60);
     }
 
@@ -152,6 +160,7 @@ public class TimeConverter {
      * @return textual representation
      */
     public static String convertHoursAndMinutesToText(int time, String delimiter1, String delimiter2) {
+        adjustTimeForOutput(time);
         int hours = getHours(time);
         int minutes = getMinutes(time);
         Formatter formatter = new Formatter();
@@ -169,6 +178,7 @@ public class TimeConverter {
      * @return last digit of minutes
      */
     public static String getLastDigitOfMinutes(int time) {
+        adjustTimeForOutput(time);
         int minutes = getMinutes(time);
         String minutesStr = Integer.toString(minutes);
         int lastDigitIndex = minutesStr.length() - 1;
