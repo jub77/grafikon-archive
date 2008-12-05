@@ -9,6 +9,22 @@ import java.util.Formatter;
  */
 public class TimeConverter {
 
+    private static final int DAY = 24 * 3600;
+
+    /**
+     * adjusts time to show sensible output.
+     * 
+     * @param time time
+     * @return adjusted time
+     */
+    private static int adjustTimeForOutput(int time) {
+        if (time < 0)
+            time += DAY;
+        else if (time >= DAY)
+            time -= DAY;
+        return time;
+    }
+
     /**
      * converts from seconds to textual representation. The string contains
      * two positions for hours.
@@ -17,6 +33,7 @@ public class TimeConverter {
      * @return textual representation
      */
     public static String convertFromIntToTextWS(int time) {
+        time = adjustTimeForOutput(time);
         int hours = getHours(time);
         int minutes = getMinutes(time);
         Formatter formatter = new Formatter();
@@ -33,6 +50,7 @@ public class TimeConverter {
      * @return textual representation
      */
     public static String convertFromIntToTextWS(int time,String delimiter) {
+        time = adjustTimeForOutput(time);
         int hours = getHours(time);
         int minutes = getMinutes(time);
         Formatter formatter = new Formatter();
@@ -48,6 +66,7 @@ public class TimeConverter {
      * @return textual representation
      */
     public static String convertFromIntToText(int time) {
+        time = adjustTimeForOutput(time);
         int hours = getHours(time);
         int minutes = getMinutes(time);
         Formatter formatter = new Formatter();
@@ -63,6 +82,7 @@ public class TimeConverter {
      * @return textual representation
      */
     public static String convertFromIntToText(int time, String delimiter) {
+        time = adjustTimeForOutput(time);
         int hours = getHours(time);
         int minutes = getMinutes(time);
         Formatter formatter = new Formatter();

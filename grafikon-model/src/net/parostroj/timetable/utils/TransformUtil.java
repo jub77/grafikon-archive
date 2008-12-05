@@ -34,9 +34,12 @@ public class TransformUtil {
     
     public static String getFromAbbr(TimeInterval i) {
         Node node = null;
+        boolean found = false;
         for (TimeInterval current : i.getTrain().getTimeIntervalList()) {
-            if (current == i)
+            if (current == i) {
+                found = true;
                 break;
+            }
             if (current.getOwner() instanceof Node) {
                 Node n = (Node)current.getOwner();
                 switch (n.getType()) {
@@ -49,20 +52,23 @@ public class TransformUtil {
                 }
             }
         }
-        if (node == null)
-            return "&nbsp;";
-        else
+        if (node != null && found)
             return node.getAbbr();
+        else
+            return "&nbsp;";
     }
     
     public static String getToAbbr(TimeInterval i) {
         Node node = null;
+        boolean found = false;
         List<TimeInterval> list = i.getTrain().getTimeIntervalList();
         ListIterator<TimeInterval> iterator = list.listIterator(list.size());
         while (iterator.hasPrevious()) {
             TimeInterval current = iterator.previous();
-            if (current == i)
+            if (current == i) {
+                found = true;
                 break;
+            }
             if (current.getOwner() instanceof Node) {
                 Node n = (Node)current.getOwner();
                 switch (n.getType()) {
@@ -75,10 +81,10 @@ public class TransformUtil {
                 }
             }
         }
-        if (node == null)
-            return "&nbsp;";
-        else
+        if (found && node != null)
             return node.getAbbr();
+        else
+            return "&nbsp;";
     }
     
     public static String getEngineCycleDescription(TrainsCycle ec) {
