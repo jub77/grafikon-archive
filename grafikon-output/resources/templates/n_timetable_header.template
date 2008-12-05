@@ -4,7 +4,7 @@
     <td colspan="8" style="font-size: 5mm"><b>%1$s</b></td>
   </tr>
   <tr style="font-weight:bold ;font-size: 3.4mm; height: 5mm">
-    <td align="center" style="width: 5mm ">X</td>
+    <td align="center" style="width: 5mm">X</td>
     <td style="width: 22mm">%2$s</td>
     <td style="width: 10mm">%3$s</td>
     <td style="width: 10mm">%4$s</td>

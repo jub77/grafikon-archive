@@ -164,39 +164,30 @@ public class NodeTimetablesList {
 
     private void generateCommentWithWeight(TimeInterval interval, StringBuilder comment) {
         Train train = interval.getTrain();
-        if (interval.getTrain().getIntervalAfter(interval) != null) {
-            Integer weight = TrainsHelper.getNextWeight(interval.getOwnerAsNode(), train);
-            if (weight != null) {
-                // new style of weight information
-                this.appendDelimiter(comment);
-                comment.append('[');
-                comment.append(weight);
-                comment.append("t]");
-            } else {
+        if (interval.getTrain().getIntervalAfter(interval) != null && interval.getType().isStop()) {
+            Integer length = TrainsHelper.getNextLength(interval.getOwnerAsNode(), train, diagram);
+            if (length == null) {
                 // check old style comment
                 String weightStr = (String) train.getAttribute("weight.info");
-                if (weightStr != null && !weightStr.trim().equals("")) {
-                    this.appendDelimiter(comment);
-                    comment.append('[');
-                    comment.append(weightStr);
-                    comment.append("t]");
-                }
                 // try to convert weight string to number
                 if (weightStr != null) {
                     try {
                         Matcher matcher = NUMBER.matcher(weightStr);
                         if (matcher.find()) {
                             String number = matcher.group(0);
-                            weight = Integer.valueOf(number);
+                            Integer weight = Integer.valueOf(number);
+                            if (weight != null)
+                                length = TrainsHelper.convertWeightToLength(train, diagram, weight);
                         }
                     } catch (NumberFormatException e) {
                         LOG.fine("Cannot convert weight to number: " + weightStr);
                     }
                 }
             }
-            // if weight is computed the convert to length
-            Integer length = TrainsHelper.convertWeightToLengt(train, diagram, weight);
+            // if length was calculated
             if (length != null) {
+                // update length with station lengths
+                length = TrainsHelper.updateNextLengthWithStationLengths(interval.getOwnerAsNode(), train, length);
                 comment.append("[");
                 comment.append(length);
                 String lengthUnit = null;
