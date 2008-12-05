@@ -250,7 +250,6 @@ public class EditImagesDialog extends javax.swing.JDialog implements Application
                 tempFile.deleteOnExit();
             } catch (IOException e) {
                 LOG.log(Level.WARNING,"Cannot save temporary image file.", e);
-                // TODO show error dialog and return
                 JOptionPane.showMessageDialog(this,
                         ResourceLoader.getString("dialog.error.temporaryfile"),
                         ResourceLoader.getString("dialog.error.title"),
