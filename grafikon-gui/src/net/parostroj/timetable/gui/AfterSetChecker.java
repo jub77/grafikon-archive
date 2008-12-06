@@ -10,9 +10,9 @@ import net.parostroj.timetable.model.TrainDiagram;
 public class AfterSetChecker {
     private static final Integer STATION_TRANSFER_TIME = 10;
 
-    private static final Double WEIGHT_RATIO_EMPTY = 0.1;
+    private static final Double WEIGHT_RATIO_EMPTY = 0.17;
 
-    private static final Double WEIGHT_RATIO_LOADED = 0.07;
+    private static final Double WEIGHT_RATIO_LOADED = 0.83;
 
     public void check(TrainDiagram diagram) {
         // empty diagram doesn't have to be checked :)
