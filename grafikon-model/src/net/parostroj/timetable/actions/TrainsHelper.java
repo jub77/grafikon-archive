@@ -93,9 +93,10 @@ public class TrainsHelper {
         }
     }
 
-    public static final Integer getNextWeight(Node node, Train train) {
+    public static final Pair<Node, Integer> getNextWeight(Node node, Train train) {
         List<Pair<TimeInterval, Pair<Integer, TrainsCycleItem>>> weightList = getWeightList(train);
         Integer retValue = null;
+        Node retNode = null;
         if (weightList != null) {
             Iterator<Pair<TimeInterval, Pair<Integer, TrainsCycleItem>>> i = weightList.iterator();
             // skip to node
@@ -112,19 +113,20 @@ public class TrainsHelper {
                     if (retValue == null || retValue > pairI.second.first)
                         retValue = pairI.second.first;
                 } else if (pairI.first.isNodeOwner()) {
+                    retNode = pairI.first.getOwnerAsNode();
                     // next stop found
-                    if (pairI.first.getType().isStop())
+                    if (pairI.first.getType().isStop() && retNode.getType() == NodeType.STATION_BRANCH)
                         break;
                 }
             }
         }
-        return retValue;
+        return retValue == null ? null : new Pair<Node, Integer>(retNode, retValue);
     }
 
-    public static final Integer getNextLength(Node node, Train train, TrainDiagram diagram) {
-        Integer result = getNextWeight(node, train);
+    public static final Pair<Node, Integer> getNextLength(Node node, Train train, TrainDiagram diagram) {
+        Pair<Node, Integer> result = getNextWeight(node, train);
         if (result != null) {
-            result = convertWeightToLength(train, diagram, result);
+            result.second = convertWeightToLength(train, diagram, result.second);
         }
         return result;
     }
@@ -136,7 +138,8 @@ public class TrainsHelper {
             TimeInterval interval = i.next();
             if (interval.isNodeOwner()) {
                 if (interval.getOwnerAsNode() == node) {
-                    length = updateWithStationLength(node, length);
+                    if (shouldCheckLength(node, train))
+                        length = updateWithStationLength(node, length);
                     break;
                 }
             }
@@ -146,8 +149,10 @@ public class TrainsHelper {
             TimeInterval interval = i.next();
             if (interval.isNodeOwner()) {
                 if (interval.getType().isStop()) {
-                    length = updateWithStationLength(interval.getOwnerAsNode(), length);
-                    break;
+                    if (shouldCheckLength(interval.getOwnerAsNode(), train))
+                        length = updateWithStationLength(interval.getOwnerAsNode(), length);
+                    if (interval.getOwnerAsNode().getType() == NodeType.STATION_BRANCH)
+                        break;
                 }
             }
         }
@@ -160,5 +165,9 @@ public class TrainsHelper {
             return nodeLength;
         else
             return length;
+    }
+
+    public static final boolean shouldCheckLength(Node node, Train train) {
+        return node.getType().isStation() || (node.getType().isStop() && train.getType().isPlatform());
     }
 }

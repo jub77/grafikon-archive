@@ -75,7 +75,7 @@ public class TrainEngineWeightRows {
                         Pair<TimeInterval, Pair<Integer, TrainsCycleItem>> itemNext = list.get(i + 1);
                         if (cycle != null && !cycle.equals(itemNext.second.second.getCycle()))
                             process = true;
-                        if (weight != null && item.first.getType().isStop())
+                        if (weight != null && item.first.getType().isStop() && item.first.getOwnerAsNode().getType().isStation())
                             process = true;
                     }
                     if (process) {

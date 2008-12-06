@@ -47,4 +47,12 @@ public enum NodeType {
         }
         return null;
     }
+
+    public boolean isStation() {
+        return this == STATION || this == STATION_BRANCH || this == STATION_FREIGHT || this == STATION_HIDDEN;
+    }
+
+    public boolean isStop() {
+        return this == STOP || this == STOP_WITH_FREIGHT;
+    }
 }

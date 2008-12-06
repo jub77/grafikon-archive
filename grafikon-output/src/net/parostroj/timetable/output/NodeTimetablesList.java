@@ -90,7 +90,7 @@ public class NodeTimetablesList {
             return templates.getString("technological.time");
 
         StringBuilder comment = new StringBuilder();
-        this.generateCommentWithWeight(interval, comment);
+        this.generateCommentWithLength(interval, comment);
         this.generateCommentForEngineCycle(interval, comment);
         this.generateCommentForTrainUnitCycle(interval, comment);
         // comment itself
@@ -162,10 +162,10 @@ public class NodeTimetablesList {
 
     private static Pattern NUMBER = Pattern.compile("\\d+");
 
-    private void generateCommentWithWeight(TimeInterval interval, StringBuilder comment) {
+    private void generateCommentWithLength(TimeInterval interval, StringBuilder comment) {
         Train train = interval.getTrain();
         if (interval.getTrain().getIntervalAfter(interval) != null && interval.getType().isStop()) {
-            Integer length = TrainsHelper.getNextLength(interval.getOwnerAsNode(), train, diagram);
+            Pair<Node, Integer> length = TrainsHelper.getNextLength(interval.getOwnerAsNode(), train, diagram);
             if (length == null) {
                 // check old style comment
                 String weightStr = (String) train.getAttribute("weight.info");
@@ -177,7 +177,7 @@ public class NodeTimetablesList {
                             String number = matcher.group(0);
                             Integer weight = Integer.valueOf(number);
                             if (weight != null)
-                                length = TrainsHelper.convertWeightToLength(train, diagram, weight);
+                                length = new Pair<Node, Integer>(train.getEndNode(), TrainsHelper.convertWeightToLength(train, diagram, weight));
                         }
                     } catch (NumberFormatException e) {
                         LOG.fine("Cannot convert weight to number: " + weightStr);
@@ -187,9 +187,9 @@ public class NodeTimetablesList {
             // if length was calculated
             if (length != null) {
                 // update length with station lengths
-                length = TrainsHelper.updateNextLengthWithStationLengths(interval.getOwnerAsNode(), train, length);
+                length.second = TrainsHelper.updateNextLengthWithStationLengths(interval.getOwnerAsNode(), train, length.second);
                 comment.append("[");
-                comment.append(length);
+                comment.append(length.second);
                 String lengthUnit = null;
                 if (Boolean.TRUE.equals(diagram.getAttribute("station.length.in.axles"))) {
                     lengthUnit = " " + TrainTimetablesListTemplates.getString("length.axles");
@@ -198,7 +198,9 @@ public class NodeTimetablesList {
                 }
                 if (lengthUnit == null)
                     lengthUnit = "";
-                comment.append(lengthUnit).append("]");
+                comment.append(lengthUnit);
+                comment.append(" (").append(length.first.getAbbr()).append(")");
+                comment.append("]");
             }
         }
     }

@@ -8,6 +8,7 @@ package net.parostroj.timetable.output;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.*;
+import net.parostroj.timetable.actions.TrainsHelper;
 import net.parostroj.timetable.model.*;
 import net.parostroj.timetable.utils.*;
 
@@ -305,7 +306,6 @@ public class TrainTimetable {
             }
             headerDataString = builder.toString();
         }
-        lengthStr = this.createLengthLine();
         if (lengthStr != null)
             headerDataString += lengthStr;
         String trainLine = train.getCompleteName();
@@ -320,7 +320,7 @@ public class TrainTimetable {
             // compute maximal length
             List<Integer> lengths = new LinkedList<Integer>();
             for (TimeInterval interval : train.getTimeIntervalList()) {
-                if (interval.isNodeOwner() && interval.getType().isStop())
+                if (interval.isNodeOwner() && interval.getType().isStop() && TrainsHelper.shouldCheckLength(interval.getOwnerAsNode(), train))
                     lengths.add((Integer)interval.getOwnerAsNode().getAttribute("length"));
             }
             // check if all lengths are set and choose the minimum
