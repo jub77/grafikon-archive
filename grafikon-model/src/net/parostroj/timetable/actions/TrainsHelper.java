@@ -63,7 +63,12 @@ public class TrainsHelper {
             (Double)diagram.getAttribute("weight.ratio.loaded");
         if (ratio == null || weight == null)
             return null;
-        return (int)(weight * ratio);
+        int result = (int)(weight * ratio);
+        // number of axles should be an even number
+        if (Boolean.TRUE.equals(diagram.getAttribute("station.length.in.axles"))) {
+            result = result - (result % 2);
+        }
+        return result;
     }
 
     /**
