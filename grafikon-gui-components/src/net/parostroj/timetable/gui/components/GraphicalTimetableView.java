@@ -172,9 +172,9 @@ public class GraphicalTimetableView extends javax.swing.JPanel implements Change
 
         trainRegionCollector.clear();
         if (type == Type.CLASSIC) {
-            draw = new GTDrawClassic(new Point(10, 20), 100, this.getSize(), route, trainColors, trainColorChooser, hTrains, trainRegionCollector);
+            draw = new GTDrawClassic(10, 20, 100, this.getSize(), route, trainColors, trainColorChooser, hTrains, trainRegionCollector);
         } else if (type == Type.WITH_TRACKS) {
-            draw = new GTDrawWithNodeTracks(new Point(10, 20), 100, this.getSize(), route, trainColors, trainColorChooser, hTrains, trainRegionCollector);
+            draw = new GTDrawWithNodeTracks(10, 20, 100, this.getSize(), route, trainColors, trainColorChooser, hTrains, trainRegionCollector);
         }
         // set preferences
         this.setPreferencesToDraw(draw);

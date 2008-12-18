@@ -35,6 +35,10 @@ abstract public class GTDraw {
     protected Dimension size;
     
     protected int gapStationX;
+
+    protected int borderX;
+
+    protected int borderY;
     
     protected Route route;
 
@@ -54,15 +58,19 @@ abstract public class GTDraw {
 
     protected List<Node> stations;
 
-    public GTDraw(Point start, int gapStationX, Dimension size, Route route, GraphicalTimetableView.TrainColors colors, TrainColorChooser chooser, HighlightedTrains hTrains, TrainRegionCollector collector) {
-        this.start = new Point(start);
+    public GTDraw(int borderX, int borderY, int gapStationX, Dimension size, Route route, GraphicalTimetableView.TrainColors colors, TrainColorChooser chooser, HighlightedTrains hTrains, TrainRegionCollector collector) {
         this.start.translate(gapStationX, 0);
         this.gapStationX = gapStationX;
+        this.borderX = borderX;
+        this.borderY = borderY;
         this.route = route;
         this.colors = colors;
         this.trainColorChooser = chooser;
         this.hTrains = hTrains;
         this.trainRegionCollector = collector;
+        
+        // update start
+        this.updateStart();
         
         // compute size
         this.setSize(size);
@@ -112,11 +120,19 @@ abstract public class GTDraw {
     }
 
     public void setSize(Dimension size) {
-        this.size = new Dimension(size.width - start.x * 2 - gapStationX, size.height - start.y * 2);
+        this.size = new Dimension(size.width - (borderX * 2 + gapStationX), size.height - borderY * 2);
     }
 
-    public void setStart(Point start) {
-        this.start = start;
+    public void setBorderX(int borderX) {
+        this.borderX = borderX;
+    }
+
+    public void setBorderY(int borderY) {
+        this.borderY = borderY;
+    }
+
+    private void updateStart() {
+        this.start = new Point(borderX, borderY);
     }
 
     public void setPositionX(int positionX) {

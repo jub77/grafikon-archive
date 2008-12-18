@@ -27,8 +27,8 @@ public class GTDrawWithNodeTracks extends GTDraw {
 
     private Map<NodeTrack,Integer> trackPositions;
     
-    public GTDrawWithNodeTracks(Point start, int gapStationX, Dimension size, Route route, GraphicalTimetableView.TrainColors colors,TrainColorChooser chooser, HighlightedTrains hTrains, TrainRegionCollector collector) {
-        super(start, gapStationX, size,route,colors,chooser,hTrains,collector);
+    public GTDrawWithNodeTracks(int borderX, int borderY, int gapStationX, Dimension size, Route route, GraphicalTimetableView.TrainColors colors,TrainColorChooser chooser, HighlightedTrains hTrains, TrainRegionCollector collector) {
+        super(borderX, borderY, gapStationX, size,route,colors,chooser,hTrains,collector);
     }
     
     @Override

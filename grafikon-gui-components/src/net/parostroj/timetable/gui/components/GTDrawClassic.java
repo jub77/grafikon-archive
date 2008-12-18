@@ -22,8 +22,8 @@ public class GTDrawClassic extends GTDraw {
     private static final Stroke STATION_STROKE_ROUTE_SPLIT_EXT = new BasicStroke(1.3f);
     
 
-    public GTDrawClassic(Point start, int gapStationX, Dimension size, Route route, GraphicalTimetableView.TrainColors colors,TrainColorChooser chooser, HighlightedTrains hTrains, TrainRegionCollector collector) {
-        super(start, gapStationX, size,route,colors,chooser,hTrains,collector);
+    public GTDrawClassic(int borderX, int borderY, int gapStationX, Dimension size, Route route, GraphicalTimetableView.TrainColors colors,TrainColorChooser chooser, HighlightedTrains hTrains, TrainRegionCollector collector) {
+        super(borderX, borderY, gapStationX, size,route,colors,chooser,hTrains,collector);
     }
     
     @Override

@@ -56,9 +56,9 @@ public class GraphicalTimetableViewWithSave extends GraphicalTimetableView {
         // get values and provide save
         GTDraw drawFile = null;
         if (this.getType() == Type.CLASSIC) {
-            drawFile = new GTDrawClassic(new Point(10, 20), 100, dialog.getSaveSize(), this.getRoute(), this.getTrainColors(), this.getTrainColorChooser(), null, null);
+            drawFile = new GTDrawClassic(10, 20, 100, dialog.getSaveSize(), this.getRoute(), this.getTrainColors(), this.getTrainColorChooser(), null, null);
         } else if (this.getType() == Type.WITH_TRACKS) {
-            drawFile = new GTDrawWithNodeTracks(new Point(10, 20), 100, dialog.getSaveSize(), this.getRoute(), this.getTrainColors(), this.getTrainColorChooser(), null, null);
+            drawFile = new GTDrawWithNodeTracks(10, 20, 100, dialog.getSaveSize(), this.getRoute(), this.getTrainColors(), this.getTrainColorChooser(), null, null);
         }
         this.setPreferencesToDraw(drawFile);
 
