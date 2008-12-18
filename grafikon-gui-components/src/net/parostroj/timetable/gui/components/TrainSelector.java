@@ -1,6 +1,6 @@
 package net.parostroj.timetable.gui.components;
 
-import net.parostroj.timetable.model.Train;
+import net.parostroj.timetable.model.TimeInterval;
 
 /**
  * Selects train after clicking in the graphical timetable view.
@@ -9,16 +9,16 @@ import net.parostroj.timetable.model.Train;
  */
 public interface TrainSelector {
     /**
-     * selects train.
+     * selects trains' interval.
      * 
-     * @param train train to be selected
+     * @param interval train's interval to be selected
      */
-    public void selectTrain(Train train);
+    public void selectTrainInterval(TimeInterval interval);
     
     /**
-     * returns selected train.
+     * returns selected train's interval.
      * 
-     * @return selected train
+     * @return selected train's interval
      */
-    public Train getSelectedTrain();
+    public TimeInterval getSelectedTrainInterval();
 }

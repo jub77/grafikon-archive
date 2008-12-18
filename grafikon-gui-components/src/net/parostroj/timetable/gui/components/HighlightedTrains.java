@@ -1,8 +1,7 @@
 package net.parostroj.timetable.gui.components;
 
 import java.awt.Color;
-import java.util.Set;
-import net.parostroj.timetable.model.Train;
+import net.parostroj.timetable.model.TimeInterval;
 
 /**
  * Highlighted trains.
@@ -10,7 +9,7 @@ import net.parostroj.timetable.model.Train;
  * @author jub
  */
 public interface HighlightedTrains {
-    public Set<Train> getHighlighedTrains();
+    public boolean isHighlighedInterval(TimeInterval interval);
     
     public Color getColor();
 }

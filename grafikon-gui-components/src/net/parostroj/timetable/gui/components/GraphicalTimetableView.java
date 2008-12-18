@@ -38,6 +38,11 @@ public class GraphicalTimetableView extends javax.swing.JPanel implements Change
     public enum TrainColors {
         BY_TYPE, BY_COLOR_CHOOSER;
     }
+
+    public enum Selection {
+        INTERVAL, TRAIN;
+    }
+
     private final static int MIN_WIDTH = 1000;
     private final static int MAX_WIDTH = 10000;
     private final static int WIDTH_STEPS = 10;
@@ -45,6 +50,9 @@ public class GraphicalTimetableView extends javax.swing.JPanel implements Change
     private final static int SELECTION_RADIUS = 7;
     private int currentSize;
     private TrainColors trainColors = TrainColors.BY_TYPE;
+
+    private Selection selection = Selection.TRAIN;
+
     private TrainColorChooser trainColorChooser;
     private EditRoutesDialog editRoutesDialog;
     private TrainDiagram diagram;
@@ -69,9 +77,9 @@ public class GraphicalTimetableView extends javax.swing.JPanel implements Change
 
         this.addSizesToMenu();
     }
-    
+
     private TrainDiagramListener currentListener;
-    
+
     public void setTrainDiagram(TrainDiagram diagram) {
         if (currentListener != null && this.diagram != null) {
             this.diagram.removeListener(currentListener);
@@ -157,7 +165,7 @@ public class GraphicalTimetableView extends javax.swing.JPanel implements Change
         }
         this.activateRouteMenuItem(route);
     }
-    
+
     private void recreateDraw(Route route) {
         if (route == null)
             return;
@@ -174,9 +182,10 @@ public class GraphicalTimetableView extends javax.swing.JPanel implements Change
         this.setShiftX(shift);
         this.repaint();
     }
-    
+
     private void resize() {
-        draw.setSize(this.getSize());
+        if (draw != null)
+            draw.setSize(this.getSize());
         trainRegionCollector.clear();
         this.repaint();
     }
@@ -192,6 +201,8 @@ public class GraphicalTimetableView extends javax.swing.JPanel implements Change
             if (trainNamesCheckBoxMenuItem.isSelected()) {
                 gtDraw.setPreference(GTDrawPreference.TRAIN_NAMES, true);
             }
+            if (techTimeCheckBoxMenuItem.isSelected())
+                gtDraw.setPreference(GTDrawPreference.TECHNOLOGICAL_TIME, true);
         }
     }
 
@@ -202,7 +213,7 @@ public class GraphicalTimetableView extends javax.swing.JPanel implements Change
             return draw.getRoute();
         }
     }
-    
+
     public Type getType() {
         return type;
     }
@@ -247,10 +258,11 @@ public class GraphicalTimetableView extends javax.swing.JPanel implements Change
         addigitsCheckBoxMenuItem = new javax.swing.JCheckBoxMenuItem();
         extendedLinesCheckBoxMenuItem = new javax.swing.JCheckBoxMenuItem();
         trainNamesCheckBoxMenuItem = new javax.swing.JCheckBoxMenuItem();
+        techTimeCheckBoxMenuItem = new javax.swing.JCheckBoxMenuItem();
         typesButtonGroup = new javax.swing.ButtonGroup();
         routesGroup = new javax.swing.ButtonGroup();
 
-        routesMenu.setText(ResourceLoader.getString("gt.routes")); // NOI18N
+        routesMenu.setText("null");
         popupMenu.add(routesMenu);
 
         routesEditMenuItem.setText(ResourceLoader.getString("gt.routes.edit")); // NOI18N
@@ -315,6 +327,14 @@ public class GraphicalTimetableView extends javax.swing.JPanel implements Change
         });
         preferencesMenu.add(trainNamesCheckBoxMenuItem);
 
+        techTimeCheckBoxMenuItem.setText(ResourceLoader.getString("gt.technological.time")); // NOI18N
+        techTimeCheckBoxMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                preferencesCheckBoxMenuItemActionPerformed(evt);
+            }
+        });
+        preferencesMenu.add(techTimeCheckBoxMenuItem);
+
         popupMenu.add(preferencesMenu);
 
         setDoubleBuffered(false);
@@ -344,28 +364,48 @@ private void routesEditMenuItemActionPerformed(java.awt.event.ActionEvent evt) {
 
 private void formMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_formMouseClicked
     // selection of the train
-    List<Train> selectedTrains = trainRegionCollector.getTrainsForPoint(evt.getX(), evt.getY());
-    if (trainSelector != null) {
-        if (selectedTrains.size() == 0) {
-            trainSelector.selectTrain(null);
-        } else {
-            Train oldSelection = trainSelector.getSelectedTrain();
-            if (oldSelection == null) {
-                trainSelector.selectTrain(selectedTrains.get(0));
-            } else {
-                int oldIndex = selectedTrains.indexOf(oldSelection);
-                if (oldIndex == -1) {
-                    trainSelector.selectTrain(selectedTrains.get(0));
-                } else {
-                    oldIndex += 1;
-                    if (oldIndex >= selectedTrains.size())
-                        oldIndex = 0;
-                    trainSelector.selectTrain(selectedTrains.get(oldIndex));
+    if (trainRegionCollector != null) {
+        List<TimeInterval> selectedIntervals = trainRegionCollector.getTrainForPoint(evt.getX(), evt.getY());
+        if (trainSelector != null) {
+            if (selectedIntervals.size() == 0)
+                trainSelector.selectTrainInterval(null);
+            else {
+                TimeInterval oldInterval = trainSelector.getSelectedTrainInterval();
+                if (oldInterval == null)
+                    trainSelector.selectTrainInterval(selectedIntervals.get(0));
+                else {
+                    TimeInterval newSelection = this.getNextSelected(selectedIntervals, oldInterval);
+                    trainSelector.selectTrainInterval(newSelection);
                 }
             }
         }
     }
 }//GEN-LAST:event_formMouseClicked
+
+private TimeInterval getNextSelected(List<TimeInterval> list, TimeInterval oldInterval) {
+    int oldIndex = list.indexOf(oldInterval);
+    if (oldIndex == -1)
+        return list.get(0);
+    else {
+        if (selection == Selection.INTERVAL) {
+            oldIndex += 1;
+            if (oldIndex >= list.size())
+                oldIndex = 0;
+            return list.get(oldIndex);
+        } else {
+            int newIndex = oldIndex;
+            Train oldTrain = oldInterval.getTrain();
+            Train selectedTrain = oldTrain;
+            do {
+                newIndex++;
+                if (newIndex >= list.size())
+                    newIndex = 0;
+                selectedTrain = list.get(newIndex).getTrain();
+            } while (selectedTrain == oldTrain && newIndex != oldIndex);
+            return list.get(newIndex);
+        }
+    }
+}
 
 private void preferencesCheckBoxMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_preferencesCheckBoxMenuItemActionPerformed
     // recreate draw
@@ -376,7 +416,7 @@ private void preferencesCheckBoxMenuItemActionPerformed(java.awt.event.ActionEve
     public void paint(Graphics g) {
         LOG.finest("Starting paint.");
         super.paint(g);
-        
+
         if (draw != null)
             draw.draw((Graphics2D)g);
         else {
@@ -385,7 +425,7 @@ private void preferencesCheckBoxMenuItemActionPerformed(java.awt.event.ActionEve
         }
         LOG.finest("Finished paint.");
     }
-/*    
+/*
     @Override
     public void modelChanged(ApplicationModelEvent event) {
         ApplicationModel lModel = event.getModel();
@@ -461,7 +501,7 @@ private void preferencesCheckBoxMenuItemActionPerformed(java.awt.event.ActionEve
             });
         }
     }
-    
+
     private void activateRouteMenuItem(Route route) {
         for (int i =0; i < routesMenu.getItemCount(); i++) {
             JMenuItem item = routesMenu.getItem(i);
@@ -472,7 +512,7 @@ private void preferencesCheckBoxMenuItemActionPerformed(java.awt.event.ActionEve
             }
         }
     }
-    
+
     private void addSizesToMenu() {
         ButtonGroup group = new ButtonGroup();
         for (int i = 1; i <= WIDTH_STEPS; i++) {
@@ -489,7 +529,7 @@ private void preferencesCheckBoxMenuItemActionPerformed(java.awt.event.ActionEve
             group.add(item);
             sizesMenu.add(item);
         }
-    
+
     }
 
     @Override
@@ -504,12 +544,12 @@ private void preferencesCheckBoxMenuItemActionPerformed(java.awt.event.ActionEve
             }
         }
     }
-    
+
     private void setGTSize(int size) {
         this.setGTWidth(size);
         this.recreateDraw(this.getRoute());
     }
-    
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JCheckBoxMenuItem addigitsCheckBoxMenuItem;
     private javax.swing.JRadioButtonMenuItem classicMenuItem;
@@ -520,6 +560,7 @@ private void preferencesCheckBoxMenuItemActionPerformed(java.awt.event.ActionEve
     private javax.swing.ButtonGroup routesGroup;
     private javax.swing.JMenu routesMenu;
     private javax.swing.JMenu sizesMenu;
+    private javax.swing.JCheckBoxMenuItem techTimeCheckBoxMenuItem;
     private javax.swing.JCheckBoxMenuItem trainNamesCheckBoxMenuItem;
     private javax.swing.ButtonGroup typesButtonGroup;
     private javax.swing.JRadioButtonMenuItem withTracksMenuItem;
@@ -527,9 +568,9 @@ private void preferencesCheckBoxMenuItemActionPerformed(java.awt.event.ActionEve
 }
 
 class RouteRadioButtonMenuItem extends JRadioButtonMenuItem {
-    
+
     private final Route route;
-    
+
     public RouteRadioButtonMenuItem(Route route) {
         super(route.toString());
         this.route = route;

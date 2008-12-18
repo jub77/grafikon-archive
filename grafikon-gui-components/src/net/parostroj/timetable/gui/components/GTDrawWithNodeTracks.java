@@ -16,6 +16,7 @@ public class GTDrawWithNodeTracks extends GTDraw {
     private static final Stroke TRAIN_STROKE = new BasicStroke(1.5f);
     private static final Stroke TRAIN_SS_STROKE = new BasicStroke(5.0f,BasicStroke.CAP_ROUND,BasicStroke.JOIN_ROUND);
     private static final Stroke STATION_STROKE = new BasicStroke(1.1f);
+    private static final Stroke TECH_TIME_STROKE = new BasicStroke(1.1f);
     
     // extended display
     private static final Stroke STATION_STROKE_STOP_EXT = new BasicStroke(1.0f,BasicStroke.CAP_BUTT,BasicStroke.JOIN_MITER,1.0f,new float[]{3f,3f},0f);
@@ -125,18 +126,20 @@ public class GTDrawWithNodeTracks extends GTDraw {
     private void paintTrainsInStation(Node station, Graphics2D g, double timeStep) {
         for (NodeTrack nodeTrack : station.getTracks()) {
             for (TimeInterval interval : nodeTrack.getTimeIntervalList()) {
+                if (interval.getType().isTechnological() && preferences.get(GTDrawPreference.TECHNOLOGICAL_TIME) != Boolean.TRUE)
+                    continue;
                 int y = start.y + trackPositions.get(interval.getTrack());
                 int x1 = (int)(start.x + interval.getStart() * timeStep);
                 int x2 = (int)(start.x + interval.getEnd() * timeStep);
                 if (interval.getType() == TimeIntervalType.NODE_STOP || interval.getType() == TimeIntervalType.NODE_THROUGH) {
                     g.setStroke(TRAIN_STROKE);
-                    g.setColor(this.getTrainColor(interval.getTrain()));
-                    g.drawLine(x1, y, x2, y);
+                } else if (interval.getType().isTechnological()) {
+                    g.setStroke(TECH_TIME_STROKE);
                 } else {
                     g.setStroke(TRAIN_SS_STROKE);
-                    g.setColor(this.getTrainColor(interval.getTrain()));
-                    g.drawLine(x1, y, x2, y);
                 }
+                g.setColor(this.getIntervalColor(interval));
+                g.drawLine(x1, y, x2, y);
             }
         }
     }
