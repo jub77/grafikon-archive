@@ -30,13 +30,9 @@ abstract public class GTDraw {
 
     private static final int MINIMAL_SPACE = 25;
 
-    protected Point originalStart;
-    
     protected Point start;
     
     protected Dimension size;
-    
-    protected Dimension originalSize;
     
     protected int gapStationX;
     
@@ -59,11 +55,9 @@ abstract public class GTDraw {
     protected List<Node> stations;
 
     public GTDraw(Point start, int gapStationX, Dimension size, Route route, GraphicalTimetableView.TrainColors colors, TrainColorChooser chooser, HighlightedTrains hTrains, TrainRegionCollector collector) {
-        this.originalStart = start;
         this.start = new Point(start);
         this.start.translate(gapStationX, 0);
         this.gapStationX = gapStationX;
-        this.originalSize = size;
         this.route = route;
         this.colors = colors;
         this.trainColorChooser = chooser;
