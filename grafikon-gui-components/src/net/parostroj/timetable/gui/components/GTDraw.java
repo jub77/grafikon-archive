@@ -58,8 +58,9 @@ abstract public class GTDraw {
 
     protected List<Node> stations;
 
+    protected Color background = Color.white;
+
     public GTDraw(int borderX, int borderY, int gapStationX, Dimension size, Route route, GraphicalTimetableView.TrainColors colors, TrainColorChooser chooser, HighlightedTrains hTrains, TrainRegionCollector collector) {
-        this.start.translate(gapStationX, 0);
         this.gapStationX = gapStationX;
         this.borderX = borderX;
         this.borderY = borderY;
@@ -131,8 +132,13 @@ abstract public class GTDraw {
         this.borderY = borderY;
     }
 
+    public void setBackground(Color background) {
+        this.background = background;
+    }
+
     private void updateStart() {
         this.start = new Point(borderX, borderY);
+        this.start.translate(gapStationX, 0);
     }
 
     public void setPositionX(int positionX) {
@@ -252,7 +258,7 @@ abstract public class GTDraw {
             }
             Rectangle r = new Rectangle((int)b.getX() - 2, (int)b.getY(), (int)b.getWidth() + 4, (int)b.getHeight());
             r.setLocation(10 + 0 + positionX - 3, y + 12 + (int)r.getY());
-            g.setColor(Color.white);
+            g.setColor(background);
             g.fill(r);
             g.setColor(Color.black);
             g.drawString(transName, 10 + 0 + positionX, y + 12);
