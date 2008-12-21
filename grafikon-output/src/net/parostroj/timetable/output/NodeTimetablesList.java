@@ -164,7 +164,7 @@ public class NodeTimetablesList {
 
     private void generateCommentWithLength(TimeInterval interval, StringBuilder comment) {
         Train train = interval.getTrain();
-        if (interval.getTrain().getIntervalAfter(interval) != null && interval.getType().isStop()) {
+        if (train.getIntervalAfter(interval) != null && interval.getType().isStop() && train.getType().getSbType() == SpeedingBrakingType.FREIGHT) {
             Pair<Node, Integer> length = TrainsHelper.getNextLength(interval.getOwnerAsNode(), train, diagram);
             if (length == null) {
                 // check old style comment
