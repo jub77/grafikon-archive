@@ -9,6 +9,10 @@
         <filename>slovak.gtm</filename>
     </template>
     <template>
+        <name>Polski</name>
+        <filename>polish.gtm</filename>
+    </template>
+    <template>
         <name>-</name>
         <filename>empty.gtm</filename>
     </template>
