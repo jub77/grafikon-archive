@@ -438,6 +438,7 @@ public class MainFrame extends javax.swing.JFrame implements ApplicationModelLis
         specialMenu = new javax.swing.JMenu();
         recalculateMenuItem = new javax.swing.JMenuItem();
         columnsMenuItem = new javax.swing.JMenuItem();
+        sortColumnsMenuItem = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         setTitle(this.getTitleString(false));
@@ -702,6 +703,14 @@ public class MainFrame extends javax.swing.JFrame implements ApplicationModelLis
             }
         });
         specialMenu.add(columnsMenuItem);
+
+        sortColumnsMenuItem.setText(ResourceLoader.getString("menu.special.sort.columns")); // NOI18N
+        sortColumnsMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                sortColumnsMenuItemActionPerformed(evt);
+            }
+        });
+        specialMenu.add(sortColumnsMenuItem);
 
         menuBar.add(specialMenu);
 
@@ -1239,6 +1248,10 @@ private void columnsMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//G
     trainsPane.editColumns();
 }//GEN-LAST:event_columnsMenuItemActionPerformed
 
+private void sortColumnsMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sortColumnsMenuItemActionPerformed
+    trainsPane.sortColumns();
+}//GEN-LAST:event_sortColumnsMenuItemActionPerformed
+
     private void setSelectedLocale() {
         if (locale == null)
             systemLanguageRadioButtonMenuItem.setSelected(true);
@@ -1410,6 +1423,7 @@ private void columnsMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//G
     private javax.swing.JSeparator separator3;
     private javax.swing.JSeparator separator4;
     private javax.swing.JMenuItem settingsMenuItem;
+    private javax.swing.JMenuItem sortColumnsMenuItem;
     private javax.swing.JMenuItem spListMenuItem;
     private javax.swing.JMenu specialMenu;
     private net.parostroj.timetable.gui.StatusBar statusBar;

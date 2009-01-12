@@ -6,24 +6,12 @@
 package net.parostroj.timetable.gui.views;
 
 import java.awt.Frame;
-import java.util.Arrays;
-import java.util.Enumeration;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 import java.util.logging.Logger;
-import javax.swing.SwingConstants;
-import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
-import net.parostroj.timetable.gui.AppPreferences;
-import net.parostroj.timetable.gui.ApplicationModel;
-import net.parostroj.timetable.gui.ApplicationModelEvent;
-import net.parostroj.timetable.gui.ApplicationModelEventType;
-import net.parostroj.timetable.gui.ApplicationModelListener;
-import net.parostroj.timetable.gui.StorableGuiData;
-import net.parostroj.timetable.gui.dialogs.ColumnsDialog;
-import net.parostroj.timetable.gui.dialogs.CopyTrainDialog;
-import net.parostroj.timetable.gui.dialogs.EditTrainDialog;
+import net.parostroj.timetable.gui.*;
+import net.parostroj.timetable.gui.dialogs.*;
 import net.parostroj.timetable.model.TimeInterval;
 import net.parostroj.timetable.model.Train;
 import net.parostroj.timetable.utils.ResourceLoader;
@@ -57,6 +45,30 @@ public class TrainView extends javax.swing.JPanel implements ApplicationModelLis
         dialog.setLocationRelativeTo(trainTableScrollPane);
         dialog.updateColumns(trainTable);
         dialog.setVisible(true);
+    }
+
+    public void sortColumns() {
+        // sort columns to initial order
+        TableColumnModel tcm = trainTable.getColumnModel();
+        Enumeration<TableColumn> columns = tcm.getColumns();
+        List<TableColumn> list = new LinkedList<TableColumn>();
+        while (columns.hasMoreElements()) {
+            TableColumn tc = columns.nextElement();
+            list.add(tc);
+        }
+        Collections.sort(list, new Comparator() {
+
+            @Override
+            public int compare(Object o1, Object o2) {
+                return Integer.valueOf(((TableColumn)o1).getModelIndex()).compareTo(((TableColumn)o2).getModelIndex());
+            }
+        });
+        for (TableColumn tc : list) {
+            tcm.removeColumn(tc);
+        }
+        for (TableColumn tc : list) {
+            tcm.addColumn(tc);
+        }
     }
     
     public void setModel(ApplicationModel model) {
