@@ -3,6 +3,9 @@ package net.parostroj.timetable.actions;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import net.parostroj.timetable.model.*;
 import net.parostroj.timetable.utils.Pair;
 
@@ -12,6 +15,8 @@ import net.parostroj.timetable.utils.Pair;
  * @author jub
  */
 public class TrainsHelper {
+
+    private static final Logger LOG = Logger.getLogger(TrainsHelper.class.getName());
 
     /**
      * returns weight for specified time interval based on line and engine class.
@@ -26,6 +31,48 @@ public class TrainsHelper {
             return null;
         else
             return weightAndCycle.first;
+    }
+
+    /**
+     * returns weight for interval. It returns old style weight if the
+     * weight table info is not specified.
+     *
+     * @param interval time interval
+     * @return weight
+     */
+    public static final Integer getWeightWithAttribute(TimeInterval interval) {
+        Integer weight = getWeight(interval);
+        if (weight == null) {
+            weight = getWeightFromAttribute(interval.getTrain());
+        }
+        return weight;
+    }
+
+    /** Pattern for extracting weight info. */
+    private static Pattern NUMBER = Pattern.compile("\\d+");
+
+    /**
+     * return converted weight from weight.info attribute.
+     *
+     * @param train train
+     * @return weight
+     */
+    public static final Integer getWeightFromAttribute(Train train) {
+        Integer weight = null;
+        String weightStr = (String) train.getAttribute("weight.info");
+        // try to convert weight string to number
+        if (weightStr != null) {
+            try {
+                Matcher matcher = NUMBER.matcher(weightStr);
+                if (matcher.find()) {
+                    String number = matcher.group(0);
+                    weight = Integer.valueOf(number);
+                }
+            } catch (NumberFormatException e) {
+                LOG.fine("Cannot convert weight to number: " + weightStr);
+            }
+        }
+        return weight;
     }
 
     /**
