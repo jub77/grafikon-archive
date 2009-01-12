@@ -165,7 +165,7 @@ public class TrainView extends javax.swing.JPanel implements ApplicationModelLis
 
         trainTable.setAutoCreateColumnsFromModel(false);
         trainTable.setModel(new TrainTableModel(model,train));
-        trainTable.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_LAST_COLUMN);
+        trainTable.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_ALL_COLUMNS);
         trainTableScrollPane.setViewportView(trainTable);
 
         jLabel2.setText(ResourceLoader.getString("create.train.speed")); // NOI18N

@@ -1,5 +1,6 @@
 package net.parostroj.timetable.gui.views;
 
+import java.util.concurrent.atomic.AtomicInteger;
 import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellEditor;
@@ -13,17 +14,20 @@ import net.parostroj.timetable.utils.ResourceLoader;
  * @author jub
  */
 public enum TrainTableColumn {
-    NODE(0, "train.table.node", 120, 120, 120, "w", String.class, false, null),
-    START(1, "train.table.starttime", 50, 50, 50, "w", String.class, true, null),
-    END(2, "train.table.endtime", 50, 50, 50, "lo", String.class, true, null),
-    STOP(3, "train.table.stop", 50, 50, 50, "flo", Integer.class, false, null),
-    SPEED(4, "train.table.speed", 50, 50, 50, "e", Integer.class, false, null),
-    PLATFORM(5, "train.table.platform", 50, 50, 50, "t", String.class, false, new TrackCellEditor()),
-    CONFLICTS(6, "train.table.conflicts", 100, 100, 100, "w", String.class, false, null),
-    COMMENT_SHOWN(7, "train.table.comment.shown", 30, 30, 30, "o", Boolean.class, false, null),
-    COMMENT(8, "train.table.comment", 1, Integer.MAX_VALUE, 60, "", String.class, false, null),
-    OCCUPIED_ENTRY(9, "train.table.occupied.track", 30, 30, 30, "fo", Boolean.class, false, null),
-    SHUNT(10, "train.table.shunt", 30, 30, 30, "fo", Boolean.class, false, null);
+    NODE("train.table.node", 50, 300, 120, "w", String.class, false, null),
+    START("train.table.starttime", 50, 50, 50, "w", String.class, true, null),
+    END("train.table.endtime", 50, 50, 50, "lo", String.class, true, null),
+    STOP("train.table.stop", 50, 50, 50, "flo", Integer.class, false, null),
+    REAL_STOP("train.table.real.stop", 50, 50, 50, "w", Double.class, false, null),
+    SPEED("train.table.speed", 50, 50, 50, "e", Integer.class, false, null),
+    PLATFORM("train.table.platform", 50, 50, 50, "t", String.class, false, new TrackCellEditor()),
+    WEIGHT("train.table.weight", 50, 100, 50, "w", Integer.class, false, null),
+    LENGTH("train.table.length", 50, 100, 50, "w", Integer.class, false, null),
+    CONFLICTS("train.table.conflicts", 50, 200, 75, "w", String.class, false, null),
+    COMMENT_SHOWN("train.table.comment.shown", 30, 30, 30, "o", Boolean.class, false, null),
+    COMMENT("train.table.comment", 1, Integer.MAX_VALUE, 150, "", String.class, false, null),
+    OCCUPIED_ENTRY("train.table.occupied.track", 30, 30, 30, "fo", Boolean.class, false, null),
+    SHUNT("train.table.shunt", 30, 30, 30, "fo", Boolean.class, false, null);
     
     private int index;
     
@@ -52,9 +56,13 @@ public enum TrainTableColumn {
     private boolean oneTrack;
     
     private TableCellEditor editor;
+
+    private static class Counter {
+        static AtomicInteger CNT = new AtomicInteger(0);
+    }
     
-    private TrainTableColumn(int index, String key, int minWidth, int maxWidth, int prefWidth, String forbidden, Class<?> clazz, boolean rightAling, TableCellEditor editor) {
-        this.index = index;
+    private TrainTableColumn(String key, int minWidth, int maxWidth, int prefWidth, String forbidden, Class<?> clazz, boolean rightAling, TableCellEditor editor) {
+        this.index = Counter.CNT.getAndIncrement();
         this.key = key;
         this.minWidth = minWidth;
         this.maxWidth = maxWidth;

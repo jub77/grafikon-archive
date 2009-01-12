@@ -124,17 +124,6 @@ class TrainTableModel extends AbstractTableModel {
             // problems
             case CONFLICTS:
                 StringBuilder builder = new StringBuilder();
-                // temporary weight info
-                // TODO remove when new column is introduced
-                if (interval.isLineOwner()) {
-                    Integer weight = TrainsHelper.getWeight(interval);
-                    if (weight != null) {
-                        builder.append('(');
-                        builder.append(weight);
-                        builder.append("t)");
-                    }
-                }
-                
                 for (TimeInterval overlap : interval.getOverlappingIntervals()) {
                     if (builder.length() != 0)
                         builder.append(", ");
@@ -158,6 +147,29 @@ class TrainTableModel extends AbstractTableModel {
                 value = (Boolean)interval.getAttribute("comment.shown");
                 retValue = Boolean.TRUE.equals(value);
                 break;
+            case REAL_STOP:
+                if (interval.getOwner() instanceof Node && rowIndex != 0 && rowIndex != lastRow
+                        && ((Node)interval.getOwner()).getType() != NodeType.SIGNAL) {
+                    int stop = interval.getLength() / 60;
+                    // celculate with time scale ...
+                    Double timeScale = (Double)model.getDiagram().getAttribute("time.scale");
+                    retValue = Double.valueOf(stop / timeScale.doubleValue());
+                }
+                break;
+            case WEIGHT:
+                // weight info
+                if (interval.isLineOwner()) {
+                    retValue = TrainsHelper.getWeightWithAttribute(interval);
+                }
+                break;
+            case LENGTH:
+                // length info
+                if (interval.isLineOwner()) {
+                    retValue = TrainsHelper.convertWeightToLength(train, model.getDiagram(), TrainsHelper.getWeightWithAttribute(interval));
+                } else if (interval.isNodeOwner()) {
+                    retValue = (Integer)interval.getOwnerAsNode().getAttribute("length");
+                }
+                break;
             // default (should not be reached)
             default:
                 // nothing
@@ -174,109 +186,109 @@ class TrainTableModel extends AbstractTableModel {
         TimeInterval interval = null;
         TrainTableColumn column = TrainTableColumn.getColumn(columnIndex);
         switch (column) {
-        case END:
-            // departure
-            time = TimeConverter.convertFromTextToInt((String)aValue);
-            if (time != -1) {
-                if (rowIndex == 0) {
-                    train.move(time);
-                    this.fireTableDataChanged();
-                    model.fireEvent(new ApplicationModelEvent(ApplicationModelEventType.MODIFIED_TRAIN, model, train));
-                } else {
+            case END:
+                // departure
+                time = TimeConverter.convertFromTextToInt((String)aValue);
+                if (time != -1) {
+                    if (rowIndex == 0) {
+                        train.move(time);
+                        this.fireTableDataChanged();
+                        model.fireEvent(new ApplicationModelEvent(ApplicationModelEventType.MODIFIED_TRAIN, model, train));
+                    } else {
+                        interval = train.getTimeIntervalList().get(rowIndex);
+                        int newStop = time - interval.getStart();
+                        if (newStop >= 0) {
+                            train.changeStopTime(interval, newStop, model.getDiagram());
+                            this.fireTableRowsUpdated(rowIndex, lastRow);
+                            model.fireEvent(new ApplicationModelEvent(ApplicationModelEventType.MODIFIED_TRAIN, model, train));
+                        }
+                    }
+                }
+                break;
+            case STOP:
+                // stop time
+                time = ((Integer)aValue).intValue() * 60;
+                if (time >= 0) {
                     interval = train.getTimeIntervalList().get(rowIndex);
-                    int newStop = time - interval.getStart();
-                    if (newStop >= 0) {
-                        train.changeStopTime(interval, newStop, model.getDiagram());
-                        this.fireTableRowsUpdated(rowIndex, lastRow);
+                    train.changeStopTime(interval, time, model.getDiagram());
+                    this.fireTableRowsUpdated(rowIndex, lastRow);
+                    model.fireEvent(new ApplicationModelEvent(ApplicationModelEventType.MODIFIED_TRAIN, model, train));
+                }
+                break;
+            case SPEED:
+                // velocity
+                int velocity = ((Integer)aValue).intValue();
+                if (velocity > 0) {
+                    interval = train.getTimeIntervalList().get(rowIndex);
+                    train.changeVelocity(interval, velocity, model.getDiagram());
+                    this.fireTableRowsUpdated(rowIndex, lastRow);
+                    model.fireEvent(new ApplicationModelEvent(ApplicationModelEventType.MODIFIED_TRAIN, model, train));
+                }
+                break;
+            case PLATFORM:
+                // platform
+                String platform = (String)aValue;
+                interval = train.getTimeIntervalList().get(rowIndex);
+                if (interval.getOwner() instanceof Node) {
+                    Node node = (Node)interval.getOwner();
+                    NodeTrack newTrack = node.getNodeTrackByNumber(platform);
+                    if (newTrack != null) {
+                        train.changeNodeTrack(interval, newTrack);
+                        this.fireTableRowsUpdated(rowIndex, rowIndex);
+                        model.fireEvent(new ApplicationModelEvent(ApplicationModelEventType.MODIFIED_TRAIN, model, train));
+                    }
+                } else if (interval.getOwner() instanceof Line) {
+                    Line line = (Line)interval.getOwner();
+                    LineTrack newTrack = line.getLineTrackByNumber(platform);
+                    if (newTrack != null) {
+                        train.changeLineTrack(interval, newTrack);
+                        this.fireTableRowsUpdated(rowIndex, rowIndex);
                         model.fireEvent(new ApplicationModelEvent(ApplicationModelEventType.MODIFIED_TRAIN, model, train));
                     }
                 }
-            }
-            break;
-        case STOP:
-            // stop time
-            time = ((Integer)aValue).intValue() * 60;
-            if (time >= 0) {
+                break;
+            case COMMENT:
+                // comment
                 interval = train.getTimeIntervalList().get(rowIndex);
-                train.changeStopTime(interval, time, model.getDiagram());
-                this.fireTableRowsUpdated(rowIndex, lastRow);
-                model.fireEvent(new ApplicationModelEvent(ApplicationModelEventType.MODIFIED_TRAIN, model, train));
-            }
-            break;
-        case SPEED:
-            // velocity
-            int velocity = ((Integer)aValue).intValue();
-            if (velocity > 0) {
+                String commentStr = (String)aValue;
+                if ("".equals(commentStr))
+                    commentStr = null;
+                if (commentStr != null)
+                    interval.setAttribute("comment", (String)aValue);
+                else
+                    interval.removeAttribute("comment");
+                model.fireEvent(new ApplicationModelEvent(ApplicationModelEventType.MODIFIED_TRAIN_ATTRIBUTE, model, train));
+                break;
+            case OCCUPIED_ENTRY:
+                // entry of the occupied track
                 interval = train.getTimeIntervalList().get(rowIndex);
-                train.changeVelocity(interval, velocity, model.getDiagram());
-                this.fireTableRowsUpdated(rowIndex, lastRow);
-                model.fireEvent(new ApplicationModelEvent(ApplicationModelEventType.MODIFIED_TRAIN, model, train));
-            }
-            break;
-        case PLATFORM:
-            // platform
-            String platform = (String)aValue;
-            interval = train.getTimeIntervalList().get(rowIndex);
-            if (interval.getOwner() instanceof Node) {
-                Node node = (Node)interval.getOwner();
-                NodeTrack newTrack = node.getNodeTrackByNumber(platform);
-                if (newTrack != null) {
-                    train.changeNodeTrack(interval, newTrack);
-                    this.fireTableRowsUpdated(rowIndex, rowIndex);
-                    model.fireEvent(new ApplicationModelEvent(ApplicationModelEventType.MODIFIED_TRAIN, model, train));
+                if (Boolean.TRUE.equals(aValue)) {
+                    interval.setAttribute("occupied", aValue);
+                } else {
+                    interval.removeAttribute("occupied");
                 }
-            } else if (interval.getOwner() instanceof Line) {
-                Line line = (Line)interval.getOwner();
-                LineTrack newTrack = line.getLineTrackByNumber(platform);
-                if (newTrack != null) {
-                    train.changeLineTrack(interval, newTrack);
-                    this.fireTableRowsUpdated(rowIndex, rowIndex);
-                    model.fireEvent(new ApplicationModelEvent(ApplicationModelEventType.MODIFIED_TRAIN, model, train));
+                model.fireEvent(new ApplicationModelEvent(ApplicationModelEventType.MODIFIED_TRAIN_ATTRIBUTE, model, train));
+                break;
+            case SHUNT:
+                // entry shunting on the far side
+                interval = train.getTimeIntervalList().get(rowIndex);
+                if (Boolean.TRUE.equals(aValue)) {
+                    interval.setAttribute("shunt", aValue);
+                } else {
+                    interval.removeAttribute("shunt");
                 }
-            }
-            break;
-        case COMMENT:
-            // comment
-            interval = train.getTimeIntervalList().get(rowIndex);
-            String commentStr = (String)aValue;
-            if ("".equals(commentStr))
-                commentStr = null;
-            if (commentStr != null)
-                interval.setAttribute("comment", (String)aValue);
-            else
-                interval.removeAttribute("comment");
-            model.fireEvent(new ApplicationModelEvent(ApplicationModelEventType.MODIFIED_TRAIN_ATTRIBUTE, model, train));
-            break;
-        case OCCUPIED_ENTRY:
-            // entry of the occupied track
-            interval = train.getTimeIntervalList().get(rowIndex);
-            if (Boolean.TRUE.equals(aValue)) {
-                interval.setAttribute("occupied", aValue);
-            } else {
-                interval.removeAttribute("occupied");
-            }
-            model.fireEvent(new ApplicationModelEvent(ApplicationModelEventType.MODIFIED_TRAIN_ATTRIBUTE, model, train));
-            break;
-        case SHUNT:
-            // entry shunting on the far side
-            interval = train.getTimeIntervalList().get(rowIndex);
-            if (Boolean.TRUE.equals(aValue)) {
-                interval.setAttribute("shunt", aValue);
-            } else {
-                interval.removeAttribute("shunt");
-            }
-            model.fireEvent(new ApplicationModelEvent(ApplicationModelEventType.MODIFIED_TRAIN_ATTRIBUTE, model, train));
-            break;
-        case COMMENT_SHOWN:
-            // entry shunting on the far side
-            interval = train.getTimeIntervalList().get(rowIndex);
-            if (Boolean.TRUE.equals(aValue)) {
-                interval.setAttribute("comment.shown", aValue);
-            } else {
-                interval.removeAttribute("comment.shown");
-            }
-            model.fireEvent(new ApplicationModelEvent(ApplicationModelEventType.MODIFIED_TRAIN_ATTRIBUTE, model, train));
-            break;
+                model.fireEvent(new ApplicationModelEvent(ApplicationModelEventType.MODIFIED_TRAIN_ATTRIBUTE, model, train));
+                break;
+            case COMMENT_SHOWN:
+                // entry shunting on the far side
+                interval = train.getTimeIntervalList().get(rowIndex);
+                if (Boolean.TRUE.equals(aValue)) {
+                    interval.setAttribute("comment.shown", aValue);
+                } else {
+                    interval.removeAttribute("comment.shown");
+                }
+                model.fireEvent(new ApplicationModelEvent(ApplicationModelEventType.MODIFIED_TRAIN_ATTRIBUTE, model, train));
+                break;
         }
         editBlock = false;
     }
