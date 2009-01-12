@@ -98,11 +98,13 @@ public class TrainsPane extends javax.swing.JPanel implements StorableGuiData {
         Integer dividerLoc = prefs.getInt("trains.divider");
         if (dividerLoc != null)
             splitPane.setDividerLocation(dividerLoc.intValue());
+        trainView.loadFromPreferences(prefs);
     }
     
     @Override
     public void saveToPreferences(AppPreferences prefs) {
         prefs.setInt("trains.divider", splitPane.getDividerLocation());
+        trainView.saveToPreferences(prefs);
     }
     
     /** This method is called from within the constructor to

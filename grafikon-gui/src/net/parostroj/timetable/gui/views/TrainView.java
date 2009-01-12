@@ -5,14 +5,21 @@
  */
 package net.parostroj.timetable.gui.views;
 
-import javax.swing.JTable;
+import java.util.Arrays;
+import java.util.Enumeration;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.logging.Logger;
 import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
+import javax.swing.table.TableColumnModel;
+import net.parostroj.timetable.gui.AppPreferences;
 import net.parostroj.timetable.gui.ApplicationModel;
 import net.parostroj.timetable.gui.ApplicationModelEvent;
 import net.parostroj.timetable.gui.ApplicationModelEventType;
 import net.parostroj.timetable.gui.ApplicationModelListener;
+import net.parostroj.timetable.gui.StorableGuiData;
 import net.parostroj.timetable.gui.dialogs.CopyTrainDialog;
 import net.parostroj.timetable.gui.dialogs.EditTrainDialog;
 import net.parostroj.timetable.model.TimeInterval;
@@ -24,7 +31,9 @@ import net.parostroj.timetable.utils.ResourceLoader;
  * 
  * @author  jub
  */
-public class TrainView extends javax.swing.JPanel implements ApplicationModelListener {
+public class TrainView extends javax.swing.JPanel implements ApplicationModelListener, StorableGuiData {
+
+    private static final Logger LOG = Logger.getLogger(TrainView.class.getName());
     
     private ApplicationModel model;
     
@@ -37,26 +46,24 @@ public class TrainView extends javax.swing.JPanel implements ApplicationModelLis
      */
     public TrainView() {
         initComponents();
-        DefaultTableCellRenderer cellRenderer = new DefaultTableCellRenderer();
-        cellRenderer.setHorizontalAlignment(SwingConstants.RIGHT);
-        
-        for (TrainTableColumn column : TrainTableColumn.values()) {
-            if (column.isRightAling())
-                trainTable.getColumnModel().getColumn(column.getIndex()).setCellRenderer(cellRenderer);
-            if (column.getEditor() != null) {
-                trainTable.getColumnModel().getColumn(column.getIndex()).setCellEditor(column.getEditor());
-            }
-            this.setTableColumnWidths(trainTable, column.getIndex(), column.getMinWidth(), column.getMaxWidth(), column.getPrefWidth());
-        }
         
         editDialog = new EditTrainDialog((java.awt.Frame)this.getTopLevelAncestor(), true);
     }
     
-    private void setTableColumnWidths(JTable table, int column, int min, int max, int preffered) {
-        TableColumn c = table.getColumnModel().getColumn(column);
-        c.setWidth(preffered);
-        c.setMinWidth(min);
-        c.setMaxWidth(max);
+    private TableColumn createTableColumn(TrainTableColumn column) {
+        TableColumn tableColumn = new TableColumn(column.getIndex(), column.getPrefWidth());
+        tableColumn.setMinWidth(column.getMinWidth());
+        tableColumn.setMaxWidth(column.getMaxWidth());
+        if (column.isRightAling()) {
+            DefaultTableCellRenderer cellRenderer = new DefaultTableCellRenderer();
+            cellRenderer.setHorizontalAlignment(SwingConstants.RIGHT);
+            tableColumn.setCellRenderer(cellRenderer);
+        }
+        if (column.getEditor() != null)
+            tableColumn.setCellEditor(column.getEditor());
+        String cName = ResourceLoader.getString(column.getKey());
+        tableColumn.setHeaderValue(cName);
+        return tableColumn;
     }
 
     public void setModel(ApplicationModel model) {
@@ -151,6 +158,7 @@ public class TrainView extends javax.swing.JPanel implements ApplicationModelLis
 
         trainTextField.setEditable(false);
 
+        trainTable.setAutoCreateColumnsFromModel(false);
         trainTable.setModel(new TrainTableModel(model,train));
         trainTable.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_LAST_COLUMN);
         trainTableScrollPane.setViewportView(trainTable);
@@ -251,4 +259,52 @@ private void copyButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FI
     private javax.swing.JTextField trainTextField;
     // End of variables declaration//GEN-END:variables
 
+    @Override
+    public void saveToPreferences(AppPreferences prefs) {
+        // get displayed columns and save theirs order
+        TableColumnModel tcm = trainTable.getColumnModel();
+        Enumeration<TableColumn> columns = tcm.getColumns();
+        StringBuilder order = null;
+        while (columns.hasMoreElements()) {
+            TableColumn column = columns.nextElement();
+            if (order != null)
+                order.append(',');
+            else
+                order = new StringBuilder();
+            order.append(column.getModelIndex());
+        }
+        if (order != null) {
+            prefs.setString("train.columns", order.toString());
+        }
+    }
+
+    @Override
+    public void loadFromPreferences(AppPreferences prefs) {
+        // set displayed columns (if the prefs are empty - show all)
+        String cs = prefs.getString("train.columns");
+        List<TrainTableColumn> shownColumns = null;
+        if (cs == null || "".equals(cs)) {
+            // all columns
+            shownColumns = Arrays.asList(TrainTableColumn.values());
+        } else {
+            // extract
+            shownColumns = new LinkedList<TrainTableColumn>();
+            String[] splitted = cs.split(",");
+            for (String cStr : splitted) {
+                try {
+                    int cInt = Integer.parseInt(cStr);
+                    TrainTableColumn ac = TrainTableColumn.getColumn(cInt);
+                    shownColumns.add(ac);
+                } catch (NumberFormatException e) {
+                    LOG.warning("Cannot load columns' order for train view: " + cStr);
+                }
+            }
+        }
+        // append columns to table
+        TableColumnModel tcm = trainTable.getColumnModel();
+        for (TrainTableColumn column : shownColumns) {
+            TableColumn c = this.createTableColumn(column);
+            tcm.addColumn(c);
+        }
+    }
 }
