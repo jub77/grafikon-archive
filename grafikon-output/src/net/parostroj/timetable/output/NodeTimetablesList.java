@@ -11,8 +11,6 @@ import java.util.Collection;
 import java.util.Formatter;
 import java.util.List;
 import java.util.logging.Logger;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import net.parostroj.timetable.actions.NodeSort;
 import net.parostroj.timetable.actions.TrainsHelper;
 import net.parostroj.timetable.model.*;
@@ -160,29 +158,15 @@ public class NodeTimetablesList {
         }
     }
 
-    private static Pattern NUMBER = Pattern.compile("\\d+");
-
     private void generateCommentWithLength(TimeInterval interval, StringBuilder comment) {
         Train train = interval.getTrain();
         if (train.getIntervalAfter(interval) != null && interval.getType().isStop() && train.getType().getSbType() == SpeedingBrakingType.FREIGHT) {
             Pair<Node, Integer> length = TrainsHelper.getNextLength(interval.getOwnerAsNode(), train, diagram);
             if (length == null) {
                 // check old style comment
-                String weightStr = (String) train.getAttribute("weight.info");
-                // try to convert weight string to number
-                if (weightStr != null) {
-                    try {
-                        Matcher matcher = NUMBER.matcher(weightStr);
-                        if (matcher.find()) {
-                            String number = matcher.group(0);
-                            Integer weight = Integer.valueOf(number);
-                            if (weight != null)
-                                length = new Pair<Node, Integer>(train.getEndNode(), TrainsHelper.convertWeightToLength(train, diagram, weight));
-                        }
-                    } catch (NumberFormatException e) {
-                        LOG.fine("Cannot convert weight to number: " + weightStr);
-                    }
-                }
+                Integer weight = TrainsHelper.getWeightFromAttribute(train);
+                if (weight != null)
+                    length = new Pair<Node, Integer>(train.getEndNode(), TrainsHelper.convertWeightToLength(train, diagram, weight));
             }
             // if length was calculated
             if (length != null) {
