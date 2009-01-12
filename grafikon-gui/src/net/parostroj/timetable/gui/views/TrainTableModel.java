@@ -5,18 +5,12 @@
  */
 package net.parostroj.timetable.gui.views;
 
-import java.util.HashSet;
-import java.util.Set;
-
-import javax.swing.event.TableModelEvent;
-import javax.swing.event.TableModelListener;
-import javax.swing.table.TableModel;
+import javax.swing.table.AbstractTableModel;
 import net.parostroj.timetable.actions.TrainsHelper;
 import net.parostroj.timetable.gui.ApplicationModel;
 import net.parostroj.timetable.gui.ApplicationModelEvent;
 import net.parostroj.timetable.gui.ApplicationModelEventType;
 import net.parostroj.timetable.model.*;
-import net.parostroj.timetable.utils.ResourceLoader;
 import net.parostroj.timetable.utils.TimeConverter;
 
 /**
@@ -24,9 +18,7 @@ import net.parostroj.timetable.utils.TimeConverter;
  *
  * @author jub
  */
-class TrainTableModel implements TableModel {
-
-    private Set<TableModelListener> listeners = new HashSet<TableModelListener>();
+class TrainTableModel extends AbstractTableModel {
 
     /** Train. */
     private Train train;
@@ -53,8 +45,7 @@ class TrainTableModel implements TableModel {
         if (train != null)
             lastRow = train.getTimeIntervalList().size() - 1;
 
-        TableModelEvent e = new TableModelEvent(this);
-        this.fireEvent(e);
+        this.fireTableDataChanged();
     }
 
     @Override
@@ -65,11 +56,6 @@ class TrainTableModel implements TableModel {
     @Override
     public int getColumnCount() {
         return TrainTableColumn.values().length;
-    }
-
-    @Override
-    public String getColumnName(int columnIndex) {
-        return ResourceLoader.getString(TrainTableColumn.getColumn(columnIndex).getKey());
     }
 
     @Override
@@ -194,14 +180,14 @@ class TrainTableModel implements TableModel {
             if (time != -1) {
                 if (rowIndex == 0) {
                     train.move(time);
-                    this.fireEvent(new TableModelEvent(this));
+                    this.fireTableDataChanged();
                     model.fireEvent(new ApplicationModelEvent(ApplicationModelEventType.MODIFIED_TRAIN, model, train));
                 } else {
                     interval = train.getTimeIntervalList().get(rowIndex);
                     int newStop = time - interval.getStart();
                     if (newStop >= 0) {
                         train.changeStopTime(interval, newStop, model.getDiagram());
-                        this.fireEvent(new TableModelEvent(this,0,lastRow));
+                        this.fireTableRowsUpdated(rowIndex, lastRow);
                         model.fireEvent(new ApplicationModelEvent(ApplicationModelEventType.MODIFIED_TRAIN, model, train));
                     }
                 }
@@ -213,7 +199,7 @@ class TrainTableModel implements TableModel {
             if (time >= 0) {
                 interval = train.getTimeIntervalList().get(rowIndex);
                 train.changeStopTime(interval, time, model.getDiagram());
-                this.fireEvent(new TableModelEvent(this,0,lastRow));
+                this.fireTableRowsUpdated(rowIndex, lastRow);
                 model.fireEvent(new ApplicationModelEvent(ApplicationModelEventType.MODIFIED_TRAIN, model, train));
             }
             break;
@@ -223,7 +209,7 @@ class TrainTableModel implements TableModel {
             if (velocity > 0) {
                 interval = train.getTimeIntervalList().get(rowIndex);
                 train.changeVelocity(interval, velocity, model.getDiagram());
-                this.fireEvent(new TableModelEvent(this,0,lastRow));
+                this.fireTableRowsUpdated(rowIndex, lastRow);
                 model.fireEvent(new ApplicationModelEvent(ApplicationModelEventType.MODIFIED_TRAIN, model, train));
             }
             break;
@@ -236,7 +222,7 @@ class TrainTableModel implements TableModel {
                 NodeTrack newTrack = node.getNodeTrackByNumber(platform);
                 if (newTrack != null) {
                     train.changeNodeTrack(interval, newTrack);
-                    this.fireEvent(new TableModelEvent(this,rowIndex,rowIndex));
+                    this.fireTableRowsUpdated(rowIndex, rowIndex);
                     model.fireEvent(new ApplicationModelEvent(ApplicationModelEventType.MODIFIED_TRAIN, model, train));
                 }
             } else if (interval.getOwner() instanceof Line) {
@@ -244,7 +230,7 @@ class TrainTableModel implements TableModel {
                 LineTrack newTrack = line.getLineTrackByNumber(platform);
                 if (newTrack != null) {
                     train.changeLineTrack(interval, newTrack);
-                    this.fireEvent(new TableModelEvent(this, rowIndex, rowIndex));
+                    this.fireTableRowsUpdated(rowIndex, rowIndex);
                     model.fireEvent(new ApplicationModelEvent(ApplicationModelEventType.MODIFIED_TRAIN, model, train));
                 }
             }
@@ -293,22 +279,6 @@ class TrainTableModel implements TableModel {
             break;
         }
         editBlock = false;
-    }
-
-    @Override
-    public void addTableModelListener(TableModelListener l) {
-        listeners.add(l);
-    }
-
-    @Override
-    public void removeTableModelListener(TableModelListener l) {
-        listeners.remove(l);
-    }
-
-    private void fireEvent(TableModelEvent e) {
-        for (TableModelListener listener :listeners) {
-            listener.tableChanged(e);
-        }
     }
 
     public void setModel(ApplicationModel model) {
