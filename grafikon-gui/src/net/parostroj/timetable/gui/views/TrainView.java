@@ -267,16 +267,17 @@ private void copyButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FI
     @Override
     public void saveToPreferences(AppPreferences prefs) {
         // get displayed columns and save theirs order
+        prefs.remove("train.columns");
         TableColumnModel tcm = trainTable.getColumnModel();
         Enumeration<TableColumn> columns = tcm.getColumns();
         StringBuilder order = null;
         while (columns.hasMoreElements()) {
             TableColumn column = columns.nextElement();
             if (order != null)
-                order.append(',');
+                order.append('|');
             else
                 order = new StringBuilder();
-            order.append(column.getModelIndex());
+            order.append(column.getModelIndex()).append(',').append(column.getPreferredWidth());
         }
         if (order != null) {
             prefs.setString("train.columns", order.toString());
@@ -287,18 +288,26 @@ private void copyButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FI
     public void loadFromPreferences(AppPreferences prefs) {
         // set displayed columns (if the prefs are empty - show all)
         String cs = prefs.getString("train.columns");
-        List<TrainTableColumn> shownColumns = null;
+        List<TableColumn> shownColumns = new LinkedList<TableColumn>();
         if (cs == null || "".equals(cs)) {
             // all columns
-            shownColumns = Arrays.asList(TrainTableColumn.values());
+            for (TrainTableColumn c : TrainTableColumn.values()) {
+                shownColumns.add(c.createTableColumn());
+            }
         } else {
             // extract
-            shownColumns = new LinkedList<TrainTableColumn>();
-            String[] splitted = cs.split(",");
+            String[] splitted = cs.split("\\|");
             for (String cStr : splitted) {
                 try {
-                    int cInt = Integer.parseInt(cStr);
-                    TrainTableColumn ac = TrainTableColumn.getColumn(cInt);
+                    String[] ss = cStr.split(",");
+                    int cInt = Integer.parseInt(ss[0]);
+                    TableColumn ac = TrainTableColumn.getColumn(cInt).createTableColumn();
+                    if (ss.length > 1) {
+                        int wInt = Integer.parseInt(ss[1]);
+                        if (wInt != 0) {
+                            ac.setPreferredWidth(wInt);
+                        }
+                    }
                     shownColumns.add(ac);
                 } catch (NumberFormatException e) {
                     LOG.warning("Cannot load columns' order for train view: " + cStr);
@@ -307,9 +316,8 @@ private void copyButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FI
         }
         // append columns to table
         TableColumnModel tcm = trainTable.getColumnModel();
-        for (TrainTableColumn column : shownColumns) {
-            TableColumn c = column.createTableColumn();
-            tcm.addColumn(c);
+        for (TableColumn column : shownColumns) {
+            tcm.addColumn(column);
         }
     }
 }
