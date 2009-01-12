@@ -437,6 +437,7 @@ public class MainFrame extends javax.swing.JFrame implements ApplicationModelLis
         trainsConflictsViewMenuItem = new javax.swing.JMenuItem();
         specialMenu = new javax.swing.JMenu();
         recalculateMenuItem = new javax.swing.JMenuItem();
+        columnsMenuItem = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         setTitle(this.getTitleString(false));
@@ -693,6 +694,14 @@ public class MainFrame extends javax.swing.JFrame implements ApplicationModelLis
             }
         });
         specialMenu.add(recalculateMenuItem);
+
+        columnsMenuItem.setText(ResourceLoader.getString("menu.special.columns")); // NOI18N
+        columnsMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                columnsMenuItemActionPerformed(evt);
+            }
+        });
+        specialMenu.add(columnsMenuItem);
 
         menuBar.add(specialMenu);
 
@@ -1226,6 +1235,10 @@ private void epListMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GE
     this.saveHtml(action);
 }//GEN-LAST:event_epListMenuItemActionPerformed
 
+private void columnsMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_columnsMenuItemActionPerformed
+    trainsPane.editColumns();
+}//GEN-LAST:event_columnsMenuItemActionPerformed
+
     private void setSelectedLocale() {
         if (locale == null)
             systemLanguageRadioButtonMenuItem.setSelected(true);
@@ -1370,6 +1383,7 @@ private void epListMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GE
     private javax.swing.JMenu actionMenu;
     private javax.swing.JMenuItem allHtmlMenuItem;
     private javax.swing.JPanel applicationPanel;
+    private javax.swing.JMenuItem columnsMenuItem;
     private javax.swing.JMenuItem dcListMenuItem;
     private net.parostroj.timetable.gui.panes.TrainsCyclesPane driverCyclesPane;
     private javax.swing.JMenuItem ecListMenuItem;

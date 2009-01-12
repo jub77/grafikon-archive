@@ -106,6 +106,10 @@ public class TrainsPane extends javax.swing.JPanel implements StorableGuiData {
         prefs.setInt("trains.divider", splitPane.getDividerLocation());
         trainView.saveToPreferences(prefs);
     }
+
+    public void editColumns() {
+        trainView.editColumns();
+    }
     
     /** This method is called from within the constructor to
      * initialize the form.

@@ -1,7 +1,11 @@
 package net.parostroj.timetable.gui.views;
 
+import javax.swing.SwingConstants;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellEditor;
+import javax.swing.table.TableColumn;
 import net.parostroj.timetable.model.TimeInterval;
+import net.parostroj.timetable.utils.ResourceLoader;
 
 /**
  * Enumeration with columns for train view table.
@@ -133,6 +137,22 @@ public enum TrainTableColumn {
         return true;
     }
     
+    public TableColumn createTableColumn() {
+        TableColumn tableColumn = new TableColumn(this.getIndex(), this.getPrefWidth());
+        tableColumn.setMinWidth(this.getMinWidth());
+        tableColumn.setMaxWidth(this.getMaxWidth());
+        if (this.isRightAling()) {
+            DefaultTableCellRenderer cellRenderer = new DefaultTableCellRenderer();
+            cellRenderer.setHorizontalAlignment(SwingConstants.RIGHT);
+            tableColumn.setCellRenderer(cellRenderer);
+        }
+        if (this.getEditor() != null)
+            tableColumn.setCellEditor(this.getEditor());
+        String cName = ResourceLoader.getString(this.getKey());
+        tableColumn.setHeaderValue(cName);
+        return tableColumn;
+    }
+
     public static TrainTableColumn getColumn(int index) {
         for (TrainTableColumn column : values()) {
             if (column.getIndex() == index)

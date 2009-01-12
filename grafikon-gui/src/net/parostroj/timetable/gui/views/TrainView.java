@@ -5,6 +5,7 @@
  */
 package net.parostroj.timetable.gui.views;
 
+import java.awt.Frame;
 import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.LinkedList;
@@ -20,6 +21,7 @@ import net.parostroj.timetable.gui.ApplicationModelEvent;
 import net.parostroj.timetable.gui.ApplicationModelEventType;
 import net.parostroj.timetable.gui.ApplicationModelListener;
 import net.parostroj.timetable.gui.StorableGuiData;
+import net.parostroj.timetable.gui.dialogs.ColumnsDialog;
 import net.parostroj.timetable.gui.dialogs.CopyTrainDialog;
 import net.parostroj.timetable.gui.dialogs.EditTrainDialog;
 import net.parostroj.timetable.model.TimeInterval;
@@ -49,23 +51,14 @@ public class TrainView extends javax.swing.JPanel implements ApplicationModelLis
         
         editDialog = new EditTrainDialog((java.awt.Frame)this.getTopLevelAncestor(), true);
     }
-    
-    private TableColumn createTableColumn(TrainTableColumn column) {
-        TableColumn tableColumn = new TableColumn(column.getIndex(), column.getPrefWidth());
-        tableColumn.setMinWidth(column.getMinWidth());
-        tableColumn.setMaxWidth(column.getMaxWidth());
-        if (column.isRightAling()) {
-            DefaultTableCellRenderer cellRenderer = new DefaultTableCellRenderer();
-            cellRenderer.setHorizontalAlignment(SwingConstants.RIGHT);
-            tableColumn.setCellRenderer(cellRenderer);
-        }
-        if (column.getEditor() != null)
-            tableColumn.setCellEditor(column.getEditor());
-        String cName = ResourceLoader.getString(column.getKey());
-        tableColumn.setHeaderValue(cName);
-        return tableColumn;
-    }
 
+    public void editColumns() {
+        ColumnsDialog dialog = new ColumnsDialog((Frame)this.getTopLevelAncestor(), true);
+        dialog.setLocationRelativeTo(trainTableScrollPane);
+        dialog.updateColumns(trainTable);
+        dialog.setVisible(true);
+    }
+    
     public void setModel(ApplicationModel model) {
         this.model = model;
         this.train = model.getSelectedTrain();
@@ -303,7 +296,7 @@ private void copyButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FI
         // append columns to table
         TableColumnModel tcm = trainTable.getColumnModel();
         for (TrainTableColumn column : shownColumns) {
-            TableColumn c = this.createTableColumn(column);
+            TableColumn c = column.createTableColumn();
             tcm.addColumn(c);
         }
     }
