@@ -437,6 +437,7 @@ public class MainFrame extends javax.swing.JFrame implements ApplicationModelLis
         trainsConflictsViewMenuItem = new javax.swing.JMenuItem();
         specialMenu = new javax.swing.JMenu();
         recalculateMenuItem = new javax.swing.JMenuItem();
+        settingsMenu = new javax.swing.JMenu();
         columnsMenuItem = new javax.swing.JMenuItem();
         sortColumnsMenuItem = new javax.swing.JMenuItem();
 
@@ -696,23 +697,27 @@ public class MainFrame extends javax.swing.JFrame implements ApplicationModelLis
         });
         specialMenu.add(recalculateMenuItem);
 
-        columnsMenuItem.setText(ResourceLoader.getString("menu.special.columns")); // NOI18N
+        menuBar.add(specialMenu);
+
+        settingsMenu.setText(ResourceLoader.getString("menu.settings")); // NOI18N
+
+        columnsMenuItem.setText(ResourceLoader.getString("menu.settings.columns")); // NOI18N
         columnsMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 columnsMenuItemActionPerformed(evt);
             }
         });
-        specialMenu.add(columnsMenuItem);
+        settingsMenu.add(columnsMenuItem);
 
-        sortColumnsMenuItem.setText(ResourceLoader.getString("menu.special.sort.columns")); // NOI18N
+        sortColumnsMenuItem.setText(ResourceLoader.getString("menu.settings.sort.columns")); // NOI18N
         sortColumnsMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 sortColumnsMenuItemActionPerformed(evt);
             }
         });
-        specialMenu.add(sortColumnsMenuItem);
+        settingsMenu.add(sortColumnsMenuItem);
 
-        menuBar.add(specialMenu);
+        menuBar.add(settingsMenu);
 
         setJMenuBar(menuBar);
 
@@ -1422,6 +1427,7 @@ private void sortColumnsMenuItemActionPerformed(java.awt.event.ActionEvent evt) 
     private javax.swing.JMenuItem recalculateMenuItem;
     private javax.swing.JSeparator separator3;
     private javax.swing.JSeparator separator4;
+    private javax.swing.JMenu settingsMenu;
     private javax.swing.JMenuItem settingsMenuItem;
     private javax.swing.JMenuItem sortColumnsMenuItem;
     private javax.swing.JMenuItem spListMenuItem;
