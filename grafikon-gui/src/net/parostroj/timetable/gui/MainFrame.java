@@ -366,6 +366,7 @@ public class MainFrame extends javax.swing.JFrame implements ApplicationModelLis
         trainTimetableListMenuItem.setEnabled(model.getDiagram() != null);
         trainTimetableListByDcMenuItem.setEnabled(model.getDiagram() != null);
         recalculateMenuItem.setEnabled(model.getDiagram() != null);
+        recalculateStopsMenuItem.setEnabled(model.getDiagram() != null);
         nodeTimetableListMenuItem.setEnabled(model.getDiagram() != null);
         ecListMenuItem.setEnabled(model.getDiagram() != null);
         dcListMenuItem.setEnabled(model.getDiagram() != null);
@@ -437,9 +438,11 @@ public class MainFrame extends javax.swing.JFrame implements ApplicationModelLis
         trainsConflictsViewMenuItem = new javax.swing.JMenuItem();
         specialMenu = new javax.swing.JMenu();
         recalculateMenuItem = new javax.swing.JMenuItem();
+        recalculateStopsMenuItem = new javax.swing.JMenuItem();
         javax.swing.JMenu settingsMenu = new javax.swing.JMenu();
         javax.swing.JMenuItem columnsMenuItem = new javax.swing.JMenuItem();
         javax.swing.JMenuItem sortColumnsMenuItem = new javax.swing.JMenuItem();
+        javax.swing.JMenuItem resizeColumnsMenuItem = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         setTitle(this.getTitleString(false));
@@ -697,6 +700,14 @@ public class MainFrame extends javax.swing.JFrame implements ApplicationModelLis
         });
         specialMenu.add(recalculateMenuItem);
 
+        recalculateStopsMenuItem.setText(ResourceLoader.getString("menu.special.recalculate.stops")); // NOI18N
+        recalculateStopsMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                recalculateStopsMenuItemActionPerformed(evt);
+            }
+        });
+        specialMenu.add(recalculateStopsMenuItem);
+
         menuBar.add(specialMenu);
 
         settingsMenu.setText(ResourceLoader.getString("menu.settings")); // NOI18N
@@ -716,6 +727,14 @@ public class MainFrame extends javax.swing.JFrame implements ApplicationModelLis
             }
         });
         settingsMenu.add(sortColumnsMenuItem);
+
+        resizeColumnsMenuItem.setText(ResourceLoader.getString("menu.settings.resize.columns")); // NOI18N
+        resizeColumnsMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                resizeColumnsMenuItemActionPerformed(evt);
+            }
+        });
+        settingsMenu.add(resizeColumnsMenuItem);
 
         menuBar.add(settingsMenu);
 
@@ -786,7 +805,7 @@ private void recalculateMenuItemActionPerformed(java.awt.event.ActionEvent evt) 
             // set back modified status (SET_DIAGRAM_CHANGED unfortunately clears the modified status)
             model.setModelChanged(true);
         }
-        });
+    });
 }//GEN-LAST:event_recalculateMenuItemActionPerformed
 
 private void trainTimetableListMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_trainTimetableListMenuItemActionPerformed
@@ -1257,6 +1276,79 @@ private void sortColumnsMenuItemActionPerformed(java.awt.event.ActionEvent evt) 
     trainsPane.sortColumns();
 }//GEN-LAST:event_sortColumnsMenuItemActionPerformed
 
+private void resizeColumnsMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_resizeColumnsMenuItemActionPerformed
+    trainsPane.resizeColumns();
+}//GEN-LAST:event_resizeColumnsMenuItemActionPerformed
+
+private void recalculateStopsMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_recalculateStopsMenuItemActionPerformed
+    // get ratio
+    String ratioStr = JOptionPane.showInputDialog(this, ResourceLoader.getString("recalculate.stops.ratio"), "0.5");
+
+    if (ratioStr == null)
+        return;
+
+    // convert do double
+    double cRatio = 1.0d;
+    try {
+        cRatio = Double.parseDouble(ratioStr);
+    } catch (NumberFormatException e) {
+        LOG.warning("Cannot convert to double: " + ratioStr);
+        return;
+    }
+
+    final double ratio = cRatio;
+
+    ActionHandler.getInstance().executeAction(this, ResourceLoader.getString("wait.message.recalculate"), new ModelAction() {
+
+        @Override
+        public void run() {
+            // recalculate all trains
+            for (Train train : model.getDiagram().getTrains()) {
+                // convert stops ...
+                for (TimeInterval interval : train.getTimeIntervalList()) {
+                    if (interval.getType() == TimeIntervalType.NODE_STOP) {
+                        // recalculate time ...
+                        int time = interval.getLength();
+                        time = this.convertTime(time, ratio);
+                        // change stop time
+                        train.changeStopTime(interval, time, model.getDiagram());
+                    }
+                }
+                int time = 0;
+                // convert time before
+                if (train.getTimeBefore() != 0) {
+                    time = train.getTimeBefore();
+                    time = this.convertTime(time, ratio);
+                    train.setTimeBefore(time);
+                }
+                // convert time after
+                if (train.getTimeAfter() != 0) {
+                    time = train.getTimeAfter();
+                    time = this.convertTime(time, ratio);
+                    train.setTimeAfter(time);
+                }
+            }
+        }
+
+        private int convertTime(int time, double convertRatio) {
+            // recalculate
+            time = (int)(convertRatio * time);
+            // round to minutes
+            time = ((time + 40) / 60) * 60;
+            // do not change stop to 0
+            time = (time == 0) ? 1 : time;
+            return time;
+        }
+
+        @Override
+        public void afterRun() {
+            model.fireEvent(new ApplicationModelEvent(ApplicationModelEventType.SET_DIAGRAM_CHANGED, model));
+            // set back modified status (SET_DIAGRAM_CHANGED unfortunately clears the modified status)
+            model.setModelChanged(true);
+        }
+    });
+}//GEN-LAST:event_recalculateStopsMenuItemActionPerformed
+
     private void setSelectedLocale() {
         if (locale == null)
             systemLanguageRadioButtonMenuItem.setSelected(true);
@@ -1424,6 +1516,7 @@ private void sortColumnsMenuItemActionPerformed(java.awt.event.ActionEvent evt) 
     private javax.swing.JRadioButtonMenuItem oSystemLRadioButtonMenuItem;
     private javax.swing.ButtonGroup outputLbuttonGroup;
     private javax.swing.JMenuItem recalculateMenuItem;
+    private javax.swing.JMenuItem recalculateStopsMenuItem;
     private javax.swing.JSeparator separator3;
     private javax.swing.JSeparator separator4;
     private javax.swing.JMenuItem settingsMenuItem;

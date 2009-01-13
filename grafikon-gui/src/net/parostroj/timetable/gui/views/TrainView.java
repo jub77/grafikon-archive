@@ -47,6 +47,16 @@ public class TrainView extends javax.swing.JPanel implements ApplicationModelLis
         dialog.setVisible(true);
     }
 
+    public void resizeColumns() {
+        // resize columns to original size
+        TableColumnModel tcm = trainTable.getColumnModel();
+        Enumeration<TableColumn> columns = tcm.getColumns();
+        while (columns.hasMoreElements()) {
+            TableColumn tc = columns.nextElement();
+            tc.setPreferredWidth(TrainTableColumn.getColumn(tc.getModelIndex()).getPrefWidth());
+        }
+    }
+
     public void sortColumns() {
         // sort columns to initial order
         TableColumnModel tcm = trainTable.getColumnModel();
