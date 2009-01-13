@@ -437,9 +437,9 @@ public class MainFrame extends javax.swing.JFrame implements ApplicationModelLis
         trainsConflictsViewMenuItem = new javax.swing.JMenuItem();
         specialMenu = new javax.swing.JMenu();
         recalculateMenuItem = new javax.swing.JMenuItem();
-        settingsMenu = new javax.swing.JMenu();
-        columnsMenuItem = new javax.swing.JMenuItem();
-        sortColumnsMenuItem = new javax.swing.JMenuItem();
+        javax.swing.JMenu settingsMenu = new javax.swing.JMenu();
+        javax.swing.JMenuItem columnsMenuItem = new javax.swing.JMenuItem();
+        javax.swing.JMenuItem sortColumnsMenuItem = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         setTitle(this.getTitleString(false));
@@ -1401,7 +1401,6 @@ private void sortColumnsMenuItemActionPerformed(java.awt.event.ActionEvent evt) 
     private javax.swing.JMenu actionMenu;
     private javax.swing.JMenuItem allHtmlMenuItem;
     private javax.swing.JPanel applicationPanel;
-    private javax.swing.JMenuItem columnsMenuItem;
     private javax.swing.JMenuItem dcListMenuItem;
     private net.parostroj.timetable.gui.panes.TrainsCyclesPane driverCyclesPane;
     private javax.swing.JMenuItem ecListMenuItem;
@@ -1427,9 +1426,7 @@ private void sortColumnsMenuItemActionPerformed(java.awt.event.ActionEvent evt) 
     private javax.swing.JMenuItem recalculateMenuItem;
     private javax.swing.JSeparator separator3;
     private javax.swing.JSeparator separator4;
-    private javax.swing.JMenu settingsMenu;
     private javax.swing.JMenuItem settingsMenuItem;
-    private javax.swing.JMenuItem sortColumnsMenuItem;
     private javax.swing.JMenuItem spListMenuItem;
     private javax.swing.JMenu specialMenu;
     private net.parostroj.timetable.gui.StatusBar statusBar;
