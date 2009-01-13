@@ -66,11 +66,11 @@ public class TrainView extends javax.swing.JPanel implements ApplicationModelLis
             TableColumn tc = columns.nextElement();
             list.add(tc);
         }
-        Collections.sort(list, new Comparator() {
+        Collections.sort(list, new Comparator<TableColumn>() {
 
             @Override
-            public int compare(Object o1, Object o2) {
-                return Integer.valueOf(((TableColumn)o1).getModelIndex()).compareTo(((TableColumn)o2).getModelIndex());
+            public int compare(TableColumn o1, TableColumn o2) {
+                return Integer.valueOf(Integer.valueOf(o1.getModelIndex()).compareTo(Integer.valueOf(o2.getModelIndex())));
             }
         });
         for (TableColumn tc : list) {
