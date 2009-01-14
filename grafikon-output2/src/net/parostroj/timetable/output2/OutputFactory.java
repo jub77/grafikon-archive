@@ -33,4 +33,6 @@ public abstract class OutputFactory {
     }
 
     public abstract StartPositionsOutput createStartPositionsOutput(TrainDiagram diagram);
+
+    public abstract EndPositionsOutput createEndPositionsOutput(TrainDiagram diagram);
 }

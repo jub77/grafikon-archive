@@ -1,6 +1,7 @@
 package net.parostroj.timetable.output2.xml;
 
 import net.parostroj.timetable.model.TrainDiagram;
+import net.parostroj.timetable.output2.EndPositionsOutput;
 import net.parostroj.timetable.output2.OutputFactory;
 import net.parostroj.timetable.output2.StartPositionsOutput;
 
@@ -13,6 +14,11 @@ public class XmlOutputFactory extends OutputFactory {
 
     @Override
     public StartPositionsOutput createStartPositionsOutput(TrainDiagram diagram) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public EndPositionsOutput createEndPositionsOutput(TrainDiagram diagram) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 }

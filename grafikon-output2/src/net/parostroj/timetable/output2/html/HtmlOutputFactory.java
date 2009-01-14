@@ -2,6 +2,7 @@ package net.parostroj.timetable.output2.html;
 
 import java.util.Locale;
 import net.parostroj.timetable.model.TrainDiagram;
+import net.parostroj.timetable.output2.EndPositionsOutput;
 import net.parostroj.timetable.output2.OutputFactory;
 import net.parostroj.timetable.output2.StartPositionsOutput;
 
@@ -21,5 +22,10 @@ public class HtmlOutputFactory extends OutputFactory {
     @Override
     public StartPositionsOutput createStartPositionsOutput(TrainDiagram diagram) {
         return new HtmlStartPositionsOutput(diagram, locale);
+    }
+
+    @Override
+    public EndPositionsOutput createEndPositionsOutput(TrainDiagram diagram) {
+        return new HtmlEndPositionsOutput(diagram, locale);
     }
 }

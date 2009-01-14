@@ -44,11 +44,27 @@ public class PositionsExtractor {
     }
 
     public List<Position> getEndPositionsEngines() {
-        return null;
+        List<Position> result = new LinkedList<Position>();
+        for (TrainsCycle ecCycle : this.sortTrainsCycleList(diagram.getCycles(TrainsCycleType.ENGINE_CYCLE))) {
+            if (!ecCycle.isEmpty()) {
+                TrainsCycleItem end = ecCycle.getItems().get(ecCycle.getItems().size() - 1);
+                String endName = end.getToInterval().getOwnerAsNode().getName();
+                result.add(new Position(ecCycle.getName(), TransformUtil.getEngineCycleDescription(ecCycle), endName, end.getTrain().getName()));
+            }
+        }
+        return result;
     }
 
     public List<Position> getEndPositionsTrainUnits() {
-        return null;
+        List<Position> result = new LinkedList<Position>();
+        for (TrainsCycle tucCycle : this.sortTrainsCycleList(diagram.getCycles(TrainsCycleType.TRAIN_UNIT_CYCLE))) {
+            if (!tucCycle.isEmpty()) {
+                TrainsCycleItem end = tucCycle.getItems().get(tucCycle.getItems().size() - 1);
+                String endName = end.getToInterval().getOwnerAsNode().getName();
+                result.add(new Position(tucCycle.getName(), tucCycle.getDescription(), endName, end.getTrain().getName()));
+            }
+        }
+        return result;
     }
 
     private List<TrainsCycle> sortTrainsCycleList(List<TrainsCycle> list) {
