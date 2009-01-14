@@ -91,7 +91,6 @@ public class TransformUtil {
         if (ec.getType() != TrainsCycleType.ENGINE_CYCLE)
             throw new IllegalArgumentException("Engine cycle expected.");
         
-        // TODO - implementation (for now it returns description with engine in brackets)
         String result = (ec.getDescription() != null) ? ec.getDescription() : "";
         if (ec.getAttribute("engine.class") != null) {
             EngineClass cl = (EngineClass)ec.getAttribute("engine.class");
