@@ -469,6 +469,12 @@ private void preferencesCheckBoxMenuItemActionPerformed(java.awt.event.ActionEve
                 }
                 this.repaint();
                 break;
+            case MODIFIED_LINE:
+                if (this.getRoute() != null && this.getRoute().contains((RouteSegment)event.getObject())) {
+                    // redraw all
+                    this.setRoute(this.getRoute());
+                }
+                break;
             case ROUTES_MODIFIED:
                 // changed list of routes
                 this.createMenuForRoutes(diagram.getRoutes());

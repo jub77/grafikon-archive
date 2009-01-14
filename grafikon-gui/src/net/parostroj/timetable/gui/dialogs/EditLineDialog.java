@@ -12,6 +12,8 @@ import java.util.logging.Logger;
 import javax.swing.DefaultListModel;
 import javax.swing.JOptionPane;
 import net.parostroj.timetable.gui.ApplicationModel;
+import net.parostroj.timetable.gui.ApplicationModelEvent;
+import net.parostroj.timetable.gui.ApplicationModelEventType;
 import net.parostroj.timetable.model.*;
 import net.parostroj.timetable.utils.IdGenerator;
 import net.parostroj.timetable.utils.ResourceLoader;
@@ -183,7 +185,20 @@ public class EditLineDialog extends javax.swing.JDialog {
                 line.setAttribute("line.class", lineClassComboBox.getSelectedItem());
             
             if (recalculate) {
-                // TODO execute recalculating
+                // collect trains
+                Set<Train> trains = new HashSet<Train>();
+                for (Track track : line.getTracks()) {
+                    for (TimeInterval interval : track.getTimeIntervalList()) {
+                        trains.add(interval.getTrain());
+                    }
+                }
+                // recalculate collected trains
+                for (Train train : trains) {
+                    train.recalculate(model.getDiagram());
+                    // event
+                    model.fireEvent(new ApplicationModelEvent(ApplicationModelEventType.MODIFIED_TRAIN, model, train));
+                }
+                model.fireEvent(new ApplicationModelEvent(ApplicationModelEventType.MODIFIED_LINE, model, line));
             }
         } catch (NumberFormatException e) {
             LOGGER.log(Level.WARNING, "Cannot convert string to int.", e);
