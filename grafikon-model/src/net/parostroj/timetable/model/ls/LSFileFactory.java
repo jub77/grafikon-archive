@@ -75,7 +75,7 @@ public class LSFileFactory {
         try {
             ZipEntry entry = is.getNextEntry();
             if (entry == null || !entry.getName().equals(METADATA))
-                throw new LSException("Metadata was now the first entry.");
+                throw new LSException("Metadata was not the first entry.");
             Properties metadata = new Properties();
             if (entry != null) {
                 // load metadata
