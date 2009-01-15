@@ -5,6 +5,7 @@ import net.parostroj.timetable.model.TrainDiagram;
 import net.parostroj.timetable.output2.EndPositionsOutput;
 import net.parostroj.timetable.output2.OutputFactory;
 import net.parostroj.timetable.output2.StartPositionsOutput;
+import net.parostroj.timetable.output2.StationTimetablesOutput;
 
 /**
  * Html output factory.
@@ -27,5 +28,10 @@ public class HtmlOutputFactory extends OutputFactory {
     @Override
     public EndPositionsOutput createEndPositionsOutput(TrainDiagram diagram) {
         return new HtmlEndPositionsOutput(diagram, locale);
+    }
+
+    @Override
+    public StationTimetablesOutput creStationTimetablesOutput(TrainDiagram diagram) {
+        return new HtmlStationTimetablesOutput(diagram, locale);
     }
 }

@@ -1,8 +1,6 @@
 package net.parostroj.timetable.output2.html;
 
 import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.HashMap;
 import java.util.List;
@@ -12,7 +10,7 @@ import net.parostroj.timetable.model.TrainDiagram;
 import net.parostroj.timetable.output2.StartPositionsOutput;
 import net.parostroj.timetable.output2.impl.Position;
 import net.parostroj.timetable.output2.impl.PositionsExtractor;
-import net.parostroj.timetable.output2.impl.ResourceHelper;
+import net.parostroj.timetable.output2.util.ResourceHelper;
 import org.mvel2.templates.TemplateRuntime;
 
 /**
@@ -23,7 +21,6 @@ import org.mvel2.templates.TemplateRuntime;
 public class HtmlStartPositionsOutput implements StartPositionsOutput {
 
     private Locale locale;
-
     private TrainDiagram diagram;
 
     HtmlStartPositionsOutput(TrainDiagram diagram, Locale locale) {
@@ -42,18 +39,12 @@ public class HtmlStartPositionsOutput implements StartPositionsOutput {
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("engines", engines);
         map.put("train_units", trainUnits);
-        ResourceHelper.addTextsToMap(map, "start_positions_", locale);
+        ResourceHelper.addTextsToMap(map, "start_positions_", locale, "texts/html_texts");
 
         String template = ResourceHelper.readResource("/templates/start_positions.html");
-        String ret = (String)TemplateRuntime.eval(template, map);
+        String ret = (String) TemplateRuntime.eval(template, map);
 
         writer.write(ret);
         writer.flush();
     }
-
-    @Override
-    public void writeTo(OutputStream stream) throws IOException {
-        this.writeTo(new OutputStreamWriter(stream, "utf-8"));
-    }
-
 }

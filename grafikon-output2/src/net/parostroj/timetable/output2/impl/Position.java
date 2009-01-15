@@ -1,17 +1,18 @@
 package net.parostroj.timetable.output2.impl;
 
+import javax.xml.bind.annotation.XmlType;
+
 /**
  * Start/End positions information.
  *
  * @author jub
  */
+@XmlType(propOrder = {"cycleName", "cycleDescription", "stationName", "trainName"})
 public class Position {
+
     private String cycleName;
-
     private String cycleDescription;
-
     private String stationName;
-
     private String trainName;
 
     public Position() {

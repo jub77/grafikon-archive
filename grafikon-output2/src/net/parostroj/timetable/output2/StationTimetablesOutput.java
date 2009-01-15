@@ -4,13 +4,13 @@ import java.io.IOException;
 import java.io.Writer;
 
 /**
- * Interface for starting positions output.
+ * Interface for station timetables output.
  *
  * @author jub
  */
-public interface StartPositionsOutput {
+public interface StationTimetablesOutput {
     /**
-     * writes starting positions into a writer.
+     * writes station timetables into a writer.
      *
      * @param writer
      * @throws IOException

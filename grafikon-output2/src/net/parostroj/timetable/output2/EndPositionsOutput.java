@@ -1,7 +1,6 @@
 package net.parostroj.timetable.output2;
 
 import java.io.IOException;
-import java.io.OutputStream;
 import java.io.Writer;
 
 /**
@@ -17,12 +16,4 @@ public interface EndPositionsOutput {
      * @throws IOException
      */
     public void writeTo(Writer writer) throws IOException;
-
-    /**
-     * writes end positions into a stream.
-     *
-     * @param stream
-     * @throws IOException
-     */
-    public void writeTo(OutputStream stream) throws IOException;
 }

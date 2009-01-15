@@ -1,4 +1,4 @@
-package net.parostroj.timetable.output2.impl;
+package net.parostroj.timetable.output2.util;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -32,13 +32,13 @@ public class ResourceHelper {
             in.close();
             return result.toString();
         } catch (IOException e) {
-            LOG.log(Level.WARNING, e.getMessage(),e);
+            LOG.log(Level.WARNING, e.getMessage(), e);
             return "";
         }
     }
 
-    public static void addTextsToMap(Map<String,Object> map, String prefix, Locale locale) {
-        ResourceBundle bundle = ResourceBundle.getBundle("texts/html_texts", locale);
+    public static void addTextsToMap(Map<String, Object> map, String prefix, Locale locale, String bundleName) {
+        ResourceBundle bundle = ResourceBundle.getBundle(bundleName, locale);
         int prefixLength = prefix.length();
         for (String key : bundle.keySet()) {
             if (key.startsWith(prefix)) {
