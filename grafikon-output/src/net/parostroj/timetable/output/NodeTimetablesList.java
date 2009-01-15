@@ -62,7 +62,11 @@ public class NodeTimetablesList {
         TimeInterval to = i.getTrain().getIntervalAfter(i);
         
         String fromNodeName = TransformUtil.getFromAbbr(i);
+        if (fromNodeName == null)
+            fromNodeName = "&nbsp;";
         String toNodeName = TransformUtil.getToAbbr(i);
+        if (toNodeName == null)
+            toNodeName = "&nbsp;";
         
         String fromTime = (from == null && !i.getType().isTechnological()) ? "&nbsp;" : TimeConverter.convertFromIntToText(i.getStart());
         String toTime = (to == null && !i.getType().isTechnological()) ? "&nbsp;" : TimeConverter.convertFromIntToText(i.getEnd());

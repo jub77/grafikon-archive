@@ -55,7 +55,7 @@ public class TransformUtil {
         if (node != null && found)
             return node.getAbbr();
         else
-            return "&nbsp;";
+            return null;
     }
     
     public static String getToAbbr(TimeInterval i) {
@@ -84,7 +84,7 @@ public class TransformUtil {
         if (found && node != null)
             return node.getAbbr();
         else
-            return "&nbsp;";
+            return null;
     }
     
     public static String getEngineCycleDescription(TrainsCycle ec) {
