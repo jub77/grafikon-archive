@@ -1,0 +1,48 @@
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>@{title}</title>
+    <style>
+        td {padding: .1mm .8mm .1mm .8mm; border-color: black; border-style: solid; border-width: 0.2mm;}
+        tr.row td {vertical-align: top; font-size: 3.4mm;}
+        tr.header {height: 5mm;}
+        tr.header td {font-weight:bold ;font-size: 3.4mm;}
+        tr.header_station {height: 5mm;}
+        tr.header_station td {font-weight:bold ; font-size: 5mm; text-align: center;}
+    </style>
+</head>
+
+<body>
+@foreach{station : stations}
+<table style="page-break-after: always; font-family: arial, sans-serif; font-size: 3mm; width: 270mm; border-color: black; border-style: solid; border-width: 0.2mm;" align="center" cellspacing=0>
+<thead>
+<tr class="header_station">
+    <td colspan="8">@{station.name}</td>
+</tr>
+<tr class="header">
+    <td style="width: 5mm; text-align: center">X</td>
+    <td style="width: 22mm">@{column_train}</td>
+    <td style="width: 10mm">@{column_from}</td>
+    <td style="width: 10mm">@{column_arrival}</td>
+    <td style="width: 5mm">@{column_track}</td>
+    <td style="width: 10mm">@{column_departure}</td>
+    <td style=" width: 10mm">@{column_to}</td>
+    <td style=" width: 198mm">@{column_notes}</td>
+</tr>
+</thead>
+<tbody>
+<tr class="row">
+    <td>&nbsp;</td>
+    <td>Mn 78452</td>
+    <td>&nbsp;</td>
+    <td align="right">&nbsp;&nbsp;</td>
+    <td align="center">1</td>
+    <td align="right">0:05&nbsp;</td>
+    <td>Jes</td>
+    <td>[539 (Jav)], HV: LV09 (534.03, T435.0), manipuluje Stará Paka, přednostně zátěž pro Sudoměřice a Javorník</td>
+</tr>
+</tbody>
+</table>
+@end{}
+</body>
+</html>
