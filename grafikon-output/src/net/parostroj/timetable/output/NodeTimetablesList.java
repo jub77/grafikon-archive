@@ -11,6 +11,7 @@ import java.util.Collection;
 import java.util.Formatter;
 import java.util.List;
 import java.util.logging.Logger;
+import net.parostroj.timetable.actions.NodeFilter;
 import net.parostroj.timetable.actions.NodeSort;
 import net.parostroj.timetable.actions.TrainsHelper;
 import net.parostroj.timetable.model.*;
@@ -31,7 +32,13 @@ public class NodeTimetablesList {
 
     public NodeTimetablesList(Collection<Node> aNodes, TrainDiagram diagram) {
         NodeSort s = new NodeSort(NodeSort.Type.ASC);
-        nodes = s.sortWithoutSignals(aNodes);
+        nodes = s.sort(aNodes, new NodeFilter() {
+
+            @Override
+            public boolean check(Node node) {
+                return node.getType().isStation() || node.getType().isStop();
+            }
+        });
         templates = new NodeTimetablesListTemplates();
         this.diagram = diagram;
     }

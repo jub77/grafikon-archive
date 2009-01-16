@@ -33,8 +33,29 @@ public class NodeSort {
      * @return sorted list
      */
     public List<Node> sort(Collection<Node> nodes) {
-        Comparator<Node> comparator = null;
         List<Node> newNodes = new ArrayList<Node>(nodes);
+        this.sortInternal(newNodes);
+        return newNodes;
+    }
+    
+    /**
+     * sorts list of nodes and removes signal nodes.
+     * 
+     * @param nodes collection of nodes
+     * @return sorted collections
+     */
+    public List<Node> sort(Collection<Node> nodes, NodeFilter filter) {
+        List<Node> newNodes = new ArrayList<Node>(nodes.size());
+        for (Node node : nodes) {
+            if (filter.check(node))
+                newNodes.add(node);
+        }
+        this.sortInternal(newNodes);
+        return newNodes;
+    }
+
+    private void sortInternal(List<Node> nodes) {
+        Comparator<Node> comparator = null;
         switch (type) {
             case ASC:
                 comparator = new Comparator<Node>() {
@@ -55,23 +76,6 @@ public class NodeSort {
                 };
                 break;
         }
-        Collections.sort(newNodes, comparator);
-        return newNodes;
-    }
-    
-    /**
-     * sorts list of nodes and removes signal nodes.
-     * 
-     * @param nodes collection of nodes
-     * @return sorted collections
-     */
-    public List<Node> sortWithoutSignals(Collection<Node> nodes) {
-        List<Node> sorted = this.sort(nodes);
-        for (Iterator<Node> i = sorted.iterator(); i.hasNext();) {
-            Node n = i.next();
-            if (n.getType() == NodeType.SIGNAL)
-                i.remove();
-        }
-        return sorted;
+        Collections.sort(nodes, comparator);
     }
 }

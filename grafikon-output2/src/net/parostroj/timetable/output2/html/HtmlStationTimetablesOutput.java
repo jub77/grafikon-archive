@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import net.parostroj.timetable.actions.NodeFilter;
 import net.parostroj.timetable.actions.NodeSort;
 import net.parostroj.timetable.model.Node;
 import net.parostroj.timetable.model.TrainDiagram;
@@ -50,6 +51,12 @@ public class HtmlStationTimetablesOutput implements StationTimetablesOutput {
 
     private List<Node> getNodes() {
         NodeSort s = new NodeSort(NodeSort.Type.ASC);
-        return  s.sortWithoutSignals(diagram.getNet().getNodes());
+        return s.sort(diagram.getNet().getNodes(), new NodeFilter() {
+
+            @Override
+            public boolean check(Node node) {
+                return node.getType().isStation() || node.getType().isStop();
+            }
+        });
     }
 }

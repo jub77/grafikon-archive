@@ -12,20 +12,20 @@ import net.parostroj.timetable.output2.impl.StationTimetable;
 @XmlRootElement
 public class StationTimetables {
 
-    private List<StationTimetable> timetable;
+    private List<StationTimetable> stationTimetable;
 
     public StationTimetables() {
     }
 
-    public StationTimetables(List<StationTimetable> timetable) {
-        this.timetable = timetable;
+    public StationTimetables(List<StationTimetable> stationTimetable) {
+        this.stationTimetable = stationTimetable;
     }
 
-    public List<StationTimetable> getTimetable() {
-        return timetable;
+    public List<StationTimetable> getStationTimetable() {
+        return stationTimetable;
     }
 
-    public void setTimetable(List<StationTimetable> timetable) {
-        this.timetable = timetable;
+    public void setStationTimetable(List<StationTimetable> stationTimetable) {
+        this.stationTimetable = stationTimetable;
     }
 }

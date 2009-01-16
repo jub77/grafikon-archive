@@ -6,6 +6,7 @@ import java.util.List;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
+import net.parostroj.timetable.actions.NodeFilter;
 import net.parostroj.timetable.actions.NodeSort;
 import net.parostroj.timetable.model.Node;
 import net.parostroj.timetable.model.TrainDiagram;
@@ -45,6 +46,12 @@ class XmlStationTimetablesOutput implements StationTimetablesOutput {
 
     private List<Node> getNodes() {
         NodeSort s = new NodeSort(NodeSort.Type.ASC);
-        return  s.sortWithoutSignals(diagram.getNet().getNodes());
+        return s.sort(diagram.getNet().getNodes(), new NodeFilter() {
+
+            @Override
+            public boolean check(Node node) {
+                return node.getType().isStation() || node.getType().isStop();
+            }
+        });
     }
 }
