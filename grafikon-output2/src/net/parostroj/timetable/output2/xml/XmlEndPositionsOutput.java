@@ -1,7 +1,10 @@
 package net.parostroj.timetable.output2.xml;
 
 import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.nio.charset.Charset;
 import java.util.List;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -10,7 +13,6 @@ import net.parostroj.timetable.model.TrainDiagram;
 import net.parostroj.timetable.output2.EndPositionsOutput;
 import net.parostroj.timetable.output2.impl.Position;
 import net.parostroj.timetable.output2.impl.PositionsExtractor;
-import net.parostroj.timetable.output2.util.OutputHelper;
 
 /**
  * Xml export of end positions.
@@ -20,13 +22,15 @@ import net.parostroj.timetable.output2.util.OutputHelper;
 class XmlEndPositionsOutput implements EndPositionsOutput {
 
     private TrainDiagram diagram;
+    private Charset charset;
 
-    public XmlEndPositionsOutput(TrainDiagram diagram) {
+    public XmlEndPositionsOutput(TrainDiagram diagram, Charset charset) {
         this.diagram = diagram;
+        this.charset = charset;
     }
 
     @Override
-    public void writeTo(Writer writer) throws IOException {
+    public void writeTo(OutputStream stream) throws IOException {
         try {
             // extract positions
             PositionsExtractor pe = new PositionsExtractor(diagram);
@@ -39,8 +43,11 @@ class XmlEndPositionsOutput implements EndPositionsOutput {
 
             JAXBContext context = JAXBContext.newInstance(EndPositions.class);
             Marshaller m = context.createMarshaller();
-            m.setProperty(Marshaller.JAXB_ENCODING, OutputHelper.getEncoding(writer, "utf-8"));
+            m.setProperty(Marshaller.JAXB_ENCODING, charset.name());
             m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+
+            Writer writer = new OutputStreamWriter(stream, charset);
+
             m.marshal(ep, writer);
         } catch (JAXBException e) {
             throw new IOException(e);

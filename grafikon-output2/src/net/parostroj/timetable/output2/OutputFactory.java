@@ -1,8 +1,11 @@
 package net.parostroj.timetable.output2;
 
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 import net.parostroj.timetable.model.TrainDiagram;
 import net.parostroj.timetable.output2.html.HtmlOutputFactory;
+import net.parostroj.timetable.output2.pdf.PdfOutputFactory;
 import net.parostroj.timetable.output2.xml.XmlOutputFactory;
 
 /**
@@ -12,6 +15,8 @@ import net.parostroj.timetable.output2.xml.XmlOutputFactory;
  */
 public abstract class OutputFactory {
 
+    private Map<String, Object> parameters = new HashMap<String, Object>();
+
     /**
      * creates factory.
      *
@@ -19,17 +24,15 @@ public abstract class OutputFactory {
      * @param locale locale
      * @return factory
      */
-    public static OutputFactory newInstance(String type, Locale locale) {
+    public static OutputFactory newInstance(String type) {
         if ("html".equals(type))
-            return new HtmlOutputFactory(locale);
+            return new HtmlOutputFactory();
         else if ("xml".equals(type))
             return new XmlOutputFactory();
+        else if ("pdf".equals(type))
+            return new PdfOutputFactory();
         else
             throw new IllegalArgumentException("Unknown output factory type: " + type);
-    }
-
-    public static OutputFactory newInstance(String type) {
-        return newInstance(type, Locale.getDefault());
     }
 
     public abstract StartPositionsOutput createStartPositionsOutput(TrainDiagram diagram);
@@ -37,4 +40,12 @@ public abstract class OutputFactory {
     public abstract EndPositionsOutput createEndPositionsOutput(TrainDiagram diagram);
 
     public abstract StationTimetablesOutput creStationTimetablesOutput(TrainDiagram diagram);
+
+    public void setParameter(String key, Object value) {
+        this.parameters.put(key, value);
+    }
+
+    public Object getParameter(String key) {
+        return this.parameters.get(key);
+    }
 }

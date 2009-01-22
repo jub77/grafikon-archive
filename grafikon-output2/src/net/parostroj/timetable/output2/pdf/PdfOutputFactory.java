@@ -1,4 +1,4 @@
-package net.parostroj.timetable.output2.html;
+package net.parostroj.timetable.output2.pdf;
 
 import java.util.Locale;
 import net.parostroj.timetable.model.TrainDiagram;
@@ -8,34 +8,28 @@ import net.parostroj.timetable.output2.StartPositionsOutput;
 import net.parostroj.timetable.output2.StationTimetablesOutput;
 
 /**
- * Html output factory.
+ * Pdf output factory. Uses xsl-fo for creating the output.
  *
  * @author jub
  */
-public class HtmlOutputFactory extends OutputFactory {
+public class PdfOutputFactory extends OutputFactory {
 
-    public HtmlOutputFactory() {
+    public PdfOutputFactory() {
     }
 
     @Override
     public StartPositionsOutput createStartPositionsOutput(TrainDiagram diagram) {
-        return new HtmlStartPositionsOutput(diagram, this.getLocale());
+        return new PdfStartPositionsOutput(diagram);
     }
 
     @Override
     public EndPositionsOutput createEndPositionsOutput(TrainDiagram diagram) {
-        return new HtmlEndPositionsOutput(diagram, this.getLocale());
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
     public StationTimetablesOutput creStationTimetablesOutput(TrainDiagram diagram) {
-        return new HtmlStationTimetablesOutput(diagram, this.getLocale());
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    private Locale getLocale() {
-        Locale locale = (Locale) this.getParameter("locale");
-        if (locale == null)
-            locale = Locale.getDefault();
-        return locale;
-    }
 }

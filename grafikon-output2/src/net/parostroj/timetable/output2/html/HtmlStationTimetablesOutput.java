@@ -1,6 +1,8 @@
 package net.parostroj.timetable.output2.html;
 
 import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.HashMap;
 import java.util.List;
@@ -32,7 +34,7 @@ public class HtmlStationTimetablesOutput implements StationTimetablesOutput {
     }
 
     @Override
-    public void writeTo(Writer writer) throws IOException {
+    public void writeTo(OutputStream stream) throws IOException {
         // extract positions
         StationTimetablesExtractor se = new StationTimetablesExtractor(diagram, this.getNodes());
         List<StationTimetable> timetables = se.getStationTimetables();
@@ -44,6 +46,8 @@ public class HtmlStationTimetablesOutput implements StationTimetablesOutput {
 
         String template = ResourceHelper.readResource("/templates/stations.html");
         String ret = (String) TemplateRuntime.eval(template, map);
+
+        Writer writer = new OutputStreamWriter(stream, "utf-8");
 
         writer.write(ret);
         writer.flush();
