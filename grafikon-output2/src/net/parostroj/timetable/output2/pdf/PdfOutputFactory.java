@@ -1,6 +1,5 @@
 package net.parostroj.timetable.output2.pdf;
 
-import java.util.Locale;
 import net.parostroj.timetable.model.TrainDiagram;
 import net.parostroj.timetable.output2.EndPositionsOutput;
 import net.parostroj.timetable.output2.OutputFactory;

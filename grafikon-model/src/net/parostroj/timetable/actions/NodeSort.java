@@ -1,15 +1,8 @@
-/*
- * NodeSort.java
- * 
- * Created on 8.9.2007, 14:44:24
- */
-
 package net.parostroj.timetable.actions;
 
 import java.text.Collator;
 import java.util.*;
 import net.parostroj.timetable.model.Node;
-import net.parostroj.timetable.model.NodeType;
 
 /**
  * Sorting of nodes.

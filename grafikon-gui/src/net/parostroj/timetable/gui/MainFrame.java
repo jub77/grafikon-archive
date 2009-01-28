@@ -14,6 +14,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import net.parostroj.timetable.actions.TrainSortByNodeFilter;
 import net.parostroj.timetable.gui.dialogs.*;
 import net.parostroj.timetable.gui.utils.*;
 import net.parostroj.timetable.gui.views.*;
@@ -380,6 +381,7 @@ public class MainFrame extends javax.swing.JFrame implements ApplicationModelLis
         trainTypesMenuItem.setEnabled(model.getDiagram() != null);
         lineClassesMenuItem.setEnabled(model.getDiagram() != null);
         weightTablesMenuItem.setEnabled(model.getDiagram() != null);
+        trainTimetableListByTimeFilteredMenuItem.setEnabled(model.getDiagram() != null);
     }
     
     /** This method is called from within the constructor to
@@ -428,6 +430,7 @@ public class MainFrame extends javax.swing.JFrame implements ApplicationModelLis
         spListMenuItem = new javax.swing.JMenuItem();
         javax.swing.JSeparator jSeparator1 = new javax.swing.JSeparator();
         trainTimetableListByDcMenuItem = new javax.swing.JMenuItem();
+        trainTimetableListByTimeFilteredMenuItem = new javax.swing.JMenuItem();
         epListMenuItem = new javax.swing.JMenuItem();
         javax.swing.JSeparator jSeparator2 = new javax.swing.JSeparator();
         allHtmlMenuItem = new javax.swing.JMenuItem();
@@ -643,6 +646,14 @@ public class MainFrame extends javax.swing.JFrame implements ApplicationModelLis
             }
         });
         actionMenu.add(trainTimetableListByDcMenuItem);
+
+        trainTimetableListByTimeFilteredMenuItem.setText(ResourceLoader.getString("menu.action.traintimetableslistbytimefiltered")); // NOI18N
+        trainTimetableListByTimeFilteredMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                trainTimetableListByTimeFilteredMenuItemActionPerformed(evt);
+            }
+        });
+        actionMenu.add(trainTimetableListByTimeFilteredMenuItem);
 
         epListMenuItem.setText(ResourceLoader.getString("menu.acion.eplist")); // NOI18N
         epListMenuItem.addActionListener(new java.awt.event.ActionListener() {
@@ -1349,6 +1360,38 @@ private void recalculateStopsMenuItemActionPerformed(java.awt.event.ActionEvent 
     });
 }//GEN-LAST:event_recalculateStopsMenuItemActionPerformed
 
+private void trainTimetableListByTimeFilteredMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_trainTimetableListByTimeFilteredMenuItemActionPerformed
+    // choose nodes
+    SelectNodesDialog dialog = new SelectNodesDialog(this, true);
+    dialog.setNodes(model.getDiagram().getNet().getNodes());
+    dialog.setLocationRelativeTo(this);
+    dialog.setVisible(true);
+
+    if (dialog.getSelectedNodes() == null)
+        return;
+
+    List<Train> trains = (new TrainSortByNodeFilter()).sortAndFilter(model.getDiagram().getTrains(), dialog.getSelectedNodes());
+
+    // write
+    final TrainTimetablesList list = new TrainTimetablesList(
+            model.getDiagram(), trains,
+            Collections.<TimetableImage>emptyList(), TrainTimetablesList.Binding.BOOK,
+            true);
+    HtmlAction action = new HtmlAction() {
+
+        @Override
+        public void write(Writer writer) throws Exception {
+            list.writeTo(writer);
+        }
+
+        @Override
+        public void writeToDirectory(File directory) throws Exception {
+            new ImageSaver().saveTrainTimetableImages(directory);
+        }
+    };
+    this.saveHtml(action);
+}//GEN-LAST:event_trainTimetableListByTimeFilteredMenuItemActionPerformed
+
     private void setSelectedLocale() {
         if (locale == null)
             systemLanguageRadioButtonMenuItem.setSelected(true);
@@ -1526,6 +1569,7 @@ private void recalculateStopsMenuItemActionPerformed(java.awt.event.ActionEvent 
     private javax.swing.JRadioButtonMenuItem systemLanguageRadioButtonMenuItem;
     private javax.swing.JTabbedPane tabbedPane;
     private javax.swing.JMenuItem trainTimetableListByDcMenuItem;
+    private javax.swing.JMenuItem trainTimetableListByTimeFilteredMenuItem;
     private javax.swing.JMenuItem trainTimetableListMenuItem;
     private javax.swing.JMenuItem trainTypesMenuItem;
     private net.parostroj.timetable.gui.panes.TrainsCyclesPane trainUnitCyclesPane;
