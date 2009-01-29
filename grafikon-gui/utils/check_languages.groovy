@@ -1,49 +1,73 @@
-compareProperties("gt_texts","sk")
-compareProperties("gt_texts","hu")
-compareProperties("gt_texts","pl")
-compareProperties("dc_texts","sk")
-compareProperties("dc_texts","hu")
-compareProperties("dc_texts","pl")
-compareProperties("ec_texts","sk")
-compareProperties("ec_texts","hu")
-compareProperties("ec_texts","pl")
-compareProperties("n_timetable_texts","sk")
-compareProperties("n_timetable_texts","hu")
-compareProperties("n_timetable_texts","pl")
-compareProperties("sp_texts","sk")
-compareProperties("sp_texts","hu")
-compareProperties("sp_texts","pl")
-compareProperties("ep_texts","sk")
-compareProperties("ep_texts","hu")
-compareProperties("ep_texts","pl")
-compareProperties("t_timetable_texts","sk")
-compareProperties("t_timetable_texts","hu")
-compareProperties("t_timetable_texts","pl")
-compareProperties("tuc_texts","sk")
-compareProperties("tuc_texts","hu")
-compareProperties("tuc_texts","pl")
+class Test {
 
-void compareProperties(name, translation) {
-          def orig = name + ".properties"
-    def trans = name + "_" + translation + ".properties"
-    def outp = name + "_" + translation + ".properties.diff"
-    compare(orig, trans, outp)
-    "native2ascii ${outp} ${outp}.trans".execute()
-}
-
-void compare(originalFN, translatedFN, outputFN) {
-    Properties original = new Properties();
-    Properties translated = new Properties();
-    original.load(new FileReader(originalFN))
-    translated.load(new FileReader(translatedFN))
-
-    Properties result = new Properties()
-    Set<String> keySet = original.keySet()
-    keySet.removeAll(translated.keySet())
-    for (Object key : keySet) {
-        result.setProperty((String)key, original.getProperty((String)key))
+    static void compareProperties(name, translation) {
+        def orig = name + ".properties"
+        def trans = name + "_" + translation + ".properties"
+        def outp = name + "_" + translation + ".properties.diff"
+        compare(orig, trans, outp)
+        "native2ascii ${outp} ${outp}.trans".execute()
     }
 
-    if (!result.keySet().isEmpty())
-        result.store(new FileWriter(outputFN),null)
+    static void compare(originalFN, translatedFN, outputFN) {
+        Properties original = new Properties();
+        Properties translated = new SortedProperties();
+
+        original.load(new FileReader(originalFN))
+        translated.load(new FileReader(translatedFN))
+
+        Set<String> keySet = original.keySet()
+        keySet.removeAll(translated.keySet())
+        for (Object key : keySet) {
+            translated.setProperty((String)key, "%%MISSING%% " + original.getProperty((String)key))
+        }
+
+        if (!keySet.isEmpty())
+        translated.store(new FileWriter(outputFN),null)
+    }
 }
+
+class SortedProperties extends Properties {
+
+    public Set<Object> keySet() {
+        return Collections.unmodifiableSet(new TreeSet<Object>(super.keySet()));
+    }
+
+    public String getProperty(String key) {
+        return super.getProperty(key);
+    }
+
+    public Enumeration keys() {
+        Enumeration keysEnum = super.keys();
+        Vector keyList = new Vector();
+        while(keysEnum.hasMoreElements()){
+            keyList.add(keysEnum.nextElement());
+        }
+        Collections.sort(keyList);
+        return keyList.elements();
+    }
+}
+
+Test.compareProperties("gt_texts","sk")
+Test.compareProperties("gt_texts","hu")
+Test.compareProperties("gt_texts","pl")
+Test.compareProperties("dc_texts","sk")
+Test.compareProperties("dc_texts","hu")
+Test.compareProperties("dc_texts","pl")
+Test.compareProperties("ec_texts","sk")
+Test.compareProperties("ec_texts","hu")
+Test.compareProperties("ec_texts","pl")
+Test.compareProperties("n_timetable_texts","sk")
+Test.compareProperties("n_timetable_texts","hu")
+Test.compareProperties("n_timetable_texts","pl")
+Test.compareProperties("sp_texts","sk")
+Test.compareProperties("sp_texts","hu")
+Test.compareProperties("sp_texts","pl")
+Test.compareProperties("ep_texts","sk")
+Test.compareProperties("ep_texts","hu")
+Test.compareProperties("ep_texts","pl")
+Test.compareProperties("t_timetable_texts","sk")
+Test.compareProperties("t_timetable_texts","hu")
+Test.compareProperties("t_timetable_texts","pl")
+Test.compareProperties("tuc_texts","sk")
+Test.compareProperties("tuc_texts","hu")
+Test.compareProperties("tuc_texts","pl")
