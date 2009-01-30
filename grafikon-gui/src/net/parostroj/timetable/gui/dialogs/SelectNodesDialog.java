@@ -1,14 +1,9 @@
 package net.parostroj.timetable.gui.dialogs;
 
-import java.awt.GridLayout;
-import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
-import javax.swing.JCheckBox;
 import net.parostroj.timetable.actions.NodeSort;
 import net.parostroj.timetable.model.Node;
-import net.parostroj.timetable.utils.Pair;
 import net.parostroj.timetable.utils.ResourceLoader;
 
 /**
@@ -18,8 +13,7 @@ import net.parostroj.timetable.utils.ResourceLoader;
  */
 public class SelectNodesDialog extends javax.swing.JDialog {
 
-    private List<Pair<Node,JCheckBox>> nodesList;
-    private Set<Node> selectedNodes;
+    private Node selectedNode;
 
     /** Creates new form SelectNodesDialog */
     public SelectNodesDialog(java.awt.Frame parent, boolean modal) {
@@ -31,19 +25,16 @@ public class SelectNodesDialog extends javax.swing.JDialog {
 
         List<Node> sortedNodes = (new NodeSort(NodeSort.Type.ASC)).sort(nodes);
 
-        nodesPanel.removeAll();
-        nodesPanel.setLayout(new GridLayout(sortedNodes.size(), 1));
-        nodesList = new LinkedList<Pair<Node, JCheckBox>>();
+        nodesComboBox.removeAllItems();
         for (Node node : sortedNodes) {
-            JCheckBox checkBox = new JCheckBox(node.getName());
-            nodesList.add(new Pair<Node, JCheckBox>(node, checkBox));
-            nodesPanel.add(checkBox);
+            nodesComboBox.addItem(node);
         }
+        nodesComboBox.setSelectedIndex(0);
         this.pack();
     }
 
-    public Set<Node> getSelectedNodes() {
-        return selectedNodes;
+    public Node getSelectedNode() {
+        return selectedNode;
     }
 
     /** This method is called from within the constructor to
@@ -56,13 +47,17 @@ public class SelectNodesDialog extends javax.swing.JDialog {
     private void initComponents() {
 
         nodesPanel = new javax.swing.JPanel();
+        nodesComboBox = new javax.swing.JComboBox();
         javax.swing.JPanel buttonsPanel = new javax.swing.JPanel();
         javax.swing.JButton okButton = new javax.swing.JButton();
         javax.swing.JButton cancelButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
 
-        nodesPanel.setLayout(new java.awt.GridLayout());
+        nodesPanel.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
+
+        nodesPanel.add(nodesComboBox);
+
         getContentPane().add(nodesPanel, java.awt.BorderLayout.CENTER);
 
         buttonsPanel.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
@@ -89,20 +84,17 @@ public class SelectNodesDialog extends javax.swing.JDialog {
     }// </editor-fold>//GEN-END:initComponents
 
     private void cancelButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelButtonActionPerformed
-        selectedNodes = null;
+        selectedNode = null;
         this.setVisible(false);
     }//GEN-LAST:event_cancelButtonActionPerformed
 
     private void okButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_okButtonActionPerformed
-        selectedNodes = new HashSet<Node>();
-        for (Pair<Node, JCheckBox> pair : nodesList) {
-            if (pair.second.isSelected())
-                selectedNodes.add(pair.first);
-        }
+        selectedNode = (Node)nodesComboBox.getSelectedItem();
         this.setVisible(false);
     }//GEN-LAST:event_okButtonActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JComboBox nodesComboBox;
     private javax.swing.JPanel nodesPanel;
     // End of variables declaration//GEN-END:variables
 

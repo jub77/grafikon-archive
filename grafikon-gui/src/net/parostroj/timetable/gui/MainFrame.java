@@ -1367,10 +1367,10 @@ private void trainTimetableListByTimeFilteredMenuItemActionPerformed(java.awt.ev
     dialog.setLocationRelativeTo(this);
     dialog.setVisible(true);
 
-    if (dialog.getSelectedNodes() == null)
+    if (dialog.getSelectedNode() == null)
         return;
 
-    List<Train> trains = (new TrainSortByNodeFilter()).sortAndFilter(model.getDiagram().getTrains(), dialog.getSelectedNodes());
+    List<Train> trains = (new TrainSortByNodeFilter()).sortAndFilter(model.getDiagram().getTrains(), dialog.getSelectedNode());
 
     // write
     final TrainTimetablesList list = new TrainTimetablesList(
