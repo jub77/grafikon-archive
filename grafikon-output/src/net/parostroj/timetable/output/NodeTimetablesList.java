@@ -54,7 +54,8 @@ public class NodeTimetablesList {
                 templates.getString("column.track"),
                 templates.getString("column.departure"),
                 templates.getString("column.to"),
-                templates.getString("column.notes")
+                templates.getString("column.notes"),
+                templates.getString("column.end")
               );
             for (TimeInterval i : this.collectIntervals(node)) {
                 this.writeLine(f, writer, i);
@@ -74,13 +75,16 @@ public class NodeTimetablesList {
         String toNodeName = TransformUtil.getToAbbr(i);
         if (toNodeName == null)
             toNodeName = "&nbsp;";
+        String endNodeName = "&nbsp;";
+        if (i.getOwner() != i.getTrain().getEndNode())
+            endNodeName = i.getTrain().getEndNode().getAbbr();
         
         String fromTime = (from == null && !i.getType().isTechnological()) ? "&nbsp;" : TimeConverter.convertFromIntToText(i.getStart());
         String toTime = (to == null && !i.getType().isTechnological()) ? "&nbsp;" : TimeConverter.convertFromIntToText(i.getEnd());
         
         String comment = this.generateComment(i);
         
-        f.format(templates.getTimetableLine(), i.getTrain().getName(),fromNodeName,fromTime,i.getTrack().getNumber(),toTime,toNodeName,comment);
+        f.format(templates.getTimetableLine(), i.getTrain().getName(),fromNodeName,fromTime,i.getTrack().getNumber(),toTime,toNodeName,comment,endNodeName);
     }
     
     private TimeIntervalList collectIntervals(Node node) {

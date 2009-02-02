@@ -6,5 +6,6 @@
     <td align="center">%4$s</td>
     <td align="right">%5$s&nbsp;</td>
     <td>%6$s</td>
+    <td>%8$s</td>
     <td>%7$s</td>
   </tr>
