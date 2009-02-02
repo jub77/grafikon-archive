@@ -1,7 +1,6 @@
 package net.parostroj.timetable.output2;
 
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 import net.parostroj.timetable.model.TrainDiagram;
 import net.parostroj.timetable.output2.html.HtmlOutputFactory;
@@ -35,11 +34,7 @@ public abstract class OutputFactory {
             throw new IllegalArgumentException("Unknown output factory type: " + type);
     }
 
-    public abstract StartPositionsOutput createStartPositionsOutput(TrainDiagram diagram);
-
-    public abstract EndPositionsOutput createEndPositionsOutput(TrainDiagram diagram);
-
-    public abstract StationTimetablesOutput creStationTimetablesOutput(TrainDiagram diagram);
+    public abstract Output createOutput(String type, TrainDiagram diagram);
 
     public void setParameter(String key, Object value) {
         this.parameters.put(key, value);

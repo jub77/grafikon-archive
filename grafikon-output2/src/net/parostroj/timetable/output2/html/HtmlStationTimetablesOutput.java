@@ -12,7 +12,7 @@ import net.parostroj.timetable.actions.NodeFilter;
 import net.parostroj.timetable.actions.NodeSort;
 import net.parostroj.timetable.model.Node;
 import net.parostroj.timetable.model.TrainDiagram;
-import net.parostroj.timetable.output2.StationTimetablesOutput;
+import net.parostroj.timetable.output2.Output;
 import net.parostroj.timetable.output2.impl.StationTimetable;
 import net.parostroj.timetable.output2.impl.StationTimetablesExtractor;
 import net.parostroj.timetable.output2.util.ResourceHelper;
@@ -23,7 +23,7 @@ import org.mvel2.templates.TemplateRuntime;
  *
  * @author jub
  */
-public class HtmlStationTimetablesOutput implements StationTimetablesOutput {
+public class HtmlStationTimetablesOutput implements Output {
 
     private TrainDiagram diagram;
     private Locale locale;

@@ -13,7 +13,7 @@ import net.parostroj.timetable.actions.NodeFilter;
 import net.parostroj.timetable.actions.NodeSort;
 import net.parostroj.timetable.model.Node;
 import net.parostroj.timetable.model.TrainDiagram;
-import net.parostroj.timetable.output2.StationTimetablesOutput;
+import net.parostroj.timetable.output2.Output;
 import net.parostroj.timetable.output2.impl.StationTimetablesExtractor;
 
 /**
@@ -21,7 +21,7 @@ import net.parostroj.timetable.output2.impl.StationTimetablesExtractor;
  *
  * @author jub
  */
-class XmlStationTimetablesOutput implements StationTimetablesOutput {
+class XmlStationTimetablesOutput implements Output {
 
     private TrainDiagram diagram;
     private Charset charset;
