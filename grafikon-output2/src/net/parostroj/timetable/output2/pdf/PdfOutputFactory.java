@@ -1,6 +1,5 @@
 package net.parostroj.timetable.output2.pdf;
 
-import net.parostroj.timetable.model.TrainDiagram;
 import net.parostroj.timetable.output2.Output;
 import net.parostroj.timetable.output2.OutputFactory;
 
@@ -15,7 +14,7 @@ public class PdfOutputFactory extends OutputFactory {
     }
 
     @Override
-    public Output createOutput(String type, TrainDiagram diagram) {
+    public Output createOutput(String type) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 }

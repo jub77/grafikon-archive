@@ -1,7 +1,6 @@
 package net.parostroj.timetable.output2;
 
-import java.io.IOException;
-import java.io.OutputStream;
+import java.util.List;
 
 /**
  * Output.
@@ -9,11 +8,10 @@ import java.io.OutputStream;
  * @author jub
  */
 public interface Output {
-    /**
-     * writes output to stream.
-     *
-     * @param stream
-     * @throws java.io.IOException
-     */
-    public void writeTo(OutputStream stream) throws IOException;
+
+    public void write(OutputParam... params) throws OutputException;
+
+    public void write(List<OutputParam> params) throws OutputException;
+
+    public void write(OutputParams params) throws OutputException;
 }

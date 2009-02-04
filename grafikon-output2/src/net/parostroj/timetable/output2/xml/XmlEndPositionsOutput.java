@@ -10,7 +10,9 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import net.parostroj.timetable.model.TrainDiagram;
-import net.parostroj.timetable.output2.Output;
+import net.parostroj.timetable.output2.AbstractOutput;
+import net.parostroj.timetable.output2.OutputException;
+import net.parostroj.timetable.output2.OutputParams;
 import net.parostroj.timetable.output2.impl.Position;
 import net.parostroj.timetable.output2.impl.PositionsExtractor;
 
@@ -19,18 +21,15 @@ import net.parostroj.timetable.output2.impl.PositionsExtractor;
  *
  * @author jub
  */
-class XmlEndPositionsOutput implements Output {
+class XmlEndPositionsOutput extends AbstractOutput {
 
-    private TrainDiagram diagram;
     private Charset charset;
 
-    public XmlEndPositionsOutput(TrainDiagram diagram, Charset charset) {
-        this.diagram = diagram;
+    public XmlEndPositionsOutput(Charset charset) {
         this.charset = charset;
     }
 
-    @Override
-    public void writeTo(OutputStream stream) throws IOException {
+    private void writeTo(OutputStream stream, TrainDiagram diagram) throws IOException {
         try {
             // extract positions
             PositionsExtractor pe = new PositionsExtractor(diagram);
@@ -51,6 +50,17 @@ class XmlEndPositionsOutput implements Output {
             m.marshal(ep, writer);
         } catch (JAXBException e) {
             throw new IOException(e);
+        }
+    }
+
+    @Override
+    public void write(OutputParams params) throws OutputException {
+        TrainDiagram diagram = (TrainDiagram) params.getParam("diagram").getValue();
+        OutputStream stream = (OutputStream) params.getParam("output.stream").getValue();
+        try {
+            this.writeTo(stream, diagram);
+        } catch (IOException e) {
+            throw new OutputException(e);
         }
     }
 }

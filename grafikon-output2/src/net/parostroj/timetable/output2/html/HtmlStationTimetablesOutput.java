@@ -12,7 +12,9 @@ import net.parostroj.timetable.actions.NodeFilter;
 import net.parostroj.timetable.actions.NodeSort;
 import net.parostroj.timetable.model.Node;
 import net.parostroj.timetable.model.TrainDiagram;
-import net.parostroj.timetable.output2.Output;
+import net.parostroj.timetable.output2.AbstractOutput;
+import net.parostroj.timetable.output2.OutputException;
+import net.parostroj.timetable.output2.OutputParams;
 import net.parostroj.timetable.output2.impl.StationTimetable;
 import net.parostroj.timetable.output2.impl.StationTimetablesExtractor;
 import net.parostroj.timetable.output2.util.ResourceHelper;
@@ -23,20 +25,17 @@ import org.mvel2.templates.TemplateRuntime;
  *
  * @author jub
  */
-public class HtmlStationTimetablesOutput implements Output {
+public class HtmlStationTimetablesOutput extends AbstractOutput {
 
-    private TrainDiagram diagram;
     private Locale locale;
 
-    HtmlStationTimetablesOutput(TrainDiagram diagram, Locale locale) {
+    HtmlStationTimetablesOutput(Locale locale) {
         this.locale = locale;
-        this.diagram = diagram;
     }
 
-    @Override
-    public void writeTo(OutputStream stream) throws IOException {
+    private void writeTo(OutputStream stream, TrainDiagram diagram) throws IOException {
         // extract positions
-        StationTimetablesExtractor se = new StationTimetablesExtractor(diagram, this.getNodes());
+        StationTimetablesExtractor se = new StationTimetablesExtractor(diagram, this.getNodes(diagram));
         List<StationTimetable> timetables = se.getStationTimetables();
 
         // call template
@@ -53,7 +52,7 @@ public class HtmlStationTimetablesOutput implements Output {
         writer.flush();
     }
 
-    private List<Node> getNodes() {
+    private List<Node> getNodes(TrainDiagram diagram) {
         NodeSort s = new NodeSort(NodeSort.Type.ASC);
         return s.sort(diagram.getNet().getNodes(), new NodeFilter() {
 
@@ -62,5 +61,16 @@ public class HtmlStationTimetablesOutput implements Output {
                 return node.getType().isStation() || node.getType().isStop();
             }
         });
+    }
+
+    @Override
+    public void write(OutputParams params) throws OutputException {
+        TrainDiagram diagram = (TrainDiagram) params.getParam("diagram").getValue();
+        OutputStream stream = (OutputStream) params.getParam("output.stream").getValue();
+        try {
+            this.writeTo(stream, diagram);
+        } catch (IOException e) {
+            throw new OutputException(e);
+        }
     }
 }

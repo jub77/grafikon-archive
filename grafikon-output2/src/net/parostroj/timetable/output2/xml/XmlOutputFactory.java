@@ -1,7 +1,6 @@
 package net.parostroj.timetable.output2.xml;
 
 import java.nio.charset.Charset;
-import net.parostroj.timetable.model.TrainDiagram;
 import net.parostroj.timetable.output2.Output;
 import net.parostroj.timetable.output2.OutputFactory;
 
@@ -21,13 +20,13 @@ public class XmlOutputFactory extends OutputFactory {
     }
 
     @Override
-    public Output createOutput(String type, TrainDiagram diagram) {
+    public Output createOutput(String type) {
         if ("starts".equals(type))
-            return new XmlStartPositionsOutput(diagram, this.getCharset());
+            return new XmlStartPositionsOutput(this.getCharset());
         else if ("ends".equals(type))
-            return new XmlEndPositionsOutput(diagram, this.getCharset());
+            return new XmlEndPositionsOutput(this.getCharset());
         else if ("stations".equals(type))
-            return new XmlStationTimetablesOutput(diagram, this.getCharset());
+            return new XmlStationTimetablesOutput(this.getCharset());
         else
             throw new RuntimeException("Unknown type.");
     }

@@ -9,7 +9,9 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import net.parostroj.timetable.model.TrainDiagram;
-import net.parostroj.timetable.output2.Output;
+import net.parostroj.timetable.output2.AbstractOutput;
+import net.parostroj.timetable.output2.OutputException;
+import net.parostroj.timetable.output2.OutputParams;
 import net.parostroj.timetable.output2.impl.Position;
 import net.parostroj.timetable.output2.impl.PositionsExtractor;
 import net.parostroj.timetable.output2.util.ResourceHelper;
@@ -20,18 +22,15 @@ import org.mvel2.templates.TemplateRuntime;
  *
  * @author jub
  */
-public class HtmlEndPositionsOutput implements Output {
+public class HtmlEndPositionsOutput extends AbstractOutput {
 
     private Locale locale;
-    private TrainDiagram diagram;
 
-    HtmlEndPositionsOutput(TrainDiagram diagram, Locale locale) {
+    HtmlEndPositionsOutput(Locale locale) {
         this.locale = locale;
-        this.diagram = diagram;
     }
 
-    @Override
-    public void writeTo(OutputStream stream) throws IOException {
+    private void writeTo(OutputStream stream, TrainDiagram diagram) throws IOException {
         // extract positions
         PositionsExtractor pe = new PositionsExtractor(diagram);
         List<Position> engines = pe.getEndPositionsEngines();
@@ -50,5 +49,16 @@ public class HtmlEndPositionsOutput implements Output {
 
         writer.write(ret);
         writer.flush();
+    }
+
+    @Override
+    public void write(OutputParams params) throws OutputException {
+        TrainDiagram diagram = (TrainDiagram)params.getParam("diagram").getValue();
+        OutputStream stream = (OutputStream)params.getParam("output.stream").getValue();
+        try {
+            this.writeTo(stream, diagram);
+        } catch (IOException e) {
+            throw new OutputException(e);
+        }
     }
 }

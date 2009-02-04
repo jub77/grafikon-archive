@@ -23,13 +23,13 @@ public class HtmlOutputFactory extends OutputFactory {
     }
 
     @Override
-    public Output createOutput(String type, TrainDiagram diagram) {
+    public Output createOutput(String type) {
         if ("starts".equals(type))
-            return new HtmlStartPositionsOutput(diagram, this.getLocale());
+            return new HtmlStartPositionsOutput(this.getLocale());
         else if ("ends".equals(type))
-            return new HtmlEndPositionsOutput(diagram, this.getLocale());
+            return new HtmlEndPositionsOutput(this.getLocale());
         else if ("stations".equals(type))
-            return new HtmlStationTimetablesOutput(diagram, this.getLocale());
+            return new HtmlStationTimetablesOutput(this.getLocale());
         else
             throw new RuntimeException("Unknown type.");
     }
