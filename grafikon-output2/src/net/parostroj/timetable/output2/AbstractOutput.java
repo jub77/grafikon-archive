@@ -23,4 +23,9 @@ public abstract class AbstractOutput implements Output {
         }
         this.write(paramMap);
     }
+
+    @Override
+    public OutputParams getParams() {
+        return null;
+    }
 }

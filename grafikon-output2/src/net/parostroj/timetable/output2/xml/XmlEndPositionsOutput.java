@@ -10,9 +10,6 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import net.parostroj.timetable.model.TrainDiagram;
-import net.parostroj.timetable.output2.AbstractOutput;
-import net.parostroj.timetable.output2.OutputException;
-import net.parostroj.timetable.output2.OutputParams;
 import net.parostroj.timetable.output2.impl.Position;
 import net.parostroj.timetable.output2.impl.PositionsExtractor;
 
@@ -21,15 +18,14 @@ import net.parostroj.timetable.output2.impl.PositionsExtractor;
  *
  * @author jub
  */
-class XmlEndPositionsOutput extends AbstractOutput {
-
-    private Charset charset;
+class XmlEndPositionsOutput extends OutputWithDiagramAndStream {
 
     public XmlEndPositionsOutput(Charset charset) {
-        this.charset = charset;
+        super(charset);
     }
 
-    private void writeTo(OutputStream stream, TrainDiagram diagram) throws IOException {
+    @Override
+    protected void writeTo(OutputStream stream, TrainDiagram diagram) throws IOException {
         try {
             // extract positions
             PositionsExtractor pe = new PositionsExtractor(diagram);
@@ -42,25 +38,14 @@ class XmlEndPositionsOutput extends AbstractOutput {
 
             JAXBContext context = JAXBContext.newInstance(EndPositions.class);
             Marshaller m = context.createMarshaller();
-            m.setProperty(Marshaller.JAXB_ENCODING, charset.name());
+            m.setProperty(Marshaller.JAXB_ENCODING, this.getCharset().name());
             m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
 
-            Writer writer = new OutputStreamWriter(stream, charset);
+            Writer writer = new OutputStreamWriter(stream, this.getCharset());
 
             m.marshal(ep, writer);
         } catch (JAXBException e) {
             throw new IOException(e);
-        }
-    }
-
-    @Override
-    public void write(OutputParams params) throws OutputException {
-        TrainDiagram diagram = (TrainDiagram) params.getParam("diagram").getValue();
-        OutputStream stream = (OutputStream) params.getParam("output.stream").getValue();
-        try {
-            this.writeTo(stream, diagram);
-        } catch (IOException e) {
-            throw new OutputException(e);
         }
     }
 }

@@ -11,6 +11,8 @@ import net.parostroj.timetable.output2.OutputFactory;
  */
 public class XmlOutputFactory extends OutputFactory {
 
+    private static final String TYPE = "xml";
+
     private Charset getCharset() {
         Charset charset = (Charset) this.getParameter("charset");
         if (charset == null) {
@@ -29,5 +31,10 @@ public class XmlOutputFactory extends OutputFactory {
             return new XmlStationTimetablesOutput(this.getCharset());
         else
             throw new RuntimeException("Unknown type.");
+    }
+
+    @Override
+    public String getType() {
+        return TYPE;
     }
 }

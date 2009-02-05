@@ -1,7 +1,6 @@
 package net.parostroj.timetable.output2.html;
 
 import java.util.Locale;
-import net.parostroj.timetable.model.TrainDiagram;
 import net.parostroj.timetable.output2.Output;
 import net.parostroj.timetable.output2.OutputFactory;
 
@@ -11,6 +10,8 @@ import net.parostroj.timetable.output2.OutputFactory;
  * @author jub
  */
 public class HtmlOutputFactory extends OutputFactory {
+
+    private static final String TYPE = "html";
 
     public HtmlOutputFactory() {
     }
@@ -32,5 +33,10 @@ public class HtmlOutputFactory extends OutputFactory {
             return new HtmlStationTimetablesOutput(this.getLocale());
         else
             throw new RuntimeException("Unknown type.");
+    }
+
+    @Override
+    public String getType() {
+        return TYPE;
     }
 }

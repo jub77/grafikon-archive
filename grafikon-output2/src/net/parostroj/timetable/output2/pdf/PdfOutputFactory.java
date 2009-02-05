@@ -10,11 +10,18 @@ import net.parostroj.timetable.output2.OutputFactory;
  */
 public class PdfOutputFactory extends OutputFactory {
 
+    private static final String TYPE = "pdf";
+
     public PdfOutputFactory() {
     }
 
     @Override
     public Output createOutput(String type) {
         throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public String getType() {
+        return TYPE;
     }
 }
