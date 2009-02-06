@@ -9,6 +9,8 @@ import java.util.zip.ZipException;
 import net.parostroj.timetable.model.ls.LSException;
 import net.parostroj.timetable.model.ls.ModelVersion;
 import java.io.*;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
@@ -30,6 +32,12 @@ public class LoadSave implements FileLoadSave {
     private static final String METADATA_KEY_MODEL_VERSION = "model.version";
     private static final String TRAIN_DIAGRAM_NAME = "train_diagram.xml";
     private static final String TRAIN_TYPES_NAME = "train_types.xml";
+
+    private static final List<ModelVersion> VERSIONS;
+
+    static {
+        VERSIONS = Collections.unmodifiableList(Arrays.asList(new ModelVersion(1,0), new ModelVersion(2, 0)));
+    }
     
     private List<TrainDiagramFilter> loadFilters;
     private List<TrainDiagramFilter> saveFilters;
@@ -165,5 +173,10 @@ public class LoadSave implements FileLoadSave {
     @Override
     public void save(TrainDiagram diagram, ZipOutputStream os) throws LSException {
         throw new UnsupportedOperationException("Not supported.");
+    }
+
+    @Override
+    public List<ModelVersion> getVersions() {
+        return VERSIONS;
     }
 }
