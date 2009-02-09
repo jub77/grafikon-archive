@@ -427,6 +427,7 @@ public class Train implements AttributesHolder, ObjectWithId {
             if (isAttached())
                 timeBefore.addToOwner();
         }
+        listenerSupport.fireEvent(new TrainEvent(this, TrainEvent.Type.TECHNOLOGICAL));
     }
 
     /**
@@ -455,6 +456,7 @@ public class Train implements AttributesHolder, ObjectWithId {
             if (isAttached())
                 timeAfter.addToOwner();
         }
+        listenerSupport.fireEvent(new TrainEvent(this, TrainEvent.Type.TECHNOLOGICAL));
     }
 
     /**

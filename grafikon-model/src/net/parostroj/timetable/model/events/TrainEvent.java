@@ -11,7 +11,7 @@ public class TrainEvent extends GTEvent<Train> {
 
     public enum Type {
 
-        ATTRIBUTE, TIME_INTERVAL_LIST, CYCLE_ITEM;
+        ATTRIBUTE, TIME_INTERVAL_LIST, CYCLE_ITEM, TECHNOLOGICAL;
     }
     private Type type;
     private String attributeName;
