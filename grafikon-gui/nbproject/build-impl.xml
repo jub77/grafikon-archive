@@ -339,6 +339,7 @@ is divided into following sections:
                 ===================
             -->
     <target depends="init" name="deps-jar" unless="no.deps">
+        <ant antfile="${project.grafikon-gui-components}/build.xml" inheritall="false" target="jar"/>
         <ant antfile="${project.grafikon-ls}/build.xml" inheritall="false" target="jar"/>
         <ant antfile="${project.grafikon-model}/build.xml" inheritall="false" target="jar"/>
         <ant antfile="${project.grafikon-output}/build.xml" inheritall="false" target="jar"/>
@@ -662,6 +663,7 @@ is divided into following sections:
                 ===============
             -->
     <target depends="init" name="deps-clean" unless="no.deps">
+        <ant antfile="${project.grafikon-gui-components}/build.xml" inheritall="false" target="clean"/>
         <ant antfile="${project.grafikon-ls}/build.xml" inheritall="false" target="clean"/>
         <ant antfile="${project.grafikon-model}/build.xml" inheritall="false" target="clean"/>
         <ant antfile="${project.grafikon-output}/build.xml" inheritall="false" target="clean"/>

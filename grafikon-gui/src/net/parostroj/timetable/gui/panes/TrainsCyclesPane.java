@@ -6,17 +6,16 @@
 package net.parostroj.timetable.gui.panes;
 
 import java.awt.Color;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
 import net.parostroj.timetable.gui.ApplicationModel;
 import net.parostroj.timetable.gui.ApplicationModelEvent;
-import net.parostroj.timetable.gui.views.GraphicalTimetableView.TrainColors;
-import net.parostroj.timetable.gui.views.*;
+import net.parostroj.timetable.gui.ApplicationModelListener;
+import net.parostroj.timetable.gui.components.GraphicalTimetableView.TrainColors;
+import net.parostroj.timetable.gui.components.HighlightedTrains;
+import net.parostroj.timetable.gui.components.TrainColorChooser;
+import net.parostroj.timetable.gui.components.TrainSelector;
+import net.parostroj.timetable.gui.views.TCDelegate;
 import net.parostroj.timetable.model.TimeInterval;
-import net.parostroj.timetable.model.Train;
 import net.parostroj.timetable.model.TrainsCycle;
-import net.parostroj.timetable.model.TrainsCycleItem;
 
 /**
  * Pane for manipulating engine cycles.
@@ -27,7 +26,7 @@ public class TrainsCyclesPane extends javax.swing.JPanel {
 
     private TCDelegate delegate;
 
-    private class HighligterAndSelector implements HighlightedTrains, TrainSelector, TrainColorChooser {
+    private class HighligterAndSelector implements HighlightedTrains, TrainSelector, TrainColorChooser, ApplicationModelListener {
 
         private TrainColorChooser chooserDelegate;
         private TrainSelector selectorDelegate;
@@ -91,13 +90,19 @@ public class TrainsCyclesPane extends javax.swing.JPanel {
         scrollPane.getHorizontalScrollBar().setUnitIncrement(100);
     }
 
-    public void setModel(ApplicationModel model, final TCDelegate delegate, TrainColorChooser chooser) {
+    public void setModel(final ApplicationModel model, final TCDelegate delegate, TrainColorChooser chooser) {
         this.delegate = delegate;
         HighligterAndSelector hts = new HighligterAndSelector(chooser, eCTrainListView);
         eCListView.setModel(model, delegate);
         eCDetailsView.setModel(model, delegate);
         eCTrainListView.setModel(model, delegate);
-        graphicalTimetableView.setModel(model);
+        model.addListener(new ApplicationModelListener() {
+
+            @Override
+            public void modelChanged(ApplicationModelEvent event) {
+                graphicalTimetableView.setTrainDiagram(model.getDiagram());
+            }
+        });
         graphicalTimetableView.setTrainColors(TrainColors.BY_COLOR_CHOOSER, hts);
         model.addListener(hts);
         graphicalTimetableView.setHTrains(hts);
@@ -116,7 +121,7 @@ public class TrainsCyclesPane extends javax.swing.JPanel {
         eCDetailsView = new net.parostroj.timetable.gui.views.TCDetailsView2();
         eCTrainListView = new net.parostroj.timetable.gui.views.TCTrainListView();
         scrollPane = new javax.swing.JScrollPane();
-        graphicalTimetableView = new net.parostroj.timetable.gui.views.GraphicalTimetableView();
+        graphicalTimetableView = new net.parostroj.timetable.gui.components.GraphicalTimetableViewWithSave();
 
         javax.swing.GroupLayout graphicalTimetableViewLayout = new javax.swing.GroupLayout(graphicalTimetableView);
         graphicalTimetableView.setLayout(graphicalTimetableViewLayout);
@@ -163,7 +168,7 @@ public class TrainsCyclesPane extends javax.swing.JPanel {
     private net.parostroj.timetable.gui.views.TCDetailsView2 eCDetailsView;
     private net.parostroj.timetable.gui.views.TCListView eCListView;
     private net.parostroj.timetable.gui.views.TCTrainListView eCTrainListView;
-    private net.parostroj.timetable.gui.views.GraphicalTimetableView graphicalTimetableView;
+    private net.parostroj.timetable.gui.components.GraphicalTimetableViewWithSave graphicalTimetableView;
     private javax.swing.JScrollPane scrollPane;
     // End of variables declaration//GEN-END:variables
 }

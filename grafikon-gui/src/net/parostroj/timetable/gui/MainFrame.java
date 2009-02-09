@@ -15,6 +15,7 @@ import java.util.logging.Logger;
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import net.parostroj.timetable.actions.TrainSortByNodeFilter;
+import net.parostroj.timetable.gui.components.TrainColorChooser;
 import net.parostroj.timetable.gui.dialogs.*;
 import net.parostroj.timetable.gui.utils.*;
 import net.parostroj.timetable.gui.views.*;

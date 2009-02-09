@@ -14,7 +14,7 @@
         <Menu class="javax.swing.JMenu" name="routesMenu">
           <Properties>
             <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-              <ResourceString bundle="" key="gt.routes" replaceFormat="ResourceLoader.getString(&quot;{key}&quot;)"/>
+              <ResourceString bundle="net/parostroj/timetable/gui/components_texts.properties" key="gt.routes" replaceFormat="ResourceLoader.getString(&quot;{key}&quot;)"/>
             </Property>
           </Properties>
         </Menu>

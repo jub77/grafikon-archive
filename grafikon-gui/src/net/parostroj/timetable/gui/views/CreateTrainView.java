@@ -50,7 +50,6 @@ public class CreateTrainView extends javax.swing.JPanel {
 
     public void setModel(ApplicationModel model) {
         this.model = model;
-        tnDialog.setModel(model);
         this.updateView();
     }
     
@@ -312,7 +311,7 @@ private void cancelButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-
 
 private void throughButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_throughButtonActionPerformed
     // show through dialog
-    tnDialog.setNodes(throughNodes);
+    tnDialog.setNodes(throughNodes, model.getDiagram().getNet().getNodes());
     tnDialog.setLocationRelativeTo(this);
     tnDialog.setVisible(true);
     throughNodes = tnDialog.getNodes();

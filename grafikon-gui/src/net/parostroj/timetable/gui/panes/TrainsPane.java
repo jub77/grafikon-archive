@@ -12,11 +12,13 @@ import net.parostroj.timetable.gui.AppPreferences;
 import net.parostroj.timetable.gui.ApplicationModel;
 import net.parostroj.timetable.gui.ApplicationModelEvent;
 import net.parostroj.timetable.gui.ApplicationModelEventType;
+import net.parostroj.timetable.gui.ApplicationModelListener;
 import net.parostroj.timetable.gui.StorableGuiData;
-import net.parostroj.timetable.gui.views.HighlightedTrains;
-import net.parostroj.timetable.gui.views.TrainSelector;
+import net.parostroj.timetable.gui.components.HighlightedTrains;
+import net.parostroj.timetable.gui.components.TrainSelector;
 import net.parostroj.timetable.model.TimeInterval;
 import net.parostroj.timetable.model.Train;
+
 
 /**
  * Trains pane.
@@ -53,11 +55,34 @@ public class TrainsPane extends javax.swing.JPanel implements StorableGuiData {
         this.model = model;
         trainListView.setModel(model);
         trainView.setModel(model);
-        graphicalTimetableView.setModel(model);
-        
+
+        model.addListener(new ApplicationModelListener() {
+
+            @Override
+            public void modelChanged(ApplicationModelEvent event) {
+                if (event.getType() == ApplicationModelEventType.SET_DIAGRAM_CHANGED) {
+                    graphicalTimetableView.setTrainDiagram(model.getDiagram());
+                }
+            }
+        });
+
         HighlightedTrains ht = new HighlightedTrains() {
-            
+
             Set<Train> set = Collections.emptySet();
+
+
+            {
+                model.addListener(new ApplicationModelListener() {
+
+                    @Override
+                    public void modelChanged(ApplicationModelEvent event) {
+                        if (event.getType() == ApplicationModelEventType.SELECTED_TRAIN_CHANGED) {
+                            set = Collections.singleton(model.getSelectedTrain());
+                            graphicalTimetableView.repaint();
+                        }
+                    }
+                });
+            }
 
             @Override
             public boolean isHighlighedInterval(TimeInterval interval) {
@@ -65,21 +90,11 @@ public class TrainsPane extends javax.swing.JPanel implements StorableGuiData {
             }
 
             @Override
-            public void modelChanged(ApplicationModelEvent event) {
-                if (event.getType() == ApplicationModelEventType.SELECTED_TRAIN_CHANGED) {
-                    set = Collections.singleton(model.getSelectedTrain());
-                    graphicalTimetableView.repaint();
-                }
-            }
-
-            @Override
             public Color getColor() {
                 return Color.GREEN;
             }
         };
-        model.addListener(ht);
         graphicalTimetableView.setHTrains(ht);
-
         graphicalTimetableView.setTrainSelector(new TrainSelector() {
             
             private TimeInterval selectedTimeInterval;
@@ -129,7 +144,7 @@ public class TrainsPane extends javax.swing.JPanel implements StorableGuiData {
 
         splitPane = new javax.swing.JSplitPane();
         scrollPane = new javax.swing.JScrollPane();
-        graphicalTimetableView = new net.parostroj.timetable.gui.views.GraphicalTimetableView();
+        graphicalTimetableView = new net.parostroj.timetable.gui.components.GraphicalTimetableViewWithSave();
         panel = new javax.swing.JPanel();
         trainListView = new net.parostroj.timetable.gui.views.TrainListView();
         trainView = new net.parostroj.timetable.gui.views.TrainView();
@@ -141,7 +156,7 @@ public class TrainsPane extends javax.swing.JPanel implements StorableGuiData {
         graphicalTimetableView.setLayout(graphicalTimetableViewLayout);
         graphicalTimetableViewLayout.setHorizontalGroup(
             graphicalTimetableViewLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 3000, Short.MAX_VALUE)
+            .addGap(0, 4000, Short.MAX_VALUE)
         );
         graphicalTimetableViewLayout.setVerticalGroup(
             graphicalTimetableViewLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -183,7 +198,7 @@ public class TrainsPane extends javax.swing.JPanel implements StorableGuiData {
     
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private net.parostroj.timetable.gui.views.GraphicalTimetableView graphicalTimetableView;
+    private net.parostroj.timetable.gui.components.GraphicalTimetableViewWithSave graphicalTimetableView;
     private javax.swing.JPanel panel;
     private javax.swing.JScrollPane scrollPane;
     private javax.swing.JSplitPane splitPane;

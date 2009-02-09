@@ -317,7 +317,7 @@ public class GraphicalTimetableView extends javax.swing.JPanel implements Change
         typesButtonGroup = new javax.swing.ButtonGroup();
         routesGroup = new javax.swing.ButtonGroup();
 
-        routesMenu.setText("null");
+        routesMenu.setText(ResourceLoader.getString("gt.routes")); // NOI18N
         popupMenu.add(routesMenu);
 
         routesEditMenuItem.setText(ResourceLoader.getString("gt.routes.edit")); // NOI18N
@@ -493,7 +493,6 @@ private void preferencesCheckBoxMenuItemActionPerformed(java.awt.event.ActionEve
             item.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    System.out.println("ACTION ...");
                     RouteRadioButtonMenuItem button = (RouteRadioButtonMenuItem)e.getSource();
                     setRoute(button.getRoute());
                 }
