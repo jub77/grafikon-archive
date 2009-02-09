@@ -480,62 +480,6 @@ private void preferencesCheckBoxMenuItemActionPerformed(java.awt.event.ActionEve
         }
         LOG.finest("Finished paint.");
     }
-/*
-    @Override
-    public void modelChanged(ApplicationModelEvent event) {
-        ApplicationModel lModel = event.getModel();
-        TrainDiagram diagram = lModel.getDiagram();
-        switch (event.getType()) {
-            case SET_DIAGRAM_CHANGED:
-                if (diagram == null) {
-                    this.setRoute(null);
-                    this.setComponentPopupMenu(null);
-                } else {
-                    this.setComponentPopupMenu(popupMenu);
-                    if (diagram.getRoutes().size() > 0) {
-                        this.setRoute(lModel.getDiagram().getRoutes().get(0));
-                    } else
-                        this.setRoute(null);
-                    this.createMenuForRoutes(diagram.getRoutes());
-                }
-                this.repaint();
-                break;
-            case ROUTES_MODIFIED:
-                // changed list of routes
-                this.createMenuForRoutes(diagram.getRoutes());
-                // check current route
-                if (this.getRoute() == (Route)event.getObject()) {
-                    if (!diagram.getRoutes().contains(this.getRoute())) {
-                        this.setRoute(null);
-                    }
-                    this.repaint();
-                }
-                break;
-            case DELETE_TRAIN:
-                if (trainRegionCollector != null)
-                    trainRegionCollector.deleteTrain((Train)event.getObject());
-                this.repaint();
-                break;
-            case MODIFIED_TRAIN:
-                if (trainRegionCollector != null)
-                    trainRegionCollector.modifiedTrain((Train)event.getObject());
-                this.repaint();
-                break;
-            case MODIFIED_TRAIN_NAME_TYPE:
-                this.repaint();
-                break;
-            case NEW_TRAIN:
-                if (trainRegionCollector != null)
-                    trainRegionCollector.newTrain((Train)event.getObject());
-                this.repaint();
-                break;
-            case TRAIN_TYPES_CHANGED:
-                // handling change of the color of the train type
-                this.repaint();
-                break;
-        }
-    }
-*/
 
     private void createMenuForRoutes(List<Route> routes) {
         routesGroup = new ButtonGroup();
