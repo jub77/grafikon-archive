@@ -13,8 +13,10 @@ import net.parostroj.timetable.gui.components.GraphicalTimetableView.TrainColors
 import net.parostroj.timetable.gui.dialogs.EditRoutesDialog;
 import net.parostroj.timetable.gui.utils.ResourceLoader;
 import net.parostroj.timetable.model.*;
+import net.parostroj.timetable.model.events.LineEvent;
 import net.parostroj.timetable.model.events.TrainDiagramEvent;
-import net.parostroj.timetable.model.events.TrainDiagramListener;
+import net.parostroj.timetable.model.events.TrainDiagramListenerWithNested;
+import net.parostroj.timetable.model.events.TrainEvent;
 
 /**
  * Graphical timetable view.
@@ -78,7 +80,7 @@ public class GraphicalTimetableView extends javax.swing.JPanel implements Change
         this.addSizesToMenu();
     }
 
-    private TrainDiagramListener currentListener;
+    private TrainDiagramListenerWithNested currentListener;
 
     public void setTrainDiagram(TrainDiagram diagram) {
         if (currentListener != null && this.diagram != null) {
@@ -92,17 +94,44 @@ public class GraphicalTimetableView extends javax.swing.JPanel implements Change
             this.diagram = diagram;
             this.createMenuForRoutes(diagram.getRoutes());
             this.setComponentPopupMenu(popupMenu);
-            this.currentListener = new TrainDiagramListener() {
+            this.currentListener = new TrainDiagramListenerWithNested() {
 
                 @Override
                 public void trainDiagramChanged(TrainDiagramEvent event) {
-                    // modified routes ...
-                    if (event.getType() == TrainDiagramEvent.Type.ROUTE_ADDED ||
-                            event.getType() == TrainDiagramEvent.Type.ROUTE_REMOVED)
-                        routesChanged(event);
+                    // diagram events
+                    switch (event.getType()) {
+                        case ROUTE_ADDED: case ROUTE_REMOVED:
+                            routesChanged(event);
+                            break;
+                        case TRAIN_ADDED:
+                            if (trainRegionCollector != null)
+                                trainRegionCollector.newTrain(event.getTrain());
+                            repaint();
+                            break;
+                        case TRAIN_REMOVED:
+                            if (trainRegionCollector != null)
+                                trainRegionCollector.deleteTrain(event.getTrain());
+                            repaint();
+                            break;
+                    }
+                }
+
+                @Override
+                public void trainDiagramChangedNested(TrainDiagramEvent event) {
+                    // other events
+                    if (event.getType() == TrainDiagramEvent.Type.NESTED) {
+                        if (event.getNestedEvent() instanceof TrainEvent) {
+                            TrainEvent tEvent = (TrainEvent) event.getNestedEvent();
+                            trainChanged(tEvent);
+                        } else if (event.getNestedEvent() instanceof LineEvent) {
+                            LineEvent lEvent = (LineEvent) event.getNestedEvent();
+                            lineChanged(lEvent);
+                        }
+                        // TODO add train type (color and names) when the event is available ...
+                    }
                 }
             };
-            this.diagram.addListener(this.currentListener);
+            this.diagram.addListenerWithNested(this.currentListener);
             if (diagram.getRoutes().size() > 0) {
                 this.setRoute(diagram.getRoutes().get(0));
             }
@@ -121,6 +150,32 @@ public class GraphicalTimetableView extends javax.swing.JPanel implements Change
         }
         if (event.getType() == TrainDiagramEvent.Type.ROUTE_ADDED && this.getRoute() == null) {
             this.setRoute(event.getRoute());
+        }
+    }
+
+    private void trainChanged(TrainEvent event) {
+        switch (event.getType()) {
+            case TIME_INTERVAL_LIST: case TECHNOLOGICAL:
+                if (trainRegionCollector != null)
+                    trainRegionCollector.modifiedTrain(event.getSource());
+                this.repaint();
+                break;
+            case ATTRIBUTE:
+                if (event.getAttributeName().equals("number") || event.getAttributeName().equals("type")) {
+                    this.repaint();
+                }
+                break;
+        }
+    }
+
+    private void lineChanged(LineEvent event) {
+        switch (event.getType()) {
+            case TRACK_ATTRIBUTE:
+                if (this.getRoute() != null && this.getRoute().contains(event.getSource())) {
+                    // redraw all
+                    recreateDraw(this.getRoute());
+                }
+                break;
         }
     }
 
