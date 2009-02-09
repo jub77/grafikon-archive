@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.ServiceLoader;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Logger;
 import java.util.zip.*;
 
 /**
@@ -16,6 +17,7 @@ import java.util.zip.*;
  */
 public class LSFileFactory {
 
+    private static final Logger LOG = Logger.getLogger(LSFileFactory.class.getName());
     private static final String METADATA = "metadata.properties";
     private static final String METADATA_KEY_MODEL_VERSION = "model.version";
     private static final LSFileFactory instance = new LSFileFactory();
@@ -27,7 +29,7 @@ public class LSFileFactory {
             ServiceLoader<FileLoadSave> loader = ServiceLoader.load(FileLoadSave.class);
             for (FileLoadSave fls : loader) {
                 List<ModelVersion> versions = fls.getVersions();
-                System.out.println("REGISTERED: " + fls.getClass().getName());
+                LOG.fine("REGISTERED: " + fls.getClass().getName());
                 for (ModelVersion version : versions) {
                     cache.put(version.getMajorVersion(), fls.getClass());
                 }
