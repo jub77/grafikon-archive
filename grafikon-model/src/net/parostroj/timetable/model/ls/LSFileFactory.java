@@ -55,11 +55,11 @@ public class LSFileFactory {
     private Class<? extends FileLoadSave> getLatestClass() {
         Map.Entry<Integer, Class<? extends FileLoadSave>> selected = null;
         for (Map.Entry<Integer, Class<? extends FileLoadSave>> entry : cache.entrySet()) {
-            if (entry == null || entry.getKey().compareTo(selected.getKey()) > 0) {
+            if (selected == null || entry.getKey().compareTo(selected.getKey()) > 0) {
                 selected = entry;
             }
         }
-        return selected.getValue();
+        return selected != null ? selected.getValue() : null;
     }
 
     public synchronized FileLoadSave create(ZipInputStream is) throws LSException {
