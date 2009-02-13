@@ -1,3 +1,6 @@
+grafikon-applet/build/*
+grafikon-applet/dist/*
+grafikon-applet/nbproject/private/*
 grafikon-gui/build/*
 grafikon-gui/dist/*
 grafikon-gui/nbproject/private/*
