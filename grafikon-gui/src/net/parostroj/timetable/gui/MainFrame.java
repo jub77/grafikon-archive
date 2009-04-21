@@ -411,6 +411,8 @@ public class MainFrame extends javax.swing.JFrame implements ApplicationModelLis
         fileSaveMenuItem = new javax.swing.JMenuItem();
         fileSaveAsMenuItem = new javax.swing.JMenuItem();
         javax.swing.JSeparator separator1 = new javax.swing.JSeparator();
+        fileExportImportMenuItem = new javax.swing.JMenuItem();
+        javax.swing.JSeparator separator5 = new javax.swing.JSeparator();
         settingsMenuItem = new javax.swing.JMenuItem();
         imagesMenuItem = new javax.swing.JMenuItem();
         infoMenuItem = new javax.swing.JMenuItem();
@@ -514,6 +516,15 @@ public class MainFrame extends javax.swing.JFrame implements ApplicationModelLis
         });
         fileMenu.add(fileSaveAsMenuItem);
         fileMenu.add(separator1);
+
+        fileExportImportMenuItem.setText(ResourceLoader.getString("menu.file.exportimport")); // NOI18N
+        fileExportImportMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                fileExportImportMenuItemActionPerformed(evt);
+            }
+        });
+        fileMenu.add(fileExportImportMenuItem);
+        fileMenu.add(separator5);
 
         settingsMenuItem.setText(ResourceLoader.getString("menu.file.settings")); // NOI18N
         settingsMenuItem.addActionListener(new java.awt.event.ActionListener() {
@@ -1393,6 +1404,10 @@ private void trainTimetableListByTimeFilteredMenuItemActionPerformed(java.awt.ev
     this.saveHtml(action);
 }//GEN-LAST:event_trainTimetableListByTimeFilteredMenuItemActionPerformed
 
+private void fileExportImportMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fileExportImportMenuItemActionPerformed
+    // TODO add your handling code here:
+}//GEN-LAST:event_fileExportImportMenuItemActionPerformed
+
     private void setSelectedLocale() {
         if (locale == null)
             systemLanguageRadioButtonMenuItem.setSelected(true);
@@ -1543,6 +1558,7 @@ private void trainTimetableListByTimeFilteredMenuItemActionPerformed(java.awt.ev
     private net.parostroj.timetable.gui.panes.TrainsCyclesPane engineCyclesPane;
     private javax.swing.JMenuItem epListMenuItem;
     private javax.swing.JMenuItem exitMenuItem;
+    private javax.swing.JMenuItem fileExportImportMenuItem;
     private javax.swing.JMenu fileMenu;
     private javax.swing.JMenuItem fileNewMenuItem;
     private javax.swing.JMenuItem fileOpenMenuItem;
