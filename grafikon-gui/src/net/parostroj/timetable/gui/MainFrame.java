@@ -47,6 +47,7 @@ public class MainFrame extends javax.swing.JFrame implements ApplicationModelLis
     private TrainTypesDialog trainTypesDialog;
     private LineClassesDialog lineClassesDialog;
     private EngineClassesDialog engineClassesDialog;
+    private ImportDialog importDialog;
     private Locale locale;
     
     private static JFileChooser outputFileChooserInstance;
@@ -285,6 +286,8 @@ public class MainFrame extends javax.swing.JFrame implements ApplicationModelLis
         
         engineClassesDialog = new EngineClassesDialog(this, true);
         engineClassesDialog.setModel(model);
+
+        importDialog = new ImportDialog(this, true);
         
         netPane.setModel(model);
         
@@ -383,6 +386,7 @@ public class MainFrame extends javax.swing.JFrame implements ApplicationModelLis
         lineClassesMenuItem.setEnabled(model.getDiagram() != null);
         weightTablesMenuItem.setEnabled(model.getDiagram() != null);
         trainTimetableListByTimeFilteredMenuItem.setEnabled(model.getDiagram() != null);
+        fileImportMenuItem.setEnabled(model.getDiagram() != null);
     }
     
     /** This method is called from within the constructor to
@@ -411,7 +415,7 @@ public class MainFrame extends javax.swing.JFrame implements ApplicationModelLis
         fileSaveMenuItem = new javax.swing.JMenuItem();
         fileSaveAsMenuItem = new javax.swing.JMenuItem();
         javax.swing.JSeparator separator1 = new javax.swing.JSeparator();
-        fileExportImportMenuItem = new javax.swing.JMenuItem();
+        fileImportMenuItem = new javax.swing.JMenuItem();
         javax.swing.JSeparator separator5 = new javax.swing.JSeparator();
         settingsMenuItem = new javax.swing.JMenuItem();
         imagesMenuItem = new javax.swing.JMenuItem();
@@ -517,13 +521,13 @@ public class MainFrame extends javax.swing.JFrame implements ApplicationModelLis
         fileMenu.add(fileSaveAsMenuItem);
         fileMenu.add(separator1);
 
-        fileExportImportMenuItem.setText(ResourceLoader.getString("menu.file.exportimport")); // NOI18N
-        fileExportImportMenuItem.addActionListener(new java.awt.event.ActionListener() {
+        fileImportMenuItem.setText(ResourceLoader.getString("menu.file.exportimport")); // NOI18N
+        fileImportMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                fileExportImportMenuItemActionPerformed(evt);
+                fileImportMenuItemActionPerformed(evt);
             }
         });
-        fileMenu.add(fileExportImportMenuItem);
+        fileMenu.add(fileImportMenuItem);
         fileMenu.add(separator5);
 
         settingsMenuItem.setText(ResourceLoader.getString("menu.file.settings")); // NOI18N
@@ -915,8 +919,7 @@ private void fileOpenMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//
         private Exception errorException;
 
         @Override
-        public void run(
-                ) {
+        public void run() {
             try {
                 if (result == JOptionPane.YES_OPTION) {
                     saveModelData(model.getOpenedFile());
@@ -1404,9 +1407,47 @@ private void trainTimetableListByTimeFilteredMenuItemActionPerformed(java.awt.ev
     this.saveHtml(action);
 }//GEN-LAST:event_trainTimetableListByTimeFilteredMenuItemActionPerformed
 
-private void fileExportImportMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fileExportImportMenuItemActionPerformed
-    // TODO add your handling code here:
-}//GEN-LAST:event_fileExportImportMenuItemActionPerformed
+private void fileImportMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fileImportMenuItemActionPerformed
+    // select imported model
+    final JFileChooser xmlFileChooser = getFileChooser(MainFrame.FileChooserType.XML);
+    final int retVal = xmlFileChooser.showOpenDialog(this);
+    String errorMessage = null;
+    TrainDiagram diagram = null;
+
+    try {
+        if (retVal == JFileChooser.APPROVE_OPTION) {
+            model.setOpenedFile(xmlFileChooser.getSelectedFile());
+            FileLoadSave ls = LSFileFactory.getInstance().create(xmlFileChooser.getSelectedFile());
+            diagram = ls.load(xmlFileChooser.getSelectedFile());
+        } else {
+            // skip the rest
+            return;
+        }
+    } catch (LSException e) {
+        LOG.log(Level.WARNING, "Error loading model.", e);
+        if (e.getCause() instanceof FileNotFoundException)
+            errorMessage = ResourceLoader.getString("dialog.error.filenotfound");
+        else if (e.getCause() instanceof IOException)
+            errorMessage = ResourceLoader.getString("dialog.error.loading");
+        else {
+            errorMessage = ResourceLoader.getString("dialog.error.loading");
+        }
+    } catch (Exception e) {
+        LOG.log(Level.WARNING, "Error loading model.", e);
+        errorMessage = ResourceLoader.getString("dialog.error.loading");
+    }
+
+    if (errorMessage != null) {
+        String text = errorMessage + " " + xmlFileChooser.getSelectedFile().getName();
+        showError(text);
+        return;
+    }
+
+    importDialog.setTrainDiagrams(model.getDiagram(), diagram);
+    importDialog.pack();
+    importDialog.setLocationRelativeTo(this);
+    importDialog.setVisible(true);
+}//GEN-LAST:event_fileImportMenuItemActionPerformed
 
     private void setSelectedLocale() {
         if (locale == null)
@@ -1558,7 +1599,7 @@ private void fileExportImportMenuItemActionPerformed(java.awt.event.ActionEvent 
     private net.parostroj.timetable.gui.panes.TrainsCyclesPane engineCyclesPane;
     private javax.swing.JMenuItem epListMenuItem;
     private javax.swing.JMenuItem exitMenuItem;
-    private javax.swing.JMenuItem fileExportImportMenuItem;
+    private javax.swing.JMenuItem fileImportMenuItem;
     private javax.swing.JMenu fileMenu;
     private javax.swing.JMenuItem fileNewMenuItem;
     private javax.swing.JMenuItem fileOpenMenuItem;
