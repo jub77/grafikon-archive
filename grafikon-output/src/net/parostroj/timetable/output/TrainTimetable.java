@@ -371,6 +371,9 @@ public class TrainTimetable {
     }
 
     private void addComment(Pair<String, String> comment) {
+        // if the comment text is null -> replace with empty string
+        if (comment.second == null)
+            comment.second = "";
         // check if comment already exists
         for (Pair<String, String> item : comments) {
             if (item.first.equals(comment.first)) {
