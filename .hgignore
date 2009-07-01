@@ -26,3 +26,4 @@ grafikon-templates/build/*
 grafikon-templates/dist/*
 grafikon-templates/nbproject/private/*
 libs/nblibraries-private.properties
+/*.cmd
