@@ -97,21 +97,32 @@ public class LSFileFactory {
         }
     }
 
-    private FileLoadSave createFLSInstance(Properties metadata) throws LSException {
-        try {
-            // set model version
-            ModelVersion modelVersion = null;
-            if (metadata.getProperty(METADATA_KEY_MODEL_VERSION) == null) {
-                modelVersion = new ModelVersion("1.0");
-            } else {
-                modelVersion = new ModelVersion(metadata.getProperty(METADATA_KEY_MODEL_VERSION));
-            }
+    public synchronized FileLoadSave create(ModelVersion modelVersion) throws LSException {
+        return this.createFLSInstance(modelVersion);
+    }
 
-            Class<?> clazz = cache.get(modelVersion.getMajorVersion());
-            if (clazz == null) {
+    public synchronized FileLoadSave create(String modelVersion) throws LSException {
+        return this.createFLSInstance(new ModelVersion(modelVersion));
+    }
+
+    private FileLoadSave createFLSInstance(Properties metadata) throws LSException {
+        // set model version
+        ModelVersion modelVersion = null;
+        if (metadata.getProperty(METADATA_KEY_MODEL_VERSION) == null) {
+            modelVersion = new ModelVersion("1.0");
+        } else {
+            modelVersion = new ModelVersion(metadata.getProperty(METADATA_KEY_MODEL_VERSION));
+        }
+
+        return this.createFLSInstance(modelVersion);
+    }
+
+    private FileLoadSave createFLSInstance(ModelVersion modelVersion) throws LSException {
+        try {
+            Class<? extends FileLoadSave> clazz = cache.get(modelVersion.getMajorVersion());
+            if (clazz == null)
                 throw new LSException("No FileLoadSave registered for version: " + modelVersion.getVersion());
-            }
-            return (FileLoadSave) clazz.newInstance();
+            return clazz.newInstance();
         } catch (InstantiationException ex) {
             throw new LSException(ex);
         } catch (IllegalAccessException ex) {
