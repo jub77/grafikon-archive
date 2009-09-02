@@ -211,7 +211,7 @@ public class TrainsCycleHelper {
 
         // test not overlapping cycle item
         Map<TimeInterval, Boolean> map = this.createMapFromTimeIntervalList(timeIntervalList);
-        Set<TrainsCycleItem> itemsSet = new HashSet(items);
+        Set<TrainsCycleItem> itemsSet = new HashSet<TrainsCycleItem>(items);
         // remove ignored item
         if (ignoredItem != null)
             itemsSet.remove(ignoredItem);
