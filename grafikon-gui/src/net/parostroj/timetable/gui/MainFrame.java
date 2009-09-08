@@ -1444,7 +1444,6 @@ private void fileImportMenuItemActionPerformed(java.awt.event.ActionEvent evt) {
     }
 
     importDialog.setTrainDiagrams(model.getDiagram(), diagram);
-    importDialog.pack();
     importDialog.setLocationRelativeTo(this);
     importDialog.setVisible(true);
 }//GEN-LAST:event_fileImportMenuItemActionPerformed

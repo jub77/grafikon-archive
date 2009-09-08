@@ -5,7 +5,14 @@
  */
 package net.parostroj.timetable.gui.dialogs;
 
+import java.util.EnumMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import javax.swing.DefaultListModel;
 import javax.swing.JList;
+import javax.swing.ListModel;
+import net.parostroj.timetable.gui.helpers.Wrapper;
 import net.parostroj.timetable.gui.utils.ResourceLoader;
 import net.parostroj.timetable.model.TrainDiagram;
 
@@ -18,13 +25,18 @@ public class ImportDialog extends javax.swing.JDialog {
 
     private TrainDiagram diagram;
     private TrainDiagram libraryDiagram;
+    private static final ListModel EMPTY_LIST_MODEL = new DefaultListModel();
+
+    private Map<ImportComponents, Set<Object>> selectedItems;
 
     /** Creates new form ExportImportDialog */
     public ImportDialog(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
 
-        // initialize combo box with components
+        // create map
+        selectedItems = new EnumMap<ImportComponents, Set<Object>>(ImportComponents.class);
+        // initialize combo box with components and create sets
         for (ImportComponents comps : ImportComponents.values()) {
             componentComboBox.addItem(comps);
         }
@@ -39,6 +51,10 @@ public class ImportDialog extends javax.swing.JDialog {
     public void setTrainDiagrams(TrainDiagram diagram, TrainDiagram libraryDiagram) {
         this.diagram = diagram;
         this.libraryDiagram = libraryDiagram;
+        for (ImportComponents comps : ImportComponents.values()) {
+            selectedItems.put(comps, new HashSet<Object>());
+        }
+        updateDialog();
     }
 
     /** This method is called from within the constructor to
@@ -51,24 +67,42 @@ public class ImportDialog extends javax.swing.JDialog {
     private void initComponents() {
 
         javax.swing.JScrollPane jScrollPane1 = new javax.swing.JScrollPane();
-        diagramComponentsList = new javax.swing.JList();
-        addButton = new javax.swing.JButton();
+        componentsList = new javax.swing.JList();
         removeButton = new javax.swing.JButton();
+        addButton = new javax.swing.JButton();
         javax.swing.JScrollPane jScrollPane2 = new javax.swing.JScrollPane();
-        libraryComponentsList = new javax.swing.JList();
+        selectedComponentsList = new javax.swing.JList();
         okButton = new javax.swing.JButton();
         cancelButton = new javax.swing.JButton();
         componentComboBox = new javax.swing.JComboBox();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
 
-        jScrollPane1.setViewportView(diagramComponentsList);
+        jScrollPane1.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        jScrollPane1.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 
-        addButton.setText("<<");
+        componentsList.setPrototypeCellValue("mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm");
+        jScrollPane1.setViewportView(componentsList);
 
-        removeButton.setText(">>");
+        removeButton.setText("<<");
+        removeButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                removeButtonActionPerformed(evt);
+            }
+        });
 
-        jScrollPane2.setViewportView(libraryComponentsList);
+        addButton.setText(">>");
+        addButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                addButtonActionPerformed(evt);
+            }
+        });
+
+        jScrollPane2.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        jScrollPane2.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+
+        selectedComponentsList.setPrototypeCellValue("mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm");
+        jScrollPane2.setViewportView(selectedComponentsList);
 
         okButton.setText(ResourceLoader.getString("button.ok")); // NOI18N
         okButton.addActionListener(new java.awt.event.ActionListener() {
@@ -96,14 +130,14 @@ public class ImportDialog extends javax.swing.JDialog {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane1)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 269, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(addButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(removeButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(addButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(componentComboBox, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane2)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 255, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                     .addComponent(okButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -114,19 +148,19 @@ public class ImportDialog extends javax.swing.JDialog {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane2)
-                    .addGroup(layout.createSequentialGroup()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
                         .addComponent(okButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(cancelButton))
-                    .addComponent(jScrollPane1)
-                    .addGroup(layout.createSequentialGroup()
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
                         .addComponent(componentComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(addButton)
+                        .addComponent(removeButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(removeButton)))
+                        .addComponent(addButton)))
                 .addContainerGap())
         );
 
@@ -146,31 +180,65 @@ public class ImportDialog extends javax.swing.JDialog {
         this.updateDialog();
     }//GEN-LAST:event_componentComboBoxActionPerformed
 
+    private void removeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeButtonActionPerformed
+        // add object to selected
+        WrapperListModel left = (WrapperListModel)componentsList.getModel();
+        WrapperListModel right = (WrapperListModel)selectedComponentsList.getModel();
+        Object[] values = selectedComponentsList.getSelectedValues();
+        for (Object value : values) {
+            if (value instanceof Wrapper<?>) {
+                Wrapper<?> w = (Wrapper<?>)value;
+                right.removeWrapper(w);
+                left.addWrapper(w);
+            }
+        }
+    }//GEN-LAST:event_removeButtonActionPerformed
+
+    private void addButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addButtonActionPerformed
+        // remove object from selected
+        WrapperListModel left = (WrapperListModel)componentsList.getModel();
+        WrapperListModel right = (WrapperListModel)selectedComponentsList.getModel();
+        Object[] values = componentsList.getSelectedValues();
+        for (Object value : values) {
+            if (value instanceof Wrapper<?>) {
+                Wrapper<?> w = (Wrapper<?>)value;
+                left.removeWrapper(w);
+                right.addWrapper(w);
+            }
+        }
+    }//GEN-LAST:event_addButtonActionPerformed
+
     private void updateDialog() {
         this.updateLists((ImportComponents)componentComboBox.getSelectedItem());
     }
 
     private void updateLists(ImportComponents comps) {
-        // remove all components from both lists
-        diagramComponentsList.removeAll();
-        libraryComponentsList.removeAll();
         // fill in new items
-        fillList(comps, diagramComponentsList);
-        fillList(comps, libraryComponentsList);
+        Set<Object> all = comps != null ? comps.getObjects(libraryDiagram) : null;
+        if (all ==null || all.size() == 0) {
+            componentsList.setModel(EMPTY_LIST_MODEL);
+            selectedComponentsList.setModel(EMPTY_LIST_MODEL);
+            return;
+        }
+        Set<Object> sel = selectedItems.get(comps);
+        // remove already selected
+        all.removeAll(sel);
+        fillList(comps, componentsList, all);
+        fillList(comps, selectedComponentsList, sel);
     }
 
-    private void fillList(ImportComponents comps, JList list) {
-        
+    private void fillList(ImportComponents comps, JList list, Set<Object> set) {
+        WrapperListModel model = new WrapperListModel(set, comps, libraryDiagram);
+        list.setModel(model);
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton addButton;
     private javax.swing.JButton cancelButton;
     private javax.swing.JComboBox componentComboBox;
-    private javax.swing.JList diagramComponentsList;
-    private javax.swing.JList libraryComponentsList;
+    private javax.swing.JList componentsList;
     private javax.swing.JButton okButton;
     private javax.swing.JButton removeButton;
+    private javax.swing.JList selectedComponentsList;
     // End of variables declaration//GEN-END:variables
-
 }

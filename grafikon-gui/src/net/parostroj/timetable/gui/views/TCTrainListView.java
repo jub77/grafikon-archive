@@ -5,6 +5,7 @@
  */
 package net.parostroj.timetable.gui.views;
 
+import net.parostroj.timetable.gui.helpers.TrainWrapper;
 import java.awt.Color;
 import java.util.*;
 import javax.swing.ButtonModel;

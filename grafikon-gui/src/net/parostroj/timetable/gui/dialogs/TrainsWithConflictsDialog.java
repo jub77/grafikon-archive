@@ -18,7 +18,7 @@ import net.parostroj.timetable.gui.ApplicationModel;
 import net.parostroj.timetable.gui.ApplicationModelEvent;
 import net.parostroj.timetable.gui.ApplicationModelListener;
 import net.parostroj.timetable.gui.StorableGuiData;
-import net.parostroj.timetable.gui.views.TrainWrapper;
+import net.parostroj.timetable.gui.helpers.TrainWrapper;
 import net.parostroj.timetable.model.Train;
 import net.parostroj.timetable.utils.ResourceLoader;
 

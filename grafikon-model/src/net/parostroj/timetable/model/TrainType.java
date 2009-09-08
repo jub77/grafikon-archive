@@ -10,7 +10,7 @@ import org.mvel2.templates.TemplateRuntime;
  *
  * @author jub
  */
-public class TrainType {
+public class TrainType implements ObjectWithId {
     /** Id. */
     private final String id;
     /** Abbreviation of the type. */
@@ -42,6 +42,7 @@ public class TrainType {
     /**
      * @return the id
      */
+    @Override
     public String getId() {
         return id;
     }
