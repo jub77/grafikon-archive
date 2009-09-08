@@ -20,9 +20,9 @@ import net.parostroj.timetable.model.TrainType;
  * @author jub
  */
 public enum ImportComponents {
+    TRAINS("import.trains"),
     STATIONS("import.stations"),
-    TRAIN_TYPES("import.train_types"),
-    TRAINS("import.trains");
+    TRAIN_TYPES("import.train_types");
 
     private String key;
 
