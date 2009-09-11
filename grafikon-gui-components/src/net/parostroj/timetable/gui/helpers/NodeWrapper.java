@@ -31,6 +31,10 @@ public class NodeWrapper extends Wrapper<Node> {
 
     @Override
     public String toString() {
-        return getElement().getName();
+        return toString(getElement());
+    }
+
+    public static String toString(Node node) {
+        return node.getName();
     }
 }

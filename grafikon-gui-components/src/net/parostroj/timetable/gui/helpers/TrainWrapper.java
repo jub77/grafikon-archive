@@ -33,14 +33,6 @@ public class TrainWrapper extends Wrapper<Train> {
         this.comparator = comparator;
     }
 
-    public Train getTrain() {
-        return this.getElement();
-    }
-
-    public void setTrain(Train train) {
-        this.setElement(train);
-    }
-
     @Override
     public int hashCode() {
         return super.hashCode();
@@ -59,23 +51,27 @@ public class TrainWrapper extends Wrapper<Train> {
 
     @Override
     public String toString() {
+        return toString(getElement(), type);
+    }
+
+    public static String toString(Train train, Type type) {
         switch (type) {
             case NAME:
-                return getTrain().getName();
+                return train.getName();
             case NAME_AND_END_NODES:
                 return String.format("%s (%s,%s)",
-                        getTrain().getName(),
-                        getTrain().getStartNode(),
-                        getTrain().getEndNode());
+                        train.getName(),
+                        train.getStartNode(),
+                        train.getEndNode());
             case NAME_AND_END_NODES_WITH_TIME:
                 return String.format("%s (%s[%s],%s[%s])",
-                        getTrain().getName(),
-                        getTrain().getStartNode().getName(),
-                        TimeConverter.convertFromIntToText(getTrain().getStartTime()),
-                        getTrain().getEndNode().getName(),
-                        TimeConverter.convertFromIntToText(getTrain().getEndTime()));
+                        train.getName(),
+                        train.getStartNode().getName(),
+                        TimeConverter.convertFromIntToText(train.getStartTime()),
+                        train.getEndNode().getName(),
+                        TimeConverter.convertFromIntToText(train.getEndTime()));
             default:
-                return getTrain().getName();
+                return train.getName();
         }
     }
 

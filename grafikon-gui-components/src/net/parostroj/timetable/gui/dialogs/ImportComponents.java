@@ -21,7 +21,7 @@ import net.parostroj.timetable.model.TrainType;
  */
 public enum ImportComponents {
     TRAINS("import.trains"),
-    STATIONS("import.stations"),
+    NODES("import.stations"),
     TRAIN_TYPES("import.train_types");
 
     private String key;
@@ -44,7 +44,7 @@ public enum ImportComponents {
             return Collections.emptySet();
         Set<Object> map = new HashSet<Object>();
         switch (this) {
-            case STATIONS:
+            case NODES:
                 map.addAll(diagram.getNet().getNodes());
                 break;
             case TRAINS:
@@ -57,10 +57,10 @@ public enum ImportComponents {
         return map;
     }
 
-    Wrapper<?> getWrapper(Object oid, TrainDiagram diagram) {
+    public Wrapper<?> getWrapper(Object oid, TrainDiagram diagram) {
         Wrapper<?> w = null;
         switch (this) {
-            case STATIONS:
+            case NODES:
                 if (oid instanceof Node) {
                     w = new NodeWrapper((Node)oid);
                 }

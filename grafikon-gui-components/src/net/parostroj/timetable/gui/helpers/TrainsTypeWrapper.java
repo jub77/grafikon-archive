@@ -31,6 +31,10 @@ public class TrainsTypeWrapper extends Wrapper<TrainType> {
 
     @Override
     public String toString() {
-        return getElement().getDesc();
+        return toString(getElement());
+    }
+
+    public static String toString(TrainType type) {
+        return type.getDesc();
     }
 }

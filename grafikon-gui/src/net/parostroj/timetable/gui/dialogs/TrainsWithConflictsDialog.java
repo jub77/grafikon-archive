@@ -67,7 +67,7 @@ public class TrainsWithConflictsDialog extends javax.swing.JDialog implements Ap
     }
     
     private void updateSelectedTrain(Train train) {
-        Train listT = (((TrainWrapper)trainsList.getSelectedValue()) != null) ? ((TrainWrapper)trainsList.getSelectedValue()).getTrain() : null;
+        Train listT = (((TrainWrapper)trainsList.getSelectedValue()) != null) ? ((TrainWrapper)trainsList.getSelectedValue()).getElement() : null;
         if (train == listT)
             return;
         else if (train == null) {
@@ -162,7 +162,7 @@ public class TrainsWithConflictsDialog extends javax.swing.JDialog implements Ap
         if (!evt.getValueIsAdjusting()) {
             TrainWrapper wrapper = (TrainWrapper)trainsList.getSelectedValue();
             if (wrapper != null) {
-                Train train = wrapper.getTrain();
+                Train train = wrapper.getElement();
                 if (train != model.getSelectedTrain()) {
                     model.setSelectedTrain(train);
                 }

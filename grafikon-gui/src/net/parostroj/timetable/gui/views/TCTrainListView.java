@@ -446,7 +446,7 @@ private void addButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIR
     for (Object objectSelected : selectedValues) {
         TrainWrapper selected = (TrainWrapper) objectSelected;
         if (selected != null) {
-            Train t = selected.getTrain();
+            Train t = selected.getElement();
             TrainsCycle cycle = delegate.getSelectedCycle(model);
             if (cycle != null) {
                 TrainsCycleItem item = null;

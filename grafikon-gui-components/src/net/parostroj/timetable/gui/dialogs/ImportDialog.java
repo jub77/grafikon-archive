@@ -5,19 +5,29 @@
  */
 package net.parostroj.timetable.gui.dialogs;
 
+import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import javax.swing.DefaultListModel;
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.ListModel;
+import net.parostroj.timetable.gui.helpers.NodeWrapper;
+import net.parostroj.timetable.gui.helpers.TrainWrapper;
+import net.parostroj.timetable.gui.helpers.TrainsTypeWrapper;
 import net.parostroj.timetable.gui.helpers.Wrapper;
 import net.parostroj.timetable.gui.utils.ResourceLoader;
+import net.parostroj.timetable.model.Node;
+import net.parostroj.timetable.model.ObjectWithId;
+import net.parostroj.timetable.model.Train;
 import net.parostroj.timetable.model.TrainDiagram;
+import net.parostroj.timetable.model.TrainType;
 
-
-    /**
+/**
  * Export/Import dialog.
  *
  * @author jub
@@ -29,26 +39,7 @@ public class ImportDialog extends javax.swing.JDialog {
     private static final ListModel EMPTY_LIST_MODEL = new DefaultListModel();
 
     private Map<ImportComponents, Set<Object>> selectedItems;
-
-    private static enum Match {
-
-        NAME("import.match.name"),
-        ID("import.match.id");
-        private String key;
-        private String text;
-
-        private Match(String key) {
-            this.key = key;
-        }
-
-        @Override
-        public String toString() {
-            if (text == null) {
-                text = ResourceLoader.getString(key);
-            }
-            return text;
-        }
-    }
+    private Set<ObjectWithId> importedObjects;
 
     /** Creates new form ExportImportDialog */
     public ImportDialog(java.awt.Frame parent, boolean modal) {
@@ -62,8 +53,8 @@ public class ImportDialog extends javax.swing.JDialog {
             componentComboBox.addItem(comps);
         }
         // initialize combobox for matching
-        matchComboBox.addItem(Match.NAME);
-        matchComboBox.addItem(Match.ID);
+        matchComboBox.addItem(ImportMatch.NAME);
+        matchComboBox.addItem(ImportMatch.ID);
     }
 
     /**
@@ -204,6 +195,52 @@ public class ImportDialog extends javax.swing.JDialog {
     }// </editor-fold>//GEN-END:initComponents
 
     private void okButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_okButtonActionPerformed
+        // import things
+        importedObjects = new HashSet<ObjectWithId>();
+        List<Object> errors = new LinkedList<Object>();
+        // trains
+        Set<Object> trains = selectedItems.get(ImportComponents.TRAINS);
+        if (trains.size() != 0) {
+            TrainImport tImport = new TrainImport(diagram, libraryDiagram, this.getImportMatch());
+            tImport.importObjects(trains);
+            importedObjects.addAll(tImport.getImportedObjects());
+            errors.addAll(tImport.getErrors());
+        }
+        // import nodes
+        Set<Object> nodes = selectedItems.get(ImportComponents.NODES);
+        if (nodes.size() != 0) {
+            NodeImport nImport = new NodeImport(diagram, libraryDiagram, this.getImportMatch());
+            nImport.importObjects(nodes);
+            importedObjects.addAll(nImport.getImportedObjects());
+            errors.addAll(nImport.getErrors());
+        }
+        // import train types
+        Set<Object> types = selectedItems.get(ImportComponents.TRAIN_TYPES);
+        if (types.size() != 0) {
+            TrainTypeImport ttImport = new TrainTypeImport(diagram, libraryDiagram, this.getImportMatch());
+            ttImport.importObjects(types);
+            importedObjects.addAll(ttImport.getImportedObjects());
+            errors.addAll(ttImport.getErrors());
+        }
+
+        // create string ...
+        if (errors.size() != 0) {
+            StringBuilder message = new StringBuilder();
+            int lineLength = 70;
+            int nextLimit = lineLength;
+            for (Object error : errors) {
+                if (message.length() != 0)
+                    message.append(", ");
+                if (nextLimit < message.length()) {
+                    message.append('\n');
+                    nextLimit += lineLength;
+                }
+                message.append(this.getText(error));
+            }
+            JOptionPane.showConfirmDialog(this, message, 
+                    ResourceLoader.getString("import.warning.title"),
+                    JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE);
+        }
         this.setVisible(false);
 }//GEN-LAST:event_okButtonActionPerformed
 
@@ -211,6 +248,7 @@ public class ImportDialog extends javax.swing.JDialog {
         this.setVisible(false);
         // release instances
         this.setTrainDiagrams(null, null);
+        this.importedObjects = Collections.emptySet();
     }//GEN-LAST:event_cancelButtonActionPerformed
 
     private void componentComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_componentComboBoxActionPerformed
@@ -268,6 +306,26 @@ public class ImportDialog extends javax.swing.JDialog {
     private void fillList(ImportComponents comps, JList list, Set<Object> set) {
         WrapperListModel model = new WrapperListModel(set, comps, libraryDiagram);
         list.setModel(model);
+    }
+
+    private ImportMatch getImportMatch() {
+        return (ImportMatch)matchComboBox.getSelectedItem();
+    }
+
+    public Set<ObjectWithId> getImportedObjects() {
+        return importedObjects;
+    }
+
+    public String getText(Object oid) {
+        if (oid instanceof Train) {
+            return TrainWrapper.toString((Train)oid, TrainWrapper.Type.NAME);
+        } else if (oid instanceof Node) {
+            return NodeWrapper.toString((Node)oid);
+        } else if (oid instanceof TrainType) {
+            return TrainsTypeWrapper.toString((TrainType)oid);
+        } else {
+            return oid.toString();
+        }
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

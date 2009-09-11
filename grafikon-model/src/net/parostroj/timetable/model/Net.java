@@ -67,6 +67,10 @@ public class Net {
     public Set<Line> getLinesOf(Node node) {
         return netDelegate.edgesOf(node);
     }
+
+    public Line getLine(Node node1, Node node2) {
+        return netDelegate.getEdge(node1, node2);
+    }
     
     public void addLine(Node from, Node to, Line line) {
         netDelegate.addEdge(from, to, line);

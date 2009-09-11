@@ -1416,7 +1416,6 @@ private void fileImportMenuItemActionPerformed(java.awt.event.ActionEvent evt) {
 
     try {
         if (retVal == JFileChooser.APPROVE_OPTION) {
-            model.setOpenedFile(xmlFileChooser.getSelectedFile());
             FileLoadSave ls = LSFileFactory.getInstance().create(xmlFileChooser.getSelectedFile());
             diagram = ls.load(xmlFileChooser.getSelectedFile());
         } else {
@@ -1446,7 +1445,26 @@ private void fileImportMenuItemActionPerformed(java.awt.event.ActionEvent evt) {
     importDialog.setTrainDiagrams(model.getDiagram(), diagram);
     importDialog.setLocationRelativeTo(this);
     importDialog.setVisible(true);
+
+    this.processImportedObjects(importDialog.getImportedObjects());
 }//GEN-LAST:event_fileImportMenuItemActionPerformed
+
+    private void processImportedObjects(Set<ObjectWithId> objects) {
+        boolean trainTypesEvent = false;
+        for (ObjectWithId o : objects) {
+            // process new trains
+            if (o instanceof Train) {
+                model.fireEvent(new ApplicationModelEvent(ApplicationModelEventType.NEW_TRAIN, model, o));
+            } else if (o instanceof Node) {
+                model.fireEvent(new ApplicationModelEvent(ApplicationModelEventType.NEW_NODE, model, o));
+            } else if (o instanceof TrainType) {
+                trainTypesEvent = true;
+            }
+        }
+        if (trainTypesEvent) {
+            model.fireEvent(new ApplicationModelEvent(ApplicationModelEventType.TRAIN_TYPES_CHANGED, model));
+        }
+    }
 
     private void setSelectedLocale() {
         if (locale == null)
