@@ -1,7 +1,9 @@
 package net.parostroj.timetable.gui.dialogs;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import net.parostroj.timetable.actions.TrainComparator;
 import net.parostroj.timetable.gui.helpers.NodeWrapper;
@@ -55,6 +57,14 @@ public enum ImportComponents {
                 break;
         }
         return map;
+    }
+
+    public List<Wrapper<?>> getListOfWrappers(Set<Object> objects, TrainDiagram diagram) {
+        List<Wrapper<?>> list = new ArrayList<Wrapper<?>>(objects.size());
+        for (Object oid : objects) {
+            list.add(this.getWrapper(oid, diagram));
+        }
+        return list;
     }
 
     public Wrapper<?> getWrapper(Object oid, TrainDiagram diagram) {

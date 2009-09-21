@@ -5,6 +5,7 @@
  */
 package net.parostroj.timetable.gui.dialogs;
 
+import net.parostroj.timetable.gui.helpers.WrapperListModel;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashSet;
@@ -304,7 +305,7 @@ public class ImportDialog extends javax.swing.JDialog {
     }
 
     private void fillList(ImportComponents comps, JList list, Set<Object> set) {
-        WrapperListModel model = new WrapperListModel(set, comps, libraryDiagram);
+        WrapperListModel model = new WrapperListModel(comps.getListOfWrappers(set, libraryDiagram), set);
         list.setModel(model);
     }
 
