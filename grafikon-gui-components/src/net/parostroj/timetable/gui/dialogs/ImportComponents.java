@@ -68,27 +68,6 @@ public enum ImportComponents {
     }
 
     public Wrapper<?> getWrapper(Object oid, TrainDiagram diagram) {
-        Wrapper<?> w = null;
-        switch (this) {
-            case NODES:
-                if (oid instanceof Node) {
-                    w = new NodeWrapper((Node)oid);
-                }
-                break;
-            case TRAINS:
-                if (oid instanceof Train) {
-                    w = new TrainWrapper(
-                            (Train) oid,
-                            TrainWrapper.Type.NAME,
-                            new TrainComparator(TrainComparator.Type.ASC, diagram.getTrainsData().getTrainSortPattern()));
-                }
-                break;
-            case TRAIN_TYPES:
-                if (oid instanceof TrainType) {
-                    w = new TrainsTypeWrapper((TrainType)oid);
-                }
-                break;
-        }
-        return w;
+        return Wrapper.getWrapper(oid, diagram);
     }
 }

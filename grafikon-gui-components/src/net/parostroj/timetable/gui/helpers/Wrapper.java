@@ -1,5 +1,13 @@
 package net.parostroj.timetable.gui.helpers;
 
+import java.util.LinkedList;
+import java.util.List;
+import net.parostroj.timetable.actions.TrainComparator;
+import net.parostroj.timetable.model.Node;
+import net.parostroj.timetable.model.Train;
+import net.parostroj.timetable.model.TrainDiagram;
+import net.parostroj.timetable.model.TrainType;
+
 /**
  * Wrapper class for lists in GUI.
  *
@@ -45,5 +53,35 @@ public class Wrapper<T> implements Comparable<Wrapper<T>> {
     @Override
     public int compareTo(Wrapper<T> o) {
         return this.toString().compareTo(o.toString());
+    }
+
+    public static Wrapper<?> getWrapper(Object o, TrainDiagram diagram) {
+        Wrapper<?> w = null;
+        if (o instanceof Node) {
+            w = new NodeWrapper((Node)o);
+        } else if (o instanceof Train) {
+            w = new TrainWrapper(
+                    (Train) o,
+                    TrainWrapper.Type.NAME,
+                    new TrainComparator(TrainComparator.Type.ASC, diagram.getTrainsData().getTrainSortPattern()));
+        } else if (o instanceof TrainType) {
+            w = new TrainsTypeWrapper((TrainType)o);
+        } else {
+            throw new IllegalArgumentException("Not supported type: " + o.getClass());
+        }
+        return w;
+    }
+
+    public static List<Wrapper<?>> getWrapperList(List<?> objList, TrainDiagram diagram) {
+        List<Wrapper<?>> list = new LinkedList<Wrapper<?>>();
+        Class<?> clazz = null;
+        for (Object o : objList) {
+            list.add(getWrapper(o, diagram));
+            if (clazz != null && !clazz.equals(o.getClass())) {
+                throw new IllegalArgumentException("All element are expected to have the same class.");
+            }
+            clazz = o.getClass();
+        }
+        return list;
     }
 }
