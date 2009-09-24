@@ -12,43 +12,43 @@ import javax.swing.AbstractListModel;
  *
  * @author jub
  */
-public class WrapperListModel extends AbstractListModel {
+public class WrapperListModel<T> extends AbstractListModel {
 
-    private Set<Object> set;
-    private List<Wrapper<?>> list;
+    private Set<T> set;
+    private List<Wrapper<T>> list;
     private boolean sorted;
 
     public WrapperListModel() {
-        list = new ArrayList<Wrapper<?>>();
+        list = new ArrayList<Wrapper<T>>();
         sorted = true;
     }
 
-    public WrapperListModel(List<Wrapper<?>> list) {
+    public WrapperListModel(List<Wrapper<T>> list) {
         this.list = list;
         this.sorted = true;
         this.sort(list);
     }
 
-    public WrapperListModel(List<Wrapper<?>> list, Set<Object> set) {
+    public WrapperListModel(List<Wrapper<T>> list, Set<T> set) {
         this.list = list;
         this.set = set;
         this.sorted = true;
         this.sort(list);
     }
 
-    public WrapperListModel(List<Wrapper<?>> list, Set<Object> set, boolean sorted) {
+    public WrapperListModel(List<Wrapper<T>> list, Set<T> set, boolean sorted) {
         this.list = list;
         this.set = set;
         this.sorted = sorted;
         this.sort(list);
     }
 
-    private void sort(List<? extends Wrapper<?>> ll) {
+    private void sort(List<? extends Wrapper<T>> ll) {
         if (sorted)
             Collections.sort(ll);
     }
 
-    public void removeWrapper(Wrapper<?> w) {
+    public void removeWrapper(Wrapper<T> w) {
         // remove from set
         if (set != null)
             set.remove(w.getElement());
@@ -60,7 +60,7 @@ public class WrapperListModel extends AbstractListModel {
         }
     }
 
-    public void addWrapper(Wrapper<?> w) {
+    public void addWrapper(Wrapper<T> w) {
         // add to set
         if (set != null)
             set.add(w.getElement());
@@ -71,26 +71,28 @@ public class WrapperListModel extends AbstractListModel {
         this.fireIntervalAdded(this, index, index);
     }
 
-    public List<Wrapper<?>> getListOfWrappers() {
+    public List<Wrapper<T>> getListOfWrappers() {
         return list;
     }
 
-    public Set<Object> getSetOfObjects() {
+    public Set<T> getSetOfObjects() {
         return set;
     }
 
     public void initializeSet() {
-        this.set = new HashSet<Object>();
-        for (Wrapper<?> w : list) {
+        this.set = new HashSet<T>();
+        for (Wrapper<T> w : list) {
             this.set.add(w.getElement());
         }
     }
 
-    public void setListOfWrappers(List<Wrapper<?>> list) {
-        this.fireIntervalRemoved(this, 0, list.size() - 1);
+    public void setListOfWrappers(List<Wrapper<T>> list) {
+        if (list.size() > 0)
+            this.fireIntervalRemoved(this, 0, list.size() - 1);
         this.list = list;
         this.set = null;
-        this.fireIntervalAdded(this, 0, list.size() - 1);
+        if (list.size() > 0)
+            this.fireIntervalAdded(this, 0, list.size() - 1);
     }
 
     @Override

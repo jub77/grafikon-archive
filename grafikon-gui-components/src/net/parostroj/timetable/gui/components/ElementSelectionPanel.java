@@ -15,24 +15,24 @@ import net.parostroj.timetable.gui.helpers.WrapperListModel;
  *
  * @author jub
  */
-public class ElementSelectionPanel extends javax.swing.JPanel {
+public class ElementSelectionPanel<T> extends javax.swing.JPanel {
 
-    private WrapperListModel leftListModel;
-    private WrapperListModel rightListModel;
+    private WrapperListModel<T> leftListModel;
+    private WrapperListModel<T> rightListModel;
 
     /** Creates new form ElementSelectionPanel */
     public ElementSelectionPanel() {
-        leftListModel = new WrapperListModel();
-        rightListModel = new WrapperListModel();
+        leftListModel = new WrapperListModel<T>();
+        rightListModel = new WrapperListModel<T>();
         initComponents();
     }
 
-    public void setListForSelection(List<Wrapper<?>> list) {
+    public void setListForSelection(List<Wrapper<T>> list) {
         leftListModel.setListOfWrappers(list);
-        rightListModel.setListOfWrappers(new ArrayList<Wrapper<?>>());
+        rightListModel.setListOfWrappers(new ArrayList<Wrapper<T>>());
     }
 
-    public List<Wrapper<?>> getSelectedList() {
+    public List<Wrapper<T>> getSelectedList() {
         return rightListModel.getListOfWrappers();
     }
 
@@ -83,7 +83,7 @@ public class ElementSelectionPanel extends javax.swing.JPanel {
                     .addComponent(moveRightButton)
                     .addComponent(moveLeftButton))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(scrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addComponent(scrollPane2))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -97,11 +97,12 @@ public class ElementSelectionPanel extends javax.swing.JPanel {
         );
     }// </editor-fold>//GEN-END:initComponents
 
+    @SuppressWarnings("unchecked")
     private void moveLeftButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_moveLeftButtonActionPerformed
         // get selected elements and move them
         Object[] values = rightList.getSelectedValues();
         for (Object o : values) {
-            if (o instanceof Wrapper) {
+            if (o instanceof Wrapper<?>) {
                 Wrapper w = (Wrapper)o;
                 rightListModel.removeWrapper(w);
                 leftListModel.addWrapper(w);
@@ -109,6 +110,7 @@ public class ElementSelectionPanel extends javax.swing.JPanel {
         }
     }//GEN-LAST:event_moveLeftButtonActionPerformed
 
+    @SuppressWarnings("unchecked")
     private void moveRightButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_moveRightButtonActionPerformed
         // get selected elements and move them
         Object[] values = leftList.getSelectedValues();

@@ -16,7 +16,7 @@ import net.parostroj.timetable.model.TrainDiagram;
  *
  * @author jub
  */
-public class ElementSelectionDialog extends javax.swing.JDialog {
+public class ElementSelectionDialog<T> extends javax.swing.JDialog {
 
     private boolean ok = false;
 
@@ -34,7 +34,7 @@ public class ElementSelectionDialog extends javax.swing.JDialog {
      * @param diagram diagram
      * @return list of selected elements
      */
-    public List<?> selectElements(List<?> elements, TrainDiagram diagram) {
+    public List<T> selectElements(List<T> elements, TrainDiagram diagram) {
         elementSelectionPanel.setListForSelection(Wrapper.getWrapperList(elements, diagram));
         setVisible(true);
         if (ok)
@@ -44,9 +44,9 @@ public class ElementSelectionDialog extends javax.swing.JDialog {
         }
     }
 
-    private List<?> getElements(List<Wrapper<?>> wList) {
-        List<Object> elements = new LinkedList<Object>();
-        for (Wrapper w : wList) {
+    private List<T> getElements(List<Wrapper<T>> wList) {
+        List<T> elements = new LinkedList<T>();
+        for (Wrapper<T> w : wList) {
             elements.add(w.getElement());
         }
         return elements;
@@ -61,11 +61,11 @@ public class ElementSelectionDialog extends javax.swing.JDialog {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        elementSelectionPanel = new net.parostroj.timetable.gui.components.ElementSelectionPanel();
+        elementSelectionPanel = new net.parostroj.timetable.gui.components.ElementSelectionPanel<T>();
         cancelButton = new javax.swing.JButton();
         okButton = new javax.swing.JButton();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
 
         cancelButton.setText(ResourceLoader.getString("button.cancel")); // NOI18N
         cancelButton.addActionListener(new java.awt.event.ActionListener() {
@@ -122,7 +122,7 @@ public class ElementSelectionDialog extends javax.swing.JDialog {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton cancelButton;
-    private net.parostroj.timetable.gui.components.ElementSelectionPanel elementSelectionPanel;
+    private net.parostroj.timetable.gui.components.ElementSelectionPanel<T> elementSelectionPanel;
     private javax.swing.JButton okButton;
     // End of variables declaration//GEN-END:variables
 

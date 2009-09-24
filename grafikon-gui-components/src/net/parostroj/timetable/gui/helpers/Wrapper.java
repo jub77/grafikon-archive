@@ -7,6 +7,7 @@ import net.parostroj.timetable.model.Node;
 import net.parostroj.timetable.model.Train;
 import net.parostroj.timetable.model.TrainDiagram;
 import net.parostroj.timetable.model.TrainType;
+import net.parostroj.timetable.model.TrainsCycle;
 
 /**
  * Wrapper class for lists in GUI.
@@ -55,27 +56,30 @@ public class Wrapper<T> implements Comparable<Wrapper<T>> {
         return this.toString().compareTo(o.toString());
     }
 
-    public static Wrapper<?> getWrapper(Object o, TrainDiagram diagram) {
-        Wrapper<?> w = null;
+    @SuppressWarnings("unchecked")
+    public static <T> Wrapper<T> getWrapper(T o, TrainDiagram diagram) {
+        Wrapper<T> w = null;
         if (o instanceof Node) {
-            w = new NodeWrapper((Node)o);
+            w = (Wrapper)new NodeWrapper((Node)o);
         } else if (o instanceof Train) {
-            w = new TrainWrapper(
+            w = (Wrapper)new TrainWrapper(
                     (Train) o,
                     TrainWrapper.Type.NAME,
                     new TrainComparator(TrainComparator.Type.ASC, diagram.getTrainsData().getTrainSortPattern()));
         } else if (o instanceof TrainType) {
-            w = new TrainsTypeWrapper((TrainType)o);
+            w = (Wrapper)new TrainsTypeWrapper((TrainType)o);
+        } else if (o instanceof TrainsCycle) {
+            w = (Wrapper)new TrainsCycleWrapper((TrainsCycle)o);
         } else {
             throw new IllegalArgumentException("Not supported type: " + o.getClass());
         }
         return w;
     }
 
-    public static List<Wrapper<?>> getWrapperList(List<?> objList, TrainDiagram diagram) {
-        List<Wrapper<?>> list = new LinkedList<Wrapper<?>>();
+    public static <T> List<Wrapper<T>> getWrapperList(List<T> objList, TrainDiagram diagram) {
+        List<Wrapper<T>> list = new LinkedList<Wrapper<T>>();
         Class<?> clazz = null;
-        for (Object o : objList) {
+        for (T o : objList) {
             list.add(getWrapper(o, diagram));
             if (clazz != null && !clazz.equals(o.getClass())) {
                 throw new IllegalArgumentException("All element are expected to have the same class.");

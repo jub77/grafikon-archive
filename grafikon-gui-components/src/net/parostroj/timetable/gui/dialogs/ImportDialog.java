@@ -257,6 +257,7 @@ public class ImportDialog extends javax.swing.JDialog {
         this.updateDialog();
     }//GEN-LAST:event_componentComboBoxActionPerformed
 
+    @SuppressWarnings("unchecked")
     private void removeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeButtonActionPerformed
         // add object to selected
         WrapperListModel left = (WrapperListModel)componentsList.getModel();
@@ -271,6 +272,7 @@ public class ImportDialog extends javax.swing.JDialog {
         }
     }//GEN-LAST:event_removeButtonActionPerformed
 
+    @SuppressWarnings("unchecked")
     private void addButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addButtonActionPerformed
         // remove object from selected
         WrapperListModel left = (WrapperListModel)componentsList.getModel();
@@ -304,6 +306,7 @@ public class ImportDialog extends javax.swing.JDialog {
         fillList(comps, selectedComponentsList, sel);
     }
 
+    @SuppressWarnings("unchecked")
     private void fillList(ImportComponents comps, JList list, Set<Object> set) {
         WrapperListModel model = new WrapperListModel(comps.getListOfWrappers(set, libraryDiagram), set);
         list.setModel(model);
