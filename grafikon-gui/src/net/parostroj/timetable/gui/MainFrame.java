@@ -143,8 +143,21 @@ public class MainFrame extends javax.swing.JFrame implements ApplicationModelLis
         return null;
     }
 
-    /** Creates new form MainFrame */
+    public MainFrame(SplashScreenInfo info) {
+        ResourceBundle bundle = ResourceBundle.getBundle("grafikon_version");
+        String version = bundle.getString("grafikon.version");
+        info.setText("Starting build " + version + " ...");
+        this.initializeFrame();
+    }
+
     public MainFrame() {
+        this.initializeFrame();
+    }
+
+    /**
+     * initializes frame.
+     */
+    private void initializeFrame() {
         // set local before anything else
         String loadedLocale = null;
         try {
@@ -1453,7 +1466,7 @@ private void ecListSelectMenuItemActionPerformed(java.awt.event.ActionEvent evt)
 private void nodeTimetableListSelectMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nodeTimetableListSelectMenuItemActionPerformed
     ElementSelectionDialog<Node> selDialog = new ElementSelectionDialog<Node>(this, true);
     selDialog.setLocationRelativeTo(this);
-    List<Node> selection = selDialog.selectElements(new ArrayList(model.getDiagram().getNet().getNodes()), model.getDiagram());
+    List<Node> selection = selDialog.selectElements(new ArrayList<Node>(model.getDiagram().getNet().getNodes()), model.getDiagram());
     if (selection != null) {
         final NodeTimetablesList list = new NodeTimetablesList(selection, model.getDiagram());
         this.nodeTimetablesList(list);

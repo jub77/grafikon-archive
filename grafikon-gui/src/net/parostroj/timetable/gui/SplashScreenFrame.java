@@ -2,6 +2,7 @@ package net.parostroj.timetable.gui;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.MediaTracker;
@@ -88,6 +89,7 @@ class ImagePanel extends JPanel {
         super.paint(g);
         g.drawImage(image, 0, 0, null);
         if (text != null) {
+            g.setFont(g.getFont().deriveFont(12.0f).deriveFont(Font.BOLD));
             g.setColor(Color.BLACK);
             LOG.finest(String.format("Text %d,%d,%s", x, y, text));
             g.drawString(text, x, y);

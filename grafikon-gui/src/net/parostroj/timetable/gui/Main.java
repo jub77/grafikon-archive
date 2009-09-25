@@ -32,7 +32,7 @@ public class Main {
 
     public static void main(String[] args) throws Exception {
         UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-        ApplicationStarter starter = new ApplicationStarter(MainFrame.class, 310, 110, Main.class.getResource("/images/splashscreen.png"));
+        ApplicationStarter starter = new ApplicationStarter(MainFrame.class, 296, 112, Main.class.getResource("/images/splashscreen.png"));
         starter.start();
     }
 }

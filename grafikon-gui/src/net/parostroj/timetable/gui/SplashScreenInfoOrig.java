@@ -3,6 +3,7 @@ package net.parostroj.timetable.gui;
 import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.SplashScreen;
 
@@ -29,6 +30,7 @@ public class SplashScreenInfoOrig implements SplashScreenInfo {
         g.setComposite(AlphaComposite.Clear);
         g.fillRect(0, 0, size.width, size.height);
         g.setPaintMode();
+        g.setFont(g.getFont().deriveFont(12.0f).deriveFont(Font.BOLD));
         g.setColor(Color.BLACK);
         g.drawString(text, x, y);
         splash.update();
