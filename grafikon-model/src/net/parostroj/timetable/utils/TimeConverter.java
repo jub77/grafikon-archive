@@ -1,6 +1,7 @@
 package net.parostroj.timetable.utils;
 
 import java.util.Formatter;
+import net.parostroj.timetable.model.TimeInterval;
 
 /**
  * Utility class for converting time from text to int and backwards.
@@ -8,9 +9,6 @@ import java.util.Formatter;
  * @author jub
  */
 public class TimeConverter {
-
-    private static final int DAY = 24 * 3600;
-
     /**
      * adjusts time to show sensible output.
      * 
@@ -18,13 +16,41 @@ public class TimeConverter {
      * @return adjusted time
      */
     private static int adjustTimeForOutput(int time) {
-        if (time < 0)
-            time += DAY;
-        else if (time >= DAY)
-            time -= DAY;
+        while (time < 0 || time >= TimeInterval.DAY) {
+            if (time < 0)
+                time += TimeInterval.DAY;
+            else if (time >= TimeInterval.DAY)
+                time -= TimeInterval.DAY;
+        }
         return time;
     }
 
+    /**
+     * adjusts time between 0:00 and 23:59.
+     *
+     * @param time time
+     * @return normalized time
+     */
+    public static int normalizeTime(int time) {
+        return adjustTimeForOutput(time);
+    }
+
+    /**
+     * returns if the time is normalized.
+     *
+     * @param time time
+     * @return normalized?
+     */
+    public static boolean isNormalizedTime(int time) {
+        return time >= 0 && time < TimeInterval.DAY;
+    }
+
+    /**
+     * adjusts time for rounding -> 1s - 20s down, 20s - 59s up.
+     *
+     * @param time time
+     * @return adjusted time
+     */
     private static int adjustTimeForRounding(int time) {
         return time + 20;
     }
@@ -207,19 +233,27 @@ public class TimeConverter {
                     break;
             }
         }
-        
+
+        int time = -1;
         // convert to time
         switch (size) {
             case 1:
-                return values[0] * 3600;
+                time = values[0] * 3600;
+                break;
             case 2:
-                return (values[0] * 10 + values[1]) * 3600;
+                time = (values[0] * 10 + values[1]) * 3600;
+                break;
             case 3:
-                return (values[0] * 3600) + (values[1] * 10 + values[2]) * 60;
+                time = (values[0] * 3600) + (values[1] * 10 + values[2]) * 60;
+                break;
             case 4:
-                return (values[0] * 10 + values[1]) * 3600 + (values[2] * 10 + values[3]) * 60;
-            default:
-                return -1;
+                time = (values[0] * 10 + values[1]) * 3600 + (values[2] * 10 + values[3]) * 60;
+                break;
         }
+        // normalize time before return
+        if (time == -1)
+            return -1;
+        else
+            return normalizeTime(time);
     }
 }
