@@ -61,7 +61,7 @@ public class TimeIntervalList extends ArrayList<TimeInterval> {
     }
 
     /**
-     * adds time interval to the list.
+     * adds time interval to the list. It uses normalized times for sorting.
      *
      * @param interval time interval do be added
      */
@@ -76,7 +76,7 @@ public class TimeIntervalList extends ArrayList<TimeInterval> {
         
         int i = 0;
         for (TimeInterval item : this) {
-            if (item.compareOpen(interval) == -1) {
+            if (item.compareOpenNormalized(interval) == -1) {
                 this.add(i, interval);
                 return;
             }
@@ -87,13 +87,14 @@ public class TimeIntervalList extends ArrayList<TimeInterval> {
 
     /**
      * adds time interval to the list. It doesn't check overlapping intervals.
+     * It uses normalized times for sorting.
      *
      * @param interval time interval do be added
      */
     public void addIntervalForRouteSegmentWithoutCheck(TimeInterval interval) {
         int i = 0;
         for (TimeInterval item : this) {
-            if (item.compareOpen(interval) == -1) {
+            if (item.compareOpenNormalized(interval) == -1) {
                 this.add(i, interval);
                 return;
             }
@@ -102,10 +103,10 @@ public class TimeIntervalList extends ArrayList<TimeInterval> {
         this.add(interval);
     }
     
-    public void addIntervalByStartTime(TimeInterval interval) {
-        int i=0;
+    public void addIntervalByNormalizedStartTime(TimeInterval interval) {
+        int i = 0;
         for (TimeInterval item : this) {
-            if (item.getStart() >= interval.getStart()) {
+            if (item.getInterval().getNormalizedStart() >= interval.getInterval().getNormalizedStart()) {
                 this.add(i,interval);
                 return;
             }
@@ -153,7 +154,7 @@ public class TimeIntervalList extends ArrayList<TimeInterval> {
      */
     public TimeIntervalResult testIntervalForRouteSegment(TimeInterval interval) {
         for (TimeInterval item : this) {
-            if (item.compareOpen(interval) == 0 && !item.equals(interval)) {
+            if (item.compareOpenNormalized(interval) == 0 && !item.equals(interval)) {
                 return new TimeIntervalResult(TimeIntervalResult.Status.OVERLAPPING);
             }
         }
@@ -171,7 +172,7 @@ public class TimeIntervalList extends ArrayList<TimeInterval> {
         TimeIntervalResult.Status status = TimeIntervalResult.Status.OK;
 
         for (TimeInterval item : this) {
-            if (item.compareOpen(interval) == 0 && !item.equals(interval)) {
+            if (item.compareOpenNormalized(interval) == 0 && !item.equals(interval)) {
                 if (status == TimeIntervalResult.Status.OK) {
                     status = TimeIntervalResult.Status.OVERLAPPING;
                     overlaps = new HashSet<TimeInterval>();

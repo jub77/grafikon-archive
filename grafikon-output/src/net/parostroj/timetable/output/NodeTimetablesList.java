@@ -91,7 +91,7 @@ public class NodeTimetablesList {
         TimeIntervalList list = new TimeIntervalList();
         for (NodeTrack track : node.getTracks()) {
             for (TimeInterval i : track.getTimeIntervalList()) {
-                list.addIntervalByStartTime(i);
+                list.addIntervalByNormalizedStartTime(i);
             }
         }
         return list;
