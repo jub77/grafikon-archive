@@ -137,12 +137,13 @@ public class TimeInterval implements AttributesHolder, ObjectWithId {
     }
 
     /**
-     * compares intervals for route part. Open/unbounded interval.
+     * compares intervals for route part. Open/unbounded interval. It uses
+     * normalized intervals.
      *
      * @param o interval
      * @return comparison
      */
-    public int compareOpen(TimeInterval o) {
+    public int compareOpenNormalized(TimeInterval o) {
         List<Interval> ints = this.getInterval().computeNormalizedIntervalsAll();
         List<Interval> oInts = o.getInterval().computeNormalizedIntervalsAll();
         for (Interval i : ints) {
@@ -157,12 +158,13 @@ public class TimeInterval implements AttributesHolder, ObjectWithId {
     }
 
     /**
-     * compares intervals for trains. Closed/bounded interval.
+     * compares intervals for trains. Closed/bounded interval. It uses
+     * normalized intervals.
      *
      * @param o interval
      * @return comparison
      */
-    public int compareClosed(TimeInterval o) {
+    public int compareClosedNormalized(TimeInterval o) {
         List<Interval> ints = this.getInterval().computeNormalizedIntervalsAll();
         List<Interval> oInts = o.getInterval().computeNormalizedIntervalsAll();
         for (Interval i : ints) {
