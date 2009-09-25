@@ -76,7 +76,7 @@ public class TimeIntervalList extends ArrayList<TimeInterval> {
         
         int i = 0;
         for (TimeInterval item : this) {
-            if (item.compareToForRoutePart(interval) == -1) {
+            if (item.compareOpen(interval) == -1) {
                 this.add(i, interval);
                 return;
             }
@@ -93,7 +93,7 @@ public class TimeIntervalList extends ArrayList<TimeInterval> {
     public void addIntervalForRouteSegmentWithoutCheck(TimeInterval interval) {
         int i = 0;
         for (TimeInterval item : this) {
-            if (item.compareToForRoutePart(interval) == -1) {
+            if (item.compareOpen(interval) == -1) {
                 this.add(i, interval);
                 return;
             }
@@ -153,7 +153,7 @@ public class TimeIntervalList extends ArrayList<TimeInterval> {
      */
     public TimeIntervalResult testIntervalForRouteSegment(TimeInterval interval) {
         for (TimeInterval item : this) {
-            if (item.compareToForRoutePart(interval) == 0 && !item.equals(interval)) {
+            if (item.compareOpen(interval) == 0 && !item.equals(interval)) {
                 return new TimeIntervalResult(TimeIntervalResult.Status.OVERLAPPING);
             }
         }
@@ -171,7 +171,7 @@ public class TimeIntervalList extends ArrayList<TimeInterval> {
         TimeIntervalResult.Status status = TimeIntervalResult.Status.OK;
 
         for (TimeInterval item : this) {
-            if (item.compareToForRoutePart(interval) == 0 && !item.equals(interval)) {
+            if (item.compareOpen(interval) == 0 && !item.equals(interval)) {
                 if (status == TimeIntervalResult.Status.OK) {
                     status = TimeIntervalResult.Status.OVERLAPPING;
                     overlaps = new HashSet<TimeInterval>();

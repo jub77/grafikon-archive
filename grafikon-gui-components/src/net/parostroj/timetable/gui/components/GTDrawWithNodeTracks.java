@@ -3,7 +3,9 @@ package net.parostroj.timetable.gui.components;
 import java.awt.*;
 import java.awt.geom.Line2D;
 import java.util.*;
+import java.util.List;
 import net.parostroj.timetable.model.*;
+import net.parostroj.timetable.model.Interval;
 
 /**
  * Graphical timetable with node tracks.
@@ -25,7 +27,7 @@ public class GTDrawWithNodeTracks extends GTDraw {
     
     private static final int TRACK_GAP = 5;
 
-    private Map<NodeTrack,Integer> trackPositions;
+    private Map<Track,Integer> trackPositions;
     
     public GTDrawWithNodeTracks(int borderX, int borderY, int gapStationX, Dimension size, Route route, GraphicalTimetableView.TrainColors colors,TrainColorChooser chooser, HighlightedTrains hTrains, TrainRegionCollector collector) {
         super(borderX, borderY, gapStationX, size,route,colors,chooser,hTrains,collector);
@@ -35,7 +37,7 @@ public class GTDrawWithNodeTracks extends GTDraw {
     protected void computePositions() {
         positions = new HashMap<Node, Integer>();
         
-        trackPositions = new HashMap<NodeTrack, Integer>();
+        trackPositions = new HashMap<Track, Integer>();
         
         stations = new LinkedList<Node>();
         
@@ -113,9 +115,9 @@ public class GTDrawWithNodeTracks extends GTDraw {
     }
 
     @Override
-    protected Line2D createTrainLine(TimeInterval interval, double timeStep) {
-        int x1 = (int)(start.x + interval.getStart() * timeStep);
-        int x2 = (int)(start.x + interval.getEnd() * timeStep);
+    protected Line2D createTrainLine(TimeInterval interval, Interval i, double timeStep) {
+        int x1 = (int)(start.x + i.getStart() * timeStep);
+        int x2 = (int)(start.x + i.getEnd() * timeStep);
         int y1 = start.y + trackPositions.get(interval.getTrain().getIntervalBefore(interval).getTrack());
         int y2 = start.y + trackPositions.get(interval.getTrain().getIntervalAfter(interval).getTrack());
 
@@ -128,9 +130,6 @@ public class GTDrawWithNodeTracks extends GTDraw {
             for (TimeInterval interval : nodeTrack.getTimeIntervalList()) {
                 if (interval.getType().isTechnological() && preferences.get(GTDrawPreference.TECHNOLOGICAL_TIME) != Boolean.TRUE)
                     continue;
-                int y = start.y + trackPositions.get(interval.getTrack());
-                int x1 = (int)(start.x + interval.getStart() * timeStep);
-                int x2 = (int)(start.x + interval.getEnd() * timeStep);
                 if (interval.getType() == TimeIntervalType.NODE_STOP || interval.getType() == TimeIntervalType.NODE_THROUGH) {
                     g.setStroke(TRAIN_STROKE);
                 } else if (interval.getType().isTechnological()) {
@@ -139,8 +138,26 @@ public class GTDrawWithNodeTracks extends GTDraw {
                     g.setStroke(TRAIN_SS_STROKE);
                 }
                 g.setColor(this.getIntervalColor(interval));
-                g.drawLine(x1, y, x2, y);
+
+                List<Interval> inters  = interval.getInterval().computeNormalizedIntervals();
+                if (inters == null) {
+                    Line2D line = this.createTrainLineInStation(interval, interval.getInterval(), timeStep);
+                    g.draw(line);
+                } else {
+                    for (Interval i : inters) {
+                        Line2D line = this.createTrainLineInStation(interval, i, timeStep);
+                        g.draw(line);
+                    }
+                }
             }
         }
+    }
+
+    private Line2D createTrainLineInStation(TimeInterval interval, Interval i, double timeStep) {
+        int y = start.y + trackPositions.get(interval.getTrack());
+        int x1 = (int)(start.x + i.getStart() * timeStep);
+        int x2 = (int)(start.x + i.getEnd() * timeStep);
+        Line2D line2D = new Line2D.Float(x1, y, x2, y);
+        return line2D;
     }
 }
