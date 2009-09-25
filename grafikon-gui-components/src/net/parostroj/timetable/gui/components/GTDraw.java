@@ -122,6 +122,9 @@ abstract public class GTDraw {
 
     public void setSize(Dimension size) {
         this.size = new Dimension(size.width - (borderX * 2 + gapStationX), size.height - borderY * 2);
+        // clear stations and positions of nodes
+        this.positions = null;
+        this.stations = null;
     }
 
     public void setBorderX(int borderX) {
