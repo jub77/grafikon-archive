@@ -41,7 +41,7 @@ public class SettingsDialog extends javax.swing.JDialog implements ApplicationMo
         this.model = model;
         this.model.addListener(this);
         
-        for (Scale scale : Scale.values()) {
+        for (Scale scale : Scale.getPredefined()) {
             scaleComboBox.addItem(scale);
         }
         
