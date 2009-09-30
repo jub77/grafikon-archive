@@ -36,7 +36,7 @@ public class NewModelDialog extends javax.swing.JDialog {
     public void setModel(ApplicationModel model) {
         this.model = model;
         
-        for (Scale scale : Scale.values()) {
+        for (Scale scale : Scale.getPredefined()) {
             scaleComboBox.addItem(scale);
         }
         
