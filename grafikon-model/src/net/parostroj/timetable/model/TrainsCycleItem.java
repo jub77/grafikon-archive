@@ -115,6 +115,7 @@ public class TrainsCycleItem {
     }
 
     public int getEndTime() {
+        // TODO normalized ??
         return this.getToInterval().getStart();
     }
 

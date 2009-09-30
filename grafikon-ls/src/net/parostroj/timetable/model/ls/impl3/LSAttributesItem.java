@@ -90,7 +90,7 @@ public class LSAttributesItem {
         } else if (type.equals("double")) {
             return Double.valueOf(value);
         } else if (type.equals("scale")) {
-            return Scale.valueOf(value);
+            return Scale.fromString(value);
         } else if (type.startsWith("model.")) {
             return this.convertModelValue(diagram);
         } else {
