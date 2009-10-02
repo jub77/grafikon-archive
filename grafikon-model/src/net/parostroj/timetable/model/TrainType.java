@@ -19,8 +19,8 @@ public class TrainType implements ObjectWithId {
     private String desc;
     /** Color for GT. */
     private Color color;
-    /** Brake type. */
-    private SpeedingBrakingType sbType;
+    /** Category. */
+    private TrainTypeCategory category;
     /** Needs platform in the station. */
     private boolean platform;
     /** Template for train name. */
@@ -112,17 +112,17 @@ public class TrainType implements ObjectWithId {
     }
 
     /**
-     * @return brake type
+     * @return category of train type
      */
-    public SpeedingBrakingType getSbType() {
-        return sbType;
+    public TrainTypeCategory getCategory() {
+        return category;
     }
 
     /**
-     * @param sbType sets brake type
+     * @param category sets category of train type
      */
-    public void setSbType(SpeedingBrakingType sbType) {
-        this.sbType = sbType;
+    public void setCategory(TrainTypeCategory category) {
+        this.category = category;
     }
 
     /**

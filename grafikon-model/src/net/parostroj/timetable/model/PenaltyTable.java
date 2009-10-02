@@ -1,6 +1,11 @@
 package net.parostroj.timetable.model;
 
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.ListIterator;
+import java.util.Map;
 
 /**
  * Penalty table.
@@ -9,73 +14,73 @@ import java.util.List;
  */
 public class PenaltyTable {
 
-    private static final double ADJUST_RATIO = 0.18d;
-    private List<PenaltyTableItem> itemList;
+    private Map<TrainTypeCategory, List<PenaltyTableRow>> rowsMap;
 
-    /**
-     * Default constructor.
-     */
     public PenaltyTable() {
+        rowsMap = new HashMap<TrainTypeCategory, List<PenaltyTableRow>>();
     }
 
-    /**
-     * @return the table
-     */
-    public List<PenaltyTableItem> getItemList() {
-        return itemList;
-    }
-
-    /**
-     * @param table the table to set
-     */
-    public void setItemList(List<PenaltyTableItem> table) {
-        this.itemList = table;
-    }
-
-    /**
-     * returns braking time penalty (in model seconds).
-     *
-     * @param type
-     * @param velocity
-     * @param timeScale
-     * @return braking time penalty
-     */
-    public int getBrakingTimePenalty(SpeedingBrakingType type, int velocity, double timeScale) {
-        PenaltyTableItem item = this.getItem(type, velocity);
-        return this.adjustByRatio(item.getBrakingPenalty(), timeScale);
-    }
-
-    /**
-     * returns speeding time penalty (in model seconds).
-     *
-     * @param type
-     * @param velocity
-     * @param timeScale
-     * @return speeding time penalty
-     */
-    public int getSpeedingTimePenalty(SpeedingBrakingType type, int velocity, double timeScale) {
-        PenaltyTableItem item = this.getItem(type, velocity);
-        return this.adjustByRatio(item.getSpeedingPenalty(), timeScale);
-    }
-
-    private PenaltyTableItem getItem(SpeedingBrakingType type, int velocity) {
-        for (PenaltyTableItem item : itemList) {
-            if (type == item.getType() && velocity >= item.getLowerLimit() && velocity < item.getUpperLimit()) {
-                return item;
+    public void addRowForCategory(TrainTypeCategory category, PenaltyTableRow row) {
+        List<PenaltyTableRow> rows = rowsMap.get(category);
+        if (rows == null) {
+            rows = new LinkedList<PenaltyTableRow>();
+            rowsMap.put(category, rows);
+        }
+        ListIterator<PenaltyTableRow> i = rows.listIterator();
+        while (i.hasNext()) {
+            PenaltyTableRow currentRow = i.next();
+            if (row.getSpeed() < currentRow.getSpeed()) {
+                i.previous();
+                i.add(row);
+                return;
             }
         }
-        throw new RuntimeException("Penalty not found.");
+        rows.add(row);
     }
 
-    private int adjustByRatio(int penalty, double timeScale) {
-        return (int) Math.round(penalty * ADJUST_RATIO * timeScale);
+    public void removeRowForSpeedAndCategory(TrainTypeCategory category, int speed) {
+        List<PenaltyTableRow> rows = rowsMap.get(category);
+        if (rows != null)
+            for (Iterator<PenaltyTableRow> i = rows.iterator(); i.hasNext();) {
+                PenaltyTableRow row = i.next();
+                if (row.getSpeed() == speed) {
+                    i.remove();
+                }
+            }
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#toString()
-     */
-    @Override
-    public String toString() {
-        return itemList.toString();
+    public void removeRowForCategory(TrainTypeCategory category, int position) {
+        List<PenaltyTableRow> rows = rowsMap.get(category);
+        if (rows != null)
+            rows.remove(position);
+    }
+
+    public PenaltyTableRow getRowForSpeedAndCategory(TrainTypeCategory category, int speed) {
+        List<PenaltyTableRow> rows = rowsMap.get(category);
+        if (rows != null) {
+            ListIterator<PenaltyTableRow> i = rows.listIterator();
+            while (i.hasNext()) {
+                PenaltyTableRow row = i.next();
+                if (speed <= row.getSpeed()) {
+                    return row;
+                }
+            }
+        }
+        // otherwise return null
+        return null;
+    }
+
+    public PenaltyTableRow getForSpeedExactAndCategory(TrainTypeCategory category, int speed) {
+        List<PenaltyTableRow> rows = rowsMap.get(category);
+        if (rows != null) {
+            ListIterator<PenaltyTableRow> i = rows.listIterator();
+            while (i.hasNext()) {
+                PenaltyTableRow row = i.next();
+                if (speed == row.getSpeed()) {
+                    return row;
+                }
+            }
+        }
+        return null;
     }
 }

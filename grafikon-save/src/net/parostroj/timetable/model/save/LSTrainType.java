@@ -3,8 +3,8 @@ package net.parostroj.timetable.model.save;
 import net.parostroj.timetable.model.TrainType;
 import java.awt.Color;
 import java.util.UUID;
+import net.parostroj.timetable.model.TrainTypeCategory;
 import net.parostroj.timetable.utils.Conversions;
-import net.parostroj.timetable.model.SpeedingBrakingType;
 
 /**
  * Train type storage class.
@@ -37,7 +37,6 @@ public class LSTrainType {
         this.platform = type.isPlatform();
         Color c = type.getColor();
         this.color = Conversions.convertColorToText(c);
-        this.braking = type.getSbType().toString();
         this.trainNameTemplate = type.getTrainNameTemplate();
         this.trainCompleteNameTemplate = type.getTrainCompleteNameTemplate();
     }
@@ -112,7 +111,7 @@ public class LSTrainType {
         type.setColor(Conversions.convertTextToColor(this.color));
         type.setDesc(this.desc);
         type.setPlatform(this.platform);
-        type.setSbType(SpeedingBrakingType.valueOf(this.braking));
+        type.setCategory(TrainTypeCategory.fromString(this.braking.toLowerCase()));
         type.setTrainNameTemplate(this.trainNameTemplate);
         type.setTrainCompleteNameTemplate(this.trainCompleteNameTemplate);
         return type;

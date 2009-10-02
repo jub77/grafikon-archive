@@ -33,6 +33,9 @@ public class TrainDiagram implements AttributesHolder, ObjectWithId {
     private TrainsData trainsData;
     /** List of engine classes. */
     private List<EngineClass> engineClasses;
+    /** Penalty table. */
+    private PenaltyTable penaltyTable;
+
     private GTListenerTrainDiagramImpl listener;
     private GTListenerSupport<TrainDiagramListener, TrainDiagramEvent> listenerSupport;
     private GTListenerSupport<TrainDiagramListenerWithNested, TrainDiagramEvent> listenerSupportAll;
@@ -47,6 +50,7 @@ public class TrainDiagram implements AttributesHolder, ObjectWithId {
         this.cycles = new EnumMap<TrainsCycleType, List<TrainsCycle>>(TrainsCycleType.class);
         this.images = new LinkedList<TimetableImage>();
         this.engineClasses = new LinkedList<EngineClass>();
+        this.penaltyTable = new PenaltyTable();
         this.net = new Net();
         this.trainTypes = new LinkedList<TrainType>();
         this.attributes = new Attributes();
@@ -289,6 +293,10 @@ public class TrainDiagram implements AttributesHolder, ObjectWithId {
 
     public void setTrainsData(TrainsData trainsData) {
         this.trainsData = trainsData;
+    }
+
+    public PenaltyTable getPenaltyTable() {
+        return penaltyTable;
     }
 
     @Override

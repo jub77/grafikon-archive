@@ -5,7 +5,7 @@ import java.awt.Color;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
-import net.parostroj.timetable.model.SpeedingBrakingType;
+import net.parostroj.timetable.model.TrainTypeCategory;
 import net.parostroj.timetable.model.TrainsData;
 import net.parostroj.timetable.utils.Conversions;
 
@@ -37,7 +37,6 @@ public class LSTrainType {
         this.platform = type.isPlatform();
         Color c = type.getColor();
         this.color = Conversions.convertColorToText(c);
-        this.braking = type.getSbType().toString();
         this.trainNameTemplate = type.getTrainNameTemplate();
         this.trainCompleteNameTemplate = type.getTrainCompleteNameTemplate();
     }
@@ -114,10 +113,14 @@ public class LSTrainType {
         type.setColor(Conversions.convertTextToColor(color));
         type.setDesc(desc);
         type.setPlatform(platform);
-        type.setSbType(SpeedingBrakingType.fromString(braking));
+        type.setCategory(this.convertToCategory(braking));
         type.setTrainCompleteNameTemplate(trainCompleteNameTemplate);
         type.setTrainNameTemplate(trainNameTemplate);
         type.setTrainsData(data);
         return type;
+    }
+
+    private TrainTypeCategory convertToCategory(String sbType) {
+        return TrainTypeCategory.fromString(sbType.toLowerCase());
     }
 }
