@@ -29,17 +29,17 @@ public class TrainTypesDialog extends javax.swing.JDialog {
     
     private TrainTypesModel typesModel;
     
-    private static enum BrakeWrapper {
+    private static enum CategoryWrapper {
         
-        PASSENGER(SpeedingBrakingType.PASSENGER,"edit.traintypes.brake.passenger"),
-        FREIGHT(SpeedingBrakingType.FREIGHT,"edit.traintypes.brake.freight");
+        PASSENGER(TrainTypeCategory.fromString("passenger"), "edit.traintypes.brake.passenger"),
+        FREIGHT(TrainTypeCategory.fromString("freight"), "edit.traintypes.brake.freight");
         
-        private SpeedingBrakingType brake;
+        private TrainTypeCategory category;
         
         private String name;
         
-        private BrakeWrapper(SpeedingBrakingType brake, String key) {
-            this.brake = brake;
+        private CategoryWrapper(TrainTypeCategory category, String key) {
+            this.category = category;
             this.name = ResourceLoader.getString(key);
         }
         
@@ -48,9 +48,9 @@ public class TrainTypesDialog extends javax.swing.JDialog {
             return name;
         }
         
-        public static BrakeWrapper getBrake(SpeedingBrakingType brake) {
-            for (BrakeWrapper w : values()) {
-                if (brake == w.brake)
+        public static CategoryWrapper getCategory(TrainTypeCategory category) {
+            for (CategoryWrapper w : values()) {
+                if (category.equals(w.category))
                     return w;
             }
             return null;
@@ -63,9 +63,9 @@ public class TrainTypesDialog extends javax.swing.JDialog {
         initComponents();
         this.setComponentsEnabled(false);
         
-        // brake values ...
-        brakeComboBox.addItem(BrakeWrapper.PASSENGER);
-        brakeComboBox.addItem(BrakeWrapper.FREIGHT);
+        // category values ...
+        brakeComboBox.addItem(CategoryWrapper.PASSENGER);
+        brakeComboBox.addItem(CategoryWrapper.FREIGHT);
     }
     
     public void setModel(ApplicationModel model) {
@@ -302,7 +302,7 @@ public class TrainTypesDialog extends javax.swing.JDialog {
             descTextField.setText(selected.getDesc());
             colorLabel.setText(Conversions.convertColorToText(selected.getColor()));
             colorLabel.setForeground(selected.getColor());
-            brakeComboBox.setSelectedItem(BrakeWrapper.getBrake(selected.getSbType()));
+            brakeComboBox.setSelectedItem(CategoryWrapper.getCategory(selected.getCategory()));
             if (selected.getTrainNameTemplate() == null) {
                 nameTemplateCheckBox.setSelected(false);
                 nameTemplateTextField.setText(selected.getTrainsData().getTrainNameTemplate());
@@ -330,7 +330,7 @@ public class TrainTypesDialog extends javax.swing.JDialog {
             descTextField.setText("");
             colorLabel.setText("0x000000");
             colorLabel.setForeground(Color.BLACK);
-            brakeComboBox.setSelectedItem(BrakeWrapper.PASSENGER);
+            brakeComboBox.setSelectedItem(CategoryWrapper.PASSENGER);
             nameTemplateCheckBox.setSelected(false);
             nameTemplateTextField.setText(model.getDiagram().getTrainsData().getTrainNameTemplate());
             nameTemplateTextField.setEnabled(false);
@@ -379,7 +379,7 @@ public class TrainTypesDialog extends javax.swing.JDialog {
             type.setAbbr(abbr);
             type.setDesc(desc);
             type.setColor(Conversions.convertTextToColor(colorLabel.getText()));
-            type.setSbType(((BrakeWrapper)brakeComboBox.getSelectedItem()).brake);
+            type.setCategory(((CategoryWrapper)brakeComboBox.getSelectedItem()).category);
             if (nameTemplateCheckBox.isSelected()) {
                 type.setTrainNameTemplate(nameTemplateTextField.getText());
             } else {
@@ -438,7 +438,7 @@ public class TrainTypesDialog extends javax.swing.JDialog {
             type.setAbbr(abbr);
             type.setDesc(desc);
             type.setColor(Conversions.convertTextToColor(colorLabel.getText()));
-            type.setSbType(((BrakeWrapper)brakeComboBox.getSelectedItem()).brake);
+            type.setCategory(((CategoryWrapper)brakeComboBox.getSelectedItem()).category);
             if (nameTemplateCheckBox.isSelected()) {
                 type.setTrainNameTemplate(nameTemplateTextField.getText());
             }

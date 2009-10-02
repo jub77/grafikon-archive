@@ -1,15 +1,15 @@
-package net.parostroj.timetable.model;
+package net.parostroj.timetable.model.ls.impl3;
 
 /**
  * Penalty table item.
  *
  * @author jub
  */
-public class PenaltyTableItem {
+public class LSPenaltyTableItem {
 
     private int lowerLimit;
     private int upperLimit;
-    private SpeedingBrakingType type;
+    private LSSBType type;
     private int brakingPenalty;
     private int speedingPenalty;
 
@@ -58,14 +58,14 @@ public class PenaltyTableItem {
     /**
      * @return the trainType
      */
-    public SpeedingBrakingType getType() {
+    public LSSBType getType() {
         return type;
     }
 
     /**
      * @param trainType the trainType to set
      */
-    public void setType(SpeedingBrakingType trainType) {
+    public void setType(LSSBType trainType) {
         this.type = trainType;
     }
 
@@ -90,7 +90,7 @@ public class PenaltyTableItem {
      * @param brakingPenalty
      * @param speedingPenalty
      */
-    public PenaltyTableItem(int lowerLimit, int upperLimit, SpeedingBrakingType type, int brakingPenalty, int speedingPenalty) {
+    public LSPenaltyTableItem(int lowerLimit, int upperLimit, LSSBType type, int brakingPenalty, int speedingPenalty) {
         this.lowerLimit = lowerLimit;
         this.upperLimit = upperLimit;
         this.type = type;
@@ -101,7 +101,7 @@ public class PenaltyTableItem {
     /**
      * Default constructor.
      */
-    public PenaltyTableItem() {
+    public LSPenaltyTableItem() {
     }
 
     @Override

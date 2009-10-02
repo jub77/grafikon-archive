@@ -39,7 +39,7 @@ public class TrainTypeImport extends Import {
         type.setColor(importedType.getColor());
         type.setDesc(importedType.getDesc());
         type.setPlatform(importedType.isPlatform());
-        type.setSbType(importedType.getSbType());
+        type.setCategory(importedType.getCategory());
         type.setTrainCompleteNameTemplate(importedType.getTrainCompleteNameTemplate());
         type.setTrainNameTemplate(importedType.getTrainNameTemplate());
         type.setTrainsData(importedType.getTrainsData());

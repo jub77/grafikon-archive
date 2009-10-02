@@ -208,18 +208,27 @@ public class Line implements RouteSegment, AttributesHolder {
         int time = (int) Math.floor((((double) length) * scale.getRatio() * timeScale * 3.6) / (speed * 1000));
 
         // apply speeding and braking penalties
-        PenaltyTable penaltyTable = RunningTimeComputationHelper.getPenaltyTable();
+        PenaltyTable penaltyTable = diagram.getPenaltyTable();
         if (type == TimeIntervalType.LINE_THROUGH_STOP || type == TimeIntervalType.LINE_START_STOP) {
-            time = time + penaltyTable.getBrakingTimePenalty(train.getType().getSbType(), speed, timeScale);
+            PenaltyTableRow row = penaltyTable.getRowForSpeedAndCategory(train.getType().getCategory(), speed);
+            int penalty = adjustByRatio(row.getDeceleration(), timeScale);
+            time = time + penalty;
         }
         if (type == TimeIntervalType.LINE_START_THROUGH || type == TimeIntervalType.LINE_START_STOP) {
-            time = time + penaltyTable.getSpeedingTimePenalty(train.getType().getSbType(), speed, timeScale);
+            PenaltyTableRow row = penaltyTable.getRowForSpeedAndCategory(train.getType().getCategory(), speed);
+            int penalty = adjustByRatio(row.getAcceleration(), timeScale);
+            time = time + penalty;
         }
 
         // rounding to minutes (1 - 19 .. down, 20 - 59 .. up)
         time = ((time + 40) / 60) * 60;
 
         return new Pair<Integer, Integer>(time, speed);
+    }
+
+    private static final double ADJUST_RATIO = 0.18d;
+    private int adjustByRatio(int penalty, double timeScale) {
+        return (int) Math.round(penalty * ADJUST_RATIO * timeScale);
     }
 
     @Override
