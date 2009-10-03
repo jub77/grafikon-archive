@@ -5,8 +5,8 @@ import java.awt.Color;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
+import net.parostroj.timetable.model.TrainDiagram;
 import net.parostroj.timetable.model.TrainTypeCategory;
-import net.parostroj.timetable.model.TrainsData;
 import net.parostroj.timetable.utils.Conversions;
 
 /**
@@ -108,16 +108,16 @@ public class LSTrainType {
         this.trainCompleteNameTemplate = trainCompleteNameTemplate;
     }
     
-    public TrainType createTrainType(TrainsData data) {
+    public TrainType createTrainType(TrainDiagram diagram) {
         TrainType type = new TrainType(id);
         type.setAbbr(abbr);
         type.setColor(Conversions.convertTextToColor(color));
         type.setDesc(desc);
         type.setPlatform(platform);
-        type.setCategory(TrainTypeCategory.fromString(category));
+        type.setCategory(diagram.getPenaltyTable().getTrainTypeCategory(category));
         type.setTrainCompleteNameTemplate(trainCompleteNameTemplate);
         type.setTrainNameTemplate(trainNameTemplate);
-        type.setTrainsData(data);
+        type.setTrainsData(diagram.getTrainsData());
         return type;
     }
 }
