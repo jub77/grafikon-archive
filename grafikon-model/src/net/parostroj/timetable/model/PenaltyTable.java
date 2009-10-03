@@ -29,6 +29,11 @@ public class PenaltyTable implements ObjectWithId {
         }
     }
 
+    public PenaltyTable(String id) {
+        this();
+        this.id = id;
+    }
+
     public void addRowForCategory(TrainTypeCategory category, PenaltyTableRow row) {
         List<PenaltyTableRow> rows = rowsMap.get(category);
         if (rows == null) {
@@ -95,6 +100,10 @@ public class PenaltyTable implements ObjectWithId {
     @Override
     public String getId() {
         return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public TrainTypeCategory getTrainTypeCategory(String categoryString) {
