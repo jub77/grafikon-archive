@@ -299,6 +299,10 @@ public class TrainDiagram implements AttributesHolder, ObjectWithId {
         return penaltyTable;
     }
 
+    public void setPenaltyTable(PenaltyTable penaltyTable) {
+        this.penaltyTable = penaltyTable;
+    }
+
     @Override
     public String getId() {
         return id;
