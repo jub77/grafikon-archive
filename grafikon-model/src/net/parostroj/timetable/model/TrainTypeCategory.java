@@ -13,7 +13,7 @@ public class TrainTypeCategory {
     private static final List<TrainTypeCategory> predefined;
 
     static {
-        predefined = Collections.unmodifiableList(Arrays.asList(new TrainTypeCategory("passenger"), new TrainTypeCategory("freigh")));
+        predefined = Collections.unmodifiableList(Arrays.asList(new TrainTypeCategory("passenger"), new TrainTypeCategory("freight")));
     }
 
     private final String key;
@@ -58,5 +58,10 @@ public class TrainTypeCategory {
                 return item;
         }
         return new TrainTypeCategory(str);
+    }
+
+    @Override
+    public String toString() {
+        return "category<key:" + key + ">";
     }
 }

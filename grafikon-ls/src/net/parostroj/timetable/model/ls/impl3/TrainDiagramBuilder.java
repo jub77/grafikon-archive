@@ -68,7 +68,7 @@ public class TrainDiagramBuilder {
     }
     
     public void setTrainType(LSTrainType lsType) {
-        TrainType type = lsType.createTrainType(diagram.getTrainsData());
+        TrainType type = lsType.createTrainType(diagram);
         TrainType foundTrainType = null;
         if ((foundTrainType = diagram.getTrainTypeById(type.getId())) != null) {
             diagram.removeTrainType(foundTrainType);
