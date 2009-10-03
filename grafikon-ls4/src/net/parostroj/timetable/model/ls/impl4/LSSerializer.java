@@ -33,7 +33,8 @@ public class LSSerializer {
             context_i = JAXBContext.newInstance(new Class[]{
                 LSTrainDiagram.class, LSNet.class, LSRoute.class,
                 LSTrainType.class, LSTrain.class, LSTrainsCycle.class,
-                LSImage.class, LSTrainsData.class, LSEngineClass.class
+                LSImage.class, LSTrainsData.class, LSEngineClass.class,
+                LSPenaltyTable.class
             });
         }
         return context_i;
