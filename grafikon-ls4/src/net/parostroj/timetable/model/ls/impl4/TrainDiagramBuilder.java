@@ -32,6 +32,11 @@ public class TrainDiagramBuilder {
         TrainsData data = lsData.createTrainsData();
         this.diagram.setTrainsData(data);
     }
+
+    public void setPenaltyTable(LSPenaltyTable lSPenaltyTable) {
+        PenaltyTable table = lSPenaltyTable.createPenaltyTable();
+        this.diagram.setPenaltyTable(table);
+    }
     
     public void setNet(LSNet lsNet) {
         Net net = this.diagram.getNet();

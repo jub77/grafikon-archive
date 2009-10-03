@@ -22,6 +22,7 @@ public class FileLoadSaveImpl implements FileLoadSave {
     private static final String METADATA_KEY_MODEL_VERSION = "model.version";
     private static final String METADATA_MODEL_VERSION = "4.0";
     private static final String DATA_TRAIN_DIAGRAM = "train_diagram.xml";
+    private static final String DATA_PENALTY_TABLE = "penalty_table.xml";
     private static final String DATA_NET = "net.xml";
     private static final String DATA_ROUTES = "routes/";
     private static final String DATA_TRAIN_TYPES = "train_types/";
@@ -101,7 +102,9 @@ public class FileLoadSaveImpl implements FileLoadSave {
                 // test diagram
                 if (builder == null)
                     throw new LSException("Train diagram builder has to be first entry: " + entry.getName());
-                if (entry.getName().equals(DATA_NET)) {
+                if (entry.getName().equals(DATA_PENALTY_TABLE)) {
+                    builder.setPenaltyTable(lss.load(zipInput, LSPenaltyTable.class));
+                } else if (entry.getName().equals(DATA_NET)) {
                     builder.setNet(lss.load(zipInput, LSNet.class));
                 } else if (entry.getName().startsWith(DATA_ROUTES)) {
                     builder.setRoute(lss.load(zipInput, LSRoute.class));
@@ -142,6 +145,8 @@ public class FileLoadSaveImpl implements FileLoadSave {
 
             // save train diagram
             this.save(zipOutput, DATA_TRAIN_DIAGRAM, new LSTrainDiagram(diagram));
+            // save penalty table
+            this.save(zipOutput, DATA_PENALTY_TABLE, new LSPenaltyTable(diagram.getPenaltyTable()));
             // save net
             this.save(zipOutput, DATA_NET, new LSNet(diagram.getNet()));
             int cnt = 0;
