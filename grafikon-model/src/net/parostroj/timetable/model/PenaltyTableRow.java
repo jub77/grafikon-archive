@@ -7,7 +7,7 @@ package net.parostroj.timetable.model;
  */
 public class PenaltyTableRow {
 
-    public static final PenaltyTableRow EMPTY_ROW = new PenaltyTableRow(Line.UNLIMITED_SPEED, 0, 0);
+    public static final PenaltyTableRow ZERO_ROW = new PenaltyTableRow(0, 0, 0);
 
     private int speed;
     private int deceleration;

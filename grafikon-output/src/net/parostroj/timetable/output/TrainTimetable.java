@@ -72,7 +72,7 @@ public class TrainTimetable {
             if (interval.getOwner() instanceof Line) {
                 continue;
             }
-            if ((interval.getType() == TimeIntervalType.NODE_STOP || interval.getType() == TimeIntervalType.NODE_END) && Boolean.TRUE.equals(interval.getTrack().getAttribute("line.end"))) {
+            if ((interval.isLast() || interval.isInnerStop()) && Boolean.TRUE.equals(interval.getTrack().getAttribute("line.end"))) {
                 lineEnd = true;
             }
             if (Boolean.TRUE.equals(interval.getAttribute("occupied"))) {
@@ -170,7 +170,7 @@ public class TrainTimetable {
                 allRunningTime += ii.getLength();
                 continue;
             }
-            if (nodeInterval.getType() == TimeIntervalType.NODE_STOP) {
+            if (nodeInterval.isInnerStop()) {
                 stopTime = TimeConverter.convertAllMinutesToText(nodeInterval.getLength());
                 allStopTime += nodeInterval.getLength();
             } else {
@@ -188,16 +188,16 @@ public class TrainTimetable {
 
             String fromTime = "&nbsp;";
             String toTime = "&nbsp;";
-            if (nodeInterval.getType() != TimeIntervalType.NODE_START && nodeInterval.getType() != TimeIntervalType.NODE_THROUGH) {
+            if (nodeInterval.isLast() || nodeInterval.isInnerStop()) {
                 int hour = TimeConverter.getHours(nodeInterval.getStart());
-                if (lastHourFrom != hour || nodeInterval.getType() == TimeIntervalType.NODE_END) {
+                if (lastHourFrom != hour || nodeInterval.isLast()) {
                     fromTime = TimeConverter.convertFromIntToText(nodeInterval.getStart(), " ");
                     lastHourFrom = hour;
                 } else {
                     fromTime = TimeConverter.convertMinutesToText(nodeInterval.getStart());
                 }
             }
-            if (nodeInterval.getType() != TimeIntervalType.NODE_END) {
+            if (!nodeInterval.isLast()) {
                 int hour = TimeConverter.getHours(nodeInterval.getEnd());
                 if (lastHoutTo != hour) {
                     toTime = TimeConverter.convertFromIntToText(nodeInterval.getEnd(), " ");
@@ -208,8 +208,7 @@ public class TrainTimetable {
             }
 
             String stopName = TransformUtil.transformStation(node, TrainTimetablesListTemplates.getString("abbr.stop"), TrainTimetablesListTemplates.getString("abbr.stop.freight"));
-            if (nodeInterval.getType() == TimeIntervalType.NODE_START || nodeInterval.getType() == TimeIntervalType.NODE_END ||
-                    node.getType() == NodeType.STATION_BRANCH) {
+            if (nodeInterval.isBoundary() || node.getType() == NodeType.STATION_BRANCH) {
                 stopName = "<b>" + stopName + "</b>";
             }
 
@@ -247,7 +246,7 @@ public class TrainTimetable {
             }
 
             // check comment line end
-            if (nodeInterval.getType() == TimeIntervalType.NODE_STOP || nodeInterval.getType() == TimeIntervalType.NODE_END) {
+            if (nodeInterval.isLast() || nodeInterval.isInnerStop()) {
                 if (Boolean.TRUE.equals(nodeInterval.getTrack().getAttribute("line.end"))) {
                     note += "&Delta;";
                     this.addComment(new Pair<String, String>("&Delta;", TrainTimetablesListTemplates.getString("entry.line.end")));
@@ -320,7 +319,7 @@ public class TrainTimetable {
             // compute maximal length
             List<Integer> lengths = new LinkedList<Integer>();
             for (TimeInterval interval : train.getTimeIntervalList()) {
-                if (interval.isNodeOwner() && interval.getType().isStop() && TrainsHelper.shouldCheckLength(interval.getOwnerAsNode(), train))
+                if (interval.isNodeOwner() && interval.isStop() && TrainsHelper.shouldCheckLength(interval.getOwnerAsNode(), train))
                     lengths.add((Integer)interval.getOwnerAsNode().getAttribute("length"));
             }
             // check if all lengths are set and choose the minimum

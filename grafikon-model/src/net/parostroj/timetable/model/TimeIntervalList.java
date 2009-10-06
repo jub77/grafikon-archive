@@ -31,21 +31,6 @@ public class TimeIntervalList extends ArrayList<TimeInterval> {
         return null;
     }
     
-    /**
-     * returns time interval for specifed route part. It the time interval
-     * doesn't exist, it returns <code>null</code>.
-     * 
-     * @param owner route part
-     * @return searched time interval
-     */
-    public TimeInterval getTimeInterval(RouteSegment owner) {
-        for (TimeInterval interval : this) {
-            if (interval.getOwner() == owner)
-                return interval;
-        }
-        return null;
-    }
-    
     public TimeInterval getIntervalBefore(TimeInterval i) {
         int ind = this.indexOf(i);
         if (ind < 1)
@@ -69,7 +54,7 @@ public class TimeIntervalList extends ArrayList<TimeInterval> {
         // update overlapping intervals
         interval.setOverlappingIntervals(this.testIntervalForRouteSegmentOI(interval).getOverlappingIntervals());
         
-        // update overlapping intervals in coresponding time intervals
+        // update overlapping intervals in corresponding time intervals
         for (TimeInterval item : interval.getOverlappingIntervals()) {
             item.getOverlappingIntervals().add(interval);
         }
@@ -192,13 +177,7 @@ public class TimeIntervalList extends ArrayList<TimeInterval> {
      * @param attached if the train is in attached state
      */
     public void shift(int timeShift, boolean attached) {
-        for (TimeInterval item : this) {
-            if (attached)
-                item.getOwner().removeTimeInterval(item);
-            item.shift(timeShift);
-            if (attached)
-                item.getOwner().addTimeInterval(item);
-        }
+        this.shiftFrom(0, timeShift, attached);
     }
     
     /**
@@ -209,8 +188,105 @@ public class TimeIntervalList extends ArrayList<TimeInterval> {
      * @param attached if the train is in attached state
      */
     public void move(int time, boolean attached) {
-        TimeInterval first = this.get(0);
-        int shift = time - first.getEnd();
-        this.shift(shift, attached);
+        this.moveFrom(0, time, attached);
+    }
+
+    public void moveFrom(int index, int time, boolean attached) {
+        TimeInterval interval = this.get(index);
+        int shift = time - interval.getStart();
+        this.shiftFrom(index, shift, attached);
+    }
+
+    public void shiftFrom(int index, int timeShift, boolean attached) {
+        ListIterator<TimeInterval> i = this.listIterator(index);
+        while (i.hasNext()) {
+            TimeInterval item = i.next();
+            if (attached)
+                item.getOwner().removeTimeInterval(item);
+            item.shift(timeShift);
+            if (attached)
+                item.getOwner().addTimeInterval(item);
+        }
+    }
+
+    public void shiftFrom(TimeInterval interval, int timeShift, boolean attached) {
+        int i = this.indexOf(interval);
+        if (i == -1)
+            throw new IllegalArgumentException("Interval is not part of the list.");
+        this.shiftFrom(i, timeShift, attached);
+    }
+
+    public int computeFromSpeed(TimeInterval interval) {
+        if (!interval.isLineOwner())
+            throw new IllegalArgumentException("Cannot find speed for node.");
+        int i = this.indexOf(interval);
+        if (i == -1)
+            throw new IllegalArgumentException("Interval is not part of the list.");
+        return this.computeFromSpeed(interval, i);
+    }
+
+    public int computeToSpeed(TimeInterval interval) {
+        if (!interval.isLineOwner())
+            throw new IllegalArgumentException("Cannot find speed for node.");
+        int i = this.indexOf(interval);
+        if (i == -1)
+            throw new IllegalArgumentException("Interval is not part of the list.");
+        return this.computeToSpeed(interval, i);
+    }
+
+    public int computeFromSpeed(TimeInterval interval, int i) {
+        // previous node is stop - first node or node has not null time
+        if ((i - 1) == 0 || this.get(i - 1).getLength() != 0)
+            return 0;
+        else {
+            // check speed of previous line
+            return this.get(i - 2).getSpeed();
+        }
+    }
+
+    public int computeToSpeed(TimeInterval interval, int i) {
+        // next node is stop - last node or node has not null time
+        if ((i + 1) == (this.size() - 1) || this.get(i + 1).getLength() != 0)
+            return 0;
+        else {
+            // check speed of previous line
+            return this.get(i + 2).getSpeed();
+        }
+    }
+
+    public void updateInterval(TimeInterval interval, boolean attached, TrainDiagram diagram) {
+        int i = this.indexOf(interval);
+        if (i == -1)
+            throw new IllegalArgumentException("Interval is not part of the list.");
+        this.updateInterval(interval, i, attached, diagram);
+    }
+
+    public void updateInterval(TimeInterval interval, int i, boolean attached, TrainDiagram diagram) {
+        if (interval.isNodeOwner()) {
+            this.updateNodeInterval(interval, i, attached, diagram);
+        } else {
+            this.updateLineInterval(interval, i, attached, diagram);
+        }
+    }
+
+    public void updateNodeInterval(TimeInterval interval, int i, boolean attached, TrainDiagram diagram) {
+        if (attached)
+            interval.removeFromOwner();
+        // nothing to do
+        if (attached)
+            interval.addToOwner();
+    }
+
+    public void updateLineInterval(TimeInterval interval, int i, boolean attached, TrainDiagram diagram) {
+        if (attached)
+            interval.removeFromOwner();
+        // compute running time
+        int runnningTime = interval.getOwnerAsLine().computeRunningTime(
+                interval.getTrain(), interval.getSpeed(), diagram,
+                this.computeFromSpeed(interval, i),
+                this.computeToSpeed(interval, i));
+        interval.setLength(runnningTime);
+        if (attached)
+            interval.addToOwner();
     }
 }

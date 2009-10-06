@@ -69,6 +69,10 @@ public class PenaltyTable implements ObjectWithId {
     }
 
     public PenaltyTableRow getRowForSpeedAndCategory(TrainTypeCategory category, int speed) {
+        // zero row is special case
+        if (speed == 0)
+            return PenaltyTableRow.ZERO_ROW;
+        // other rows
         List<PenaltyTableRow> rows = rowsMap.get(category);
         if (rows != null) {
             ListIterator<PenaltyTableRow> i = rows.listIterator();

@@ -1306,7 +1306,7 @@ private void recalculateStopsMenuItemActionPerformed(java.awt.event.ActionEvent 
             for (Train train : model.getDiagram().getTrains()) {
                 // convert stops ...
                 for (TimeInterval interval : train.getTimeIntervalList()) {
-                    if (interval.getType() == TimeIntervalType.NODE_STOP) {
+                    if (interval.isInnerStop()) {
                         // recalculate time ...
                         int time = interval.getLength();
                         time = this.convertTime(time, ratio);

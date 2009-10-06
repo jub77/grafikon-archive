@@ -128,11 +128,11 @@ public class GTDrawWithNodeTracks extends GTDraw {
     private void paintTrainsInStation(Node station, Graphics2D g, double timeStep) {
         for (NodeTrack nodeTrack : station.getTracks()) {
             for (TimeInterval interval : nodeTrack.getTimeIntervalList()) {
-                if (interval.getType().isTechnological() && preferences.get(GTDrawPreference.TECHNOLOGICAL_TIME) != Boolean.TRUE)
+                if (interval.isTechnological() && preferences.get(GTDrawPreference.TECHNOLOGICAL_TIME) != Boolean.TRUE)
                     continue;
-                if (interval.getType() == TimeIntervalType.NODE_STOP || interval.getType() == TimeIntervalType.NODE_THROUGH) {
+                if (interval.isInnerStop()) {
                     g.setStroke(TRAIN_STROKE);
-                } else if (interval.getType().isTechnological()) {
+                } else if (interval.isTechnological()) {
                     g.setStroke(TECH_TIME_STROKE);
                 } else {
                     g.setStroke(TRAIN_SS_STROKE);

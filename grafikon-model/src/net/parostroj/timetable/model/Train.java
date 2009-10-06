@@ -13,6 +13,9 @@ import net.parostroj.timetable.utils.*;
  */
 public class Train implements AttributesHolder, ObjectWithId {
 
+    /** No top speed constant. */
+    public static final int NO_TOP_SPEED = 0;
+
     /** ID. */
     private final String id;
     /** Train number. */
@@ -25,8 +28,6 @@ public class Train implements AttributesHolder, ObjectWithId {
     private TimeIntervalList timeIntervalList;
     /** Top speed (comment - 0 .. no speed defined (speed should be determined by train type)). */
     private int topSpeed = NO_TOP_SPEED;
-    /** No top speed constant. */
-    public static final int NO_TOP_SPEED = 0;
     /** Cycles. */
     private Map<TrainsCycleType, List<TrainsCycleItem>> cycles;
     /* Attributes of the train. */
@@ -413,7 +414,7 @@ public class Train implements AttributesHolder, ObjectWithId {
             TimeInterval firstInterval = this.getFirstInterval();
             timeBefore = new TimeInterval(IdGenerator.getInstance().getId(), this, firstInterval.getOwner(),
                     firstInterval.getStart() - length, firstInterval.getStart() - 1,
-                    TimeIntervalType.TIME_BEFORE, firstInterval.getTrack());
+                    firstInterval.getTrack());
             if (isAttached())
                 timeBefore.addToOwner();
         } else if (length != 0 && timeBefore != null) {
@@ -442,7 +443,7 @@ public class Train implements AttributesHolder, ObjectWithId {
             TimeInterval lastInterval = this.getLastInterval();
             timeAfter = new TimeInterval(IdGenerator.getInstance().getId(), this, lastInterval.getOwner(),
                     lastInterval.getEnd() + 1, lastInterval.getEnd() + length,
-                    TimeIntervalType.TIME_AFTER, lastInterval.getTrack());
+                    lastInterval.getTrack());
             if (isAttached())
                 timeAfter.addToOwner();
         } else if (length != 0 && timeAfter != null) {
@@ -518,6 +519,21 @@ public class Train implements AttributesHolder, ObjectWithId {
         this.listenerSupport.fireEvent(new TrainEvent(this, TrainEvent.Type.TIME_INTERVAL_LIST));
     }
 
+    private void removeFromOwner(TimeInterval interval) {
+        if (isAttached())
+            interval.removeFromOwner();
+    }
+
+    private void addToOwner(TimeInterval interval) {
+        if (isAttached())
+            interval.addToOwner();
+    }
+
+    private void removeFromAddToOwner(TimeInterval interval) {
+        removeFromOwner(interval);
+        addToOwner(interval);
+    }
+
     /**
      * changes time for stop for specified node.
      * 
@@ -528,56 +544,31 @@ public class Train implements AttributesHolder, ObjectWithId {
     public void changeStopTime(TimeInterval nodeInterval, int length, TrainDiagram diagram) {
         // check time
         if (length < 0) {
-            throw new IllegalArgumentException("Stop time cannot be negative.");        // change stop time and move others
+            throw new IllegalArgumentException("Stop time cannot be negative.");
         }
-        int nextStart = timeIntervalList.get(0).getStart();
-        boolean changed = false;
-        for (TimeInterval interval : timeIntervalList) {
-            if ((timeIntervalList.getIntervalAfter(interval) == nodeInterval) && (length == 0) && (interval.getType().isNextStop())) {
-                // change type of interval
-                interval.setLength(((Line) interval.getOwner()).computeRunningTime(this, interval.getSpeed(), diagram, interval.getType().changeToNextThrough()).first);
-                interval.setType(interval.getType().changeToNextThrough());
-                changed = true;
-            }
-            if ((timeIntervalList.getIntervalAfter(interval) == nodeInterval) && (length != 0) && (!interval.getType().isNextStop())) {
-                // change type of interval
-                interval.setLength(((Line) interval.getOwner()).computeRunningTime(this, interval.getSpeed(), diagram, interval.getType().changeToNextStop()).first);
-                interval.setType(interval.getType().changeToNextStop());
-                changed = true;
-            }
-            if ((timeIntervalList.getIntervalBefore(interval) == nodeInterval) && (length == 0) && (interval.getType().isPreviousStop())) {
-                // change type of interval
-                interval.setLength(((Line) interval.getOwner()).computeRunningTime(this, interval.getSpeed(), diagram, interval.getType().changeToPreviousThrough()).first);
-                interval.setType(interval.getType().changeToPreviousThrough());
-                changed = true;
-            }
-            if ((timeIntervalList.getIntervalBefore(interval) == nodeInterval) && (length != 0) && (!interval.getType().isPreviousStop())) {
-                // change type of interval
-                interval.setLength(((Line) interval.getOwner()).computeRunningTime(this, interval.getSpeed(), diagram, interval.getType().changeToPreviousStop()).first);
-                interval.setType(interval.getType().changeToPreviousStop());
-                changed = true;
-            }
+        if (length == nodeInterval.getLength())
+            return;
+        int index = timeIntervalList.indexOf(nodeInterval);
+        if (index == -1 || index == 0 || index == (timeIntervalList.size() - 1)
+                || !nodeInterval.isNodeOwner())
+            throw new IllegalArgumentException("Cannot change interval.");
 
-            if (interval == nodeInterval) {
-                if (length == 0) {
-                    interval.setType(TimeIntervalType.NODE_THROUGH);
-                } else {
-                    interval.setType(TimeIntervalType.NODE_STOP);
-                }
-                interval.setLength(length);
-                changed = true;
-            }
-            if (changed || interval.getStart() != nextStart) {
-                if (isAttached())
-                    interval.removeFromOwner();
-                interval.move(nextStart);
-                if (isAttached())
-                    interval.addToOwner();
-            }
+        // change stop time
+        nodeInterval.setLength(length);
 
-            changed = false;
-            nextStart = interval.getEnd();
-        }
+        TimeInterval lineInterval = null;
+        // compute running time of line before
+        lineInterval = timeIntervalList.get(index - 1);
+        timeIntervalList.updateLineInterval(lineInterval, index - 1, isAttached(), diagram);
+        // move time
+        nodeInterval.move(lineInterval.getEnd());
+        timeIntervalList.updateNodeInterval(lineInterval, index, isAttached(), diagram);
+        // compute running time of line after
+        lineInterval = timeIntervalList.get(index + 1);
+        lineInterval.move(nodeInterval.getEnd());
+        timeIntervalList.updateLineInterval(lineInterval, index + 1, isAttached(), diagram);
+        // move rest
+        timeIntervalList.moveFrom(index + 2, lineInterval.getEnd(), isAttached());
         this.updateTechnologicalTimes();
         this.listenerSupport.fireEvent(new TrainEvent(this, TrainEvent.Type.TIME_INTERVAL_LIST));
     }
@@ -590,35 +581,41 @@ public class Train implements AttributesHolder, ObjectWithId {
      * @param modelInfo model info
      */
     public void changeVelocity(TimeInterval lineInterval, int velocity, TrainDiagram diagram) {
-        // change velocity
-        boolean moveNext = false;
-        int shift = 0;
-        for (TimeInterval interval : timeIntervalList) {
-            if (moveNext) {
-                if (isAttached())
-                    interval.removeFromOwner();
-                interval.shift(shift);
-                if (isAttached())
-                    interval.addToOwner();
-            }
+        int index = timeIntervalList.indexOf(lineInterval);
+        if (index == -1 || !lineInterval.isLineOwner())
+            throw new IllegalArgumentException("Cannot change interval.");
 
-            if (lineInterval == interval) {
-                // compute new speed
-                Pair<Integer, Integer> c = lineInterval.getOwnerAsLine().computeRunningTime(this, velocity, diagram, interval.getType());
-                if (c.second == interval.getSpeed()) // do nothing
-                {
-                    break;
-                }
-                shift = c.first - interval.getLength();
-                if (isAttached())
-                    interval.removeFromOwner();
-                interval.setLength(c.first);
-                interval.setSpeed(c.second);
-                if (isAttached())
-                    interval.addToOwner();
-                moveNext = true;
-            }
+        int speed = lineInterval.getOwnerAsLine().computeSpeed(this, velocity);
+        lineInterval.setSpeed(speed);
+
+        // line interval before (if there is not stop ...)
+        if (index - 2 >= 0 && timeIntervalList.get(index - 1).getLength() == 0) {
+            TimeInterval lti = timeIntervalList.get(index - 2);
+            timeIntervalList.updateLineInterval(lti, index - 2, isAttached(), diagram);
+            TimeInterval nti = timeIntervalList.get(index - 1);
+            nti.move(lti.getEnd());
+            timeIntervalList.updateNodeInterval(nti, index - 1, isAttached(), diagram);
+            lineInterval.move(nti.getEnd());
         }
+
+        // change line interval
+        timeIntervalList.updateLineInterval(lineInterval, index, isAttached(), diagram);
+
+        // change intervals after (if there is no stop ...)
+        if (index + 2 < timeIntervalList.size() && timeIntervalList.get(index + 1).getLength() == 0) {
+            TimeInterval nti = timeIntervalList.get(index + 1);
+            nti.move(lineInterval.getEnd());
+            timeIntervalList.updateNodeInterval(nti, index + 1, isAttached(), diagram);
+            TimeInterval lti = timeIntervalList.get(index + 2);
+            lti.move(nti.getEnd());
+            timeIntervalList.updateLineInterval(lti, index + 2, isAttached(), diagram);
+            // move rest
+            timeIntervalList.moveFrom(index + 3, lti.getEnd(), isAttached());
+        } else {
+            // move rest
+            timeIntervalList.moveFrom(index + 1, lineInterval.getEnd(), isAttached());
+        }
+
         this.updateTechnologicalTimes();
         this.listenerSupport.fireEvent(new TrainEvent(this, TrainEvent.Type.TIME_INTERVAL_LIST));
     }
@@ -669,37 +666,25 @@ public class Train implements AttributesHolder, ObjectWithId {
      * @param info model info
      */
     public void recalculate(TrainDiagram diagram) {
-        TimeInterval s = timeIntervalList.get(1);
-        if (s.getType() == TimeIntervalType.LINE_THROUGH) {
-            s.setType(TimeIntervalType.LINE_START_THROUGH);
-        }
-        s = timeIntervalList.get(timeIntervalList.size() - 2);
-        if (s.getType() == TimeIntervalType.LINE_THROUGH) {
-            s.setType(TimeIntervalType.LINE_THROUGH_STOP);
-        }
-        if (s.getType() == TimeIntervalType.LINE_START_THROUGH) {
-            s.setType(TimeIntervalType.LINE_START_STOP);
-        }
-        // recalculate whole train
-        int nextStart = timeIntervalList.get(0).getStart();
-        boolean changed = false;
+        int nextStart = this.getStartTime();
         for (TimeInterval interval : timeIntervalList) {
             if (interval.getOwner() instanceof Line) {
                 Line line = (Line) interval.getOwner();
-                // compute new speed
-                Pair<Integer, Integer> c = line.computeRunningTime(this, interval.getSpeed(), diagram, interval.getType());
-                interval.setLength(c.first);
-                interval.setSpeed(c.second);
-                changed = true;
+                // compute speed
+                int speed = line.computeSpeed(this, interval.getSpeed());
+                // compute new time
+                int runningTime = line.computeRunningTime(
+                        this, speed, diagram,
+                        timeIntervalList.computeFromSpeed(interval),
+                        timeIntervalList.computeToSpeed(interval));
+                interval.setLength(runningTime);
+                interval.setSpeed(speed);
             }
-            if (changed || nextStart != interval.getStart()) {
-                if (isAttached())
-                    interval.removeFromOwner();
-                interval.move(nextStart);
-                if (isAttached())
-                    interval.addToOwner();
-                changed = false;
-            }
+
+            this.removeFromOwner(interval);
+            interval.move(nextStart);
+            this.addToOwner(interval);
+
             nextStart = interval.getEnd();
         }
         this.updateTechnologicalTimes();

@@ -69,13 +69,13 @@ public class TrainEngineWeightRows {
                     startNode = item.first.getOwnerAsNode();
                 else {
                     boolean process = false;
-                    if (item.first.getType() == TimeIntervalType.NODE_END)
+                    if (item.first.isLast())
                         process = true;
                     else {
                         Pair<TimeInterval, Pair<Integer, TrainsCycleItem>> itemNext = list.get(i + 1);
                         if (cycle != null && !cycle.equals(itemNext.second.second.getCycle()))
                             process = true;
-                        if (weight != null && item.first.getType().isStop() && item.first.getOwnerAsNode().getType().isStation())
+                        if (weight != null && item.first.isStop() && item.first.getOwnerAsNode().getType().isStation())
                             process = true;
                     }
                     if (process) {
