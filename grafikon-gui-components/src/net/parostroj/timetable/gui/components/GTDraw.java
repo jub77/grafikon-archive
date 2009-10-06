@@ -330,9 +330,9 @@ abstract public class GTDraw {
     }
     
     protected void paintMinutesOnLine(Graphics2D g, TimeInterval interval, Line2D line) {
-        // check if I should draw endd time
+        // check if I should draw end time
         boolean endTime = true;
-        if (interval.getType() == TimeIntervalType.LINE_START_THROUGH || interval.getType() == TimeIntervalType.LINE_THROUGH) {
+        if (!interval.getNextTrainInterval().isStop()) {
             Train train = interval.getTrain();
             int ind = train.getTimeIntervalList().indexOf(interval);
             if ((ind + 2) < train.getTimeIntervalList().size()) {

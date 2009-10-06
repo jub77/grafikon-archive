@@ -234,7 +234,7 @@ public class TrainsHelper {
                 } else if (pairI.first.isNodeOwner()) {
                     retNode = pairI.first.getOwnerAsNode();
                     // next stop found
-                    if (pairI.first.getType().isStop() && retNode.getType() == NodeType.STATION_BRANCH)
+                    if (pairI.first.isStop() && retNode.getType() == NodeType.STATION_BRANCH)
                         break;
                 }
             }
@@ -286,7 +286,7 @@ public class TrainsHelper {
         while (i.hasNext()) {
             TimeInterval interval = i.next();
             if (interval.isNodeOwner()) {
-                if (interval.getType().isStop()) {
+                if (interval.isStop()) {
                     if (shouldCheckLength(interval.getOwnerAsNode(), train))
                         length = updateWithStationLength(interval.getOwnerAsNode(), length);
                     if (interval.getOwnerAsNode().getType() == NodeType.STATION_BRANCH)

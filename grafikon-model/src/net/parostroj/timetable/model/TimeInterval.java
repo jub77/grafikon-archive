@@ -26,8 +26,6 @@ public class TimeInterval implements AttributesHolder, ObjectWithId {
     private int speed = NO_SPEED;
     /** Attributes. */
     private Attributes attributes;
-    /** Time interval type. */
-    private TimeIntervalType type;
     /** For tests - overlapping time intervals. */
     private Set<TimeInterval> overlappingIntervals;
     /** No speed constant. */
@@ -45,14 +43,12 @@ public class TimeInterval implements AttributesHolder, ObjectWithId {
      * @param end end time
      * @param speed speed for line time interval
      * @param direction direction of the line time interval
-     * @param type type of the interval
      * @param track track
      */
-    public TimeInterval(String id, Train train, RouteSegment owner, int start, int end, int speed, TimeIntervalDirection direction, TimeIntervalType type, Track track) {
+    public TimeInterval(String id, Train train, RouteSegment owner, int start, int end, int speed, TimeIntervalDirection direction, Track track) {
         this.train = train;
         this.setOwner(owner);
         this.interval = new Interval(start, end);
-        this.type = type;
         this.speed = speed;
         this.direction = direction;
         this.track = track;
@@ -68,11 +64,10 @@ public class TimeInterval implements AttributesHolder, ObjectWithId {
      * @param owner time interval owner
      * @param start start time
      * @param end end time
-     * @param type type of the interval
      * @param track track
      */
-    public TimeInterval(String id, Train train, RouteSegment owner, int start, int end, TimeIntervalType type, Track track) {
-        this(id, train, owner, start, end, NO_SPEED, null, type, track);
+    public TimeInterval(String id, Train train, RouteSegment owner, int start, int end, Track track) {
+        this(id, train, owner, start, end, NO_SPEED, null, track);
     }
 
     /**
@@ -83,7 +78,7 @@ public class TimeInterval implements AttributesHolder, ObjectWithId {
     public TimeInterval(String id, TimeInterval interval) {
         this(id, interval.getTrain(), interval.getOwner(), interval.getStart(),
                 interval.getEnd(), interval.getSpeed(), interval.getDirection(),
-                interval.getType(), interval.getTrack());
+                interval.getTrack());
         this.setAttributes(new Attributes(interval.getAttributes()));
     }
 
@@ -198,20 +193,6 @@ public class TimeInterval implements AttributesHolder, ObjectWithId {
     }
 
     /**
-     * @return the type
-     */
-    public TimeIntervalType getType() {
-        return type;
-    }
-
-    /**
-     * @param type the type to set
-     */
-    public void setType(TimeIntervalType type) {
-        this.type = type;
-    }
-
-    /**
      * @return the track
      */
     public Track getTrack() {
@@ -253,7 +234,7 @@ public class TimeInterval implements AttributesHolder, ObjectWithId {
      * @return <code>false</code> if there is no platform for train that needs one (in any other case it returns <code>true</code>)
      */
     public boolean isPlatformOk() {
-        if (type == TimeIntervalType.NODE_END || type == TimeIntervalType.NODE_START || type == TimeIntervalType.NODE_STOP) {
+        if (this.isStop()) {
             return !(train.getType().isPlatform() && !((NodeTrack) track).isPlatform());
         } else {
             // otherwise ok
@@ -397,6 +378,38 @@ public class TimeInterval implements AttributesHolder, ObjectWithId {
     
     public Line getOwnerAsLine() {
         return isLineOwner() ? (Line)owner : null;
+    }
+
+    public boolean isTechnological() {
+        return train.getTimeIntervalBefore() == this || train.getTimeIntervalAfter() == this;
+    }
+
+    public boolean isStop() {
+        return isInnerStop() || isFirst() || isLast();
+    }
+
+    public boolean isInnerStop() {
+        return isNodeOwner() && getLength() != 0;
+    }
+
+    public boolean isFirst() {
+        return train.getFirstInterval() == this;
+    }
+
+    public boolean isLast() {
+        return train.getLastInterval() == this;
+    }
+
+    public boolean isBoundary() {
+        return isFirst() || isLast();
+    }
+
+    public TimeInterval getNextTrainInterval() {
+        return train.getIntervalAfter(this);
+    }
+
+    public TimeInterval getPreviousTrainInterval() {
+        return train.getIntervalBefore(this);
     }
 
     @Override

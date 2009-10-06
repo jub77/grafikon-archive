@@ -48,7 +48,8 @@ public class LSPenaltyTableHelper {
     public static void fillPenaltyTable(PenaltyTable pTable) {
         for (LSPenaltyTableItem item : getLSPenaltyTable().getItemList()) {
             TrainTypeCategory cat = TrainTypeCategory.fromString(item.getType().toString().toLowerCase());
-            pTable.addRowForCategory(cat, new PenaltyTableRow(item.getUpperLimit(), item.getSpeedingPenalty(), item.getBrakingPenalty()));
+            // upper limit decreased by one - backward compatibility with new implementation
+            pTable.addRowForCategory(cat, new PenaltyTableRow(item.getUpperLimit() - 1, item.getSpeedingPenalty(), item.getBrakingPenalty()));
         }
     }
 }

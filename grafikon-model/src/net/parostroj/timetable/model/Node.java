@@ -89,18 +89,16 @@ public class Node implements RouteSegment, AttributesHolder, ObjectWithId {
         return id;
     }
 
-    public TimeInterval createTimeInterval(String intervalId, Train train, int start, TrainDiagram diagram, TimeIntervalType type, int defaultStop) {
-        int end = start + this.computeStopTime(train, diagram, type, defaultStop);
-
-        boolean stop = type == TimeIntervalType.NODE_END || type == TimeIntervalType.NODE_START || type == TimeIntervalType.NODE_STOP;
+    public TimeInterval createTimeInterval(String intervalId, Train train, int start, TrainDiagram diagram, int stop) {
+        int end = start + stop;
 
         NodeTrack selectedTrack = null;
-        TimeInterval interval = new TimeInterval(null, train, this, start, end, type, null);
+        TimeInterval interval = new TimeInterval(null, train, this, start, end, null);
 
         // check which platform is free for adding
         for (NodeTrack nodeTrack : tracks) {
             // skip station tracks with no platform
-            if (stop && train.getType().isPlatform() && !nodeTrack.isPlatform()) {
+            if (stop !=0 && train.getType().isPlatform() && !nodeTrack.isPlatform()) {
                 continue;
             }
             TimeIntervalResult result = nodeTrack.testTimeInterval(interval);
@@ -115,7 +113,7 @@ public class Node implements RouteSegment, AttributesHolder, ObjectWithId {
             selectedTrack = tracks.get(0);
         }
 
-        return new TimeInterval(intervalId, train, this, start, end, type, selectedTrack);
+        return new TimeInterval(intervalId, train, this, start, end, selectedTrack);
     }
 
     /**
@@ -150,23 +148,6 @@ public class Node implements RouteSegment, AttributesHolder, ObjectWithId {
         }
         tracks.clear();
         this.listenerSupport.fireEvent(new NodeEvent(this, NodeEvent.Type.TRACK_REMOVED));
-    }
-
-    /**
-     * computes stop time for specified train.
-     *
-     * @param train train
-     * @param data model info
-     * @param type time interval type
-     * @param defaultStop default stop time
-     * @return stop time
-     */
-    private int computeStopTime(Train train, TrainDiagram diagram, TimeIntervalType type, int defaultStop) {
-        if (type == TimeIntervalType.NODE_STOP) {
-            return defaultStop;
-        } else {
-            return 0;
-        }
     }
 
     public String getName() {
