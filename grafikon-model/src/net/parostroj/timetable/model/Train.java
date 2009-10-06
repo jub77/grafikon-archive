@@ -667,25 +667,22 @@ public class Train implements AttributesHolder, ObjectWithId {
      */
     public void recalculate(TrainDiagram diagram) {
         int nextStart = this.getStartTime();
+        int i = 0;
         for (TimeInterval interval : timeIntervalList) {
-            if (interval.getOwner() instanceof Line) {
+            interval.move(nextStart);
+            if (interval.isLineOwner()) {
                 Line line = (Line) interval.getOwner();
                 // compute speed
                 int speed = line.computeSpeed(this, interval.getSpeed());
-                // compute new time
-                int runningTime = line.computeRunningTime(
-                        this, speed, diagram,
-                        timeIntervalList.computeFromSpeed(interval),
-                        timeIntervalList.computeToSpeed(interval));
-                interval.setLength(runningTime);
                 interval.setSpeed(speed);
+
+                timeIntervalList.updateLineInterval(interval, i, isAttached(), diagram);
+            } else {
+                timeIntervalList.updateNodeInterval(interval, i, isAttached(), diagram);
             }
 
-            this.removeFromOwner(interval);
-            interval.move(nextStart);
-            this.addToOwner(interval);
-
             nextStart = interval.getEnd();
+            i++;
         }
         this.updateTechnologicalTimes();
         this.listenerSupport.fireEvent(new TrainEvent(this, TrainEvent.Type.TIME_INTERVAL_LIST));
