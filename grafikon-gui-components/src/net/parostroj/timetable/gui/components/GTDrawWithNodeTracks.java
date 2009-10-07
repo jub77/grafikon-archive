@@ -130,7 +130,7 @@ public class GTDrawWithNodeTracks extends GTDraw {
             for (TimeInterval interval : nodeTrack.getTimeIntervalList()) {
                 if (interval.isTechnological() && preferences.get(GTDrawPreference.TECHNOLOGICAL_TIME) != Boolean.TRUE)
                     continue;
-                if (interval.isInnerStop()) {
+                if (!interval.isBoundary()) {
                     g.setStroke(TRAIN_STROKE);
                 } else if (interval.isTechnological()) {
                     g.setStroke(TECH_TIME_STROKE);
