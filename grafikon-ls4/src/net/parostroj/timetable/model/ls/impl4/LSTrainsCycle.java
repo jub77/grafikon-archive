@@ -13,7 +13,7 @@ import net.parostroj.timetable.model.*;
  * 
  * @author jub
  */
-@XmlRootElement(name = "trainsCycle")
+@XmlRootElement(name = "trains_cycle")
 @XmlType(propOrder = {"id", "name", "description", "type", "attributes", "items"})
 public class LSTrainsCycle {
 

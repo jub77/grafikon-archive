@@ -96,6 +96,7 @@ public class LSTrain {
         this.number = number;
     }
 
+    @XmlElement(name = "top_speed")
     public int getTopSpeed() {
         return topSpeed;
     }
@@ -112,6 +113,7 @@ public class LSTrain {
         this.type = type;
     }
 
+    @XmlElement(name = "time_after")
     public int getTimeAfter() {
         return timeAfter;
     }
@@ -120,6 +122,7 @@ public class LSTrain {
         this.timeAfter = timeAfter;
     }
 
+    @XmlElement(name = "time_before")
     public int getTimeBefore() {
         return timeBefore;
     }

@@ -1,9 +1,6 @@
 package net.parostroj.timetable.model;
 
 import java.awt.Color;
-import java.util.HashMap;
-import java.util.Map;
-import org.mvel2.templates.TemplateRuntime;
 
 /**
  * Train type.
@@ -24,9 +21,9 @@ public class TrainType implements ObjectWithId {
     /** Needs platform in the station. */
     private boolean platform;
     /** Template for train name. */
-    private String trainNameTemplate;
+    private TextTemplate trainNameTemplate;
     /** Template for complete train name. */
-    private String trainCompleteNameTemplate;
+    private TextTemplate trainCompleteNameTemplate;
     /** Reference to trains data. */
     private TrainsData trainsData;
     
@@ -128,28 +125,28 @@ public class TrainType implements ObjectWithId {
     /**
      * @return train's name template
      */
-    public String getTrainNameTemplate() {
+    public TextTemplate getTrainNameTemplate() {
         return trainNameTemplate;
     }
 
     /**
      * @param trainNameTemplate sets train's name template
      */
-    public void setTrainNameTemplate(String trainNameTemplate) {
+    public void setTrainNameTemplate(TextTemplate trainNameTemplate) {
         this.trainNameTemplate = trainNameTemplate;
     }
 
     /**
      * @return train's complete name template
      */
-    public String getTrainCompleteNameTemplate() {
+    public TextTemplate getTrainCompleteNameTemplate() {
         return trainCompleteNameTemplate;
     }
 
     /**
      * @param trainCompleteNameTemplate sets template with complete train's name
      */
-    public void setTrainCompleteNameTemplate(String trainCompleteNameTemplate) {
+    public void setTrainCompleteNameTemplate(TextTemplate trainCompleteNameTemplate) {
         this.trainCompleteNameTemplate = trainCompleteNameTemplate;
     }
 
@@ -160,10 +157,10 @@ public class TrainType implements ObjectWithId {
      * @return formatted train's name
      */
     public String formatTrainName(Train train) {
-        String template = (trainNameTemplate == null) ?
+        TextTemplate template = (trainNameTemplate == null) ?
             trainsData.getTrainNameTemplate() :
             trainNameTemplate;
-        return (String)TemplateRuntime.eval(template, this.createVariablesForTemplate(train));
+        return template.evaluate(train, train.createTemplateBinding());
     }
 
     /**
@@ -173,17 +170,10 @@ public class TrainType implements ObjectWithId {
      * @return formatted complete train's name
      */
     public String formatTrainCompleteName(Train train) {
-        String template = (trainCompleteNameTemplate == null) ?
+        TextTemplate template = (trainCompleteNameTemplate == null) ?
             trainsData.getTrainCompleteNameTemplate() :
             trainCompleteNameTemplate;
-        return (String)TemplateRuntime.eval(template, this.createVariablesForTemplate(train));
-    }
-    
-    private Map<String,Object> createVariablesForTemplate(Train train) {
-        Map<String,Object> variables = new HashMap<String, Object>();
-        variables.put("train", train);
-        variables.put("type", this);
-        return variables;
+        return template.evaluate(train, train.createTemplateBinding());
     }
     
     @Override

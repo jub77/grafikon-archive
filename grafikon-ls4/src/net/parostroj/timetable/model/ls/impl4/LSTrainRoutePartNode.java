@@ -1,5 +1,6 @@
 package net.parostroj.timetable.model.ls.impl4;
 
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 import net.parostroj.timetable.model.TimeInterval;
 
@@ -28,6 +29,7 @@ public class LSTrainRoutePartNode {
         this.attributes = new LSAttributes(interval.getAttributes());
     }
 
+    @XmlElement(name = "node_id")
     public String getNodeId() {
         return nodeId;
     }
@@ -44,6 +46,7 @@ public class LSTrainRoutePartNode {
         this.stop = stop;
     }
 
+    @XmlElement(name = "track_id")
     public String getTrackId() {
         return trackId;
     }
@@ -52,6 +55,7 @@ public class LSTrainRoutePartNode {
         this.trackId = trackId;
     }
 
+    @XmlElement(name = "interval_id")
     public String getIntervalId() {
         return intervalId;
     }

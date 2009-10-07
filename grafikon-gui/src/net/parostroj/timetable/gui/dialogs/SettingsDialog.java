@@ -68,9 +68,9 @@ public class SettingsDialog extends javax.swing.JDialog implements ApplicationMo
             } else {
                 sortComboBox.setSelectedIndex(1);
             }
-            completeNameTemplateTextField.setText(trainsData.getTrainCompleteNameTemplate());
+            completeNameTemplateTextField.setText(trainsData.getTrainCompleteNameTemplate().getTemplate());
             completeNameTemplateTextField.setCaretPosition(0);
-            nameTemplateTextField.setText(trainsData.getTrainNameTemplate());
+            nameTemplateTextField.setText(trainsData.getTrainNameTemplate().getTemplate());
             nameTemplateTextField.setCaretPosition(0);
 
             // set crossing time in minutes
@@ -354,8 +354,8 @@ public class SettingsDialog extends javax.swing.JDialog implements ApplicationMo
         model.getDiagram().setAttribute("time.scale", sp);
         
         // set templates
-        trainsData.setTrainCompleteNameTemplate(completeName);
-        trainsData.setTrainNameTemplate(name);
+        trainsData.setTrainCompleteNameTemplate(TextTemplate.createTextTemplate(completeName, Language.MVEL));
+        trainsData.setTrainNameTemplate(TextTemplate.createTextTemplate(name, Language.MVEL));
         
         // set sorting
         SortPattern sPattern = null;

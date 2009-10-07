@@ -6,7 +6,6 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 import net.parostroj.timetable.model.TrainDiagram;
-import net.parostroj.timetable.model.TrainTypeCategory;
 import net.parostroj.timetable.utils.Conversions;
 
 /**
@@ -24,8 +23,8 @@ public class LSTrainType {
     private String color;
     private String category;
     private boolean platform;
-    private String trainNameTemplate;
-    private String trainCompleteNameTemplate;
+    private LSTextTemplate trainNameTemplate;
+    private LSTextTemplate trainCompleteNameTemplate;
 
     public LSTrainType() {
     }
@@ -38,8 +37,10 @@ public class LSTrainType {
         Color c = type.getColor();
         this.color = Conversions.convertColorToText(c);
         this.category = type.getCategory().getKey();
-        this.trainNameTemplate = type.getTrainNameTemplate();
-        this.trainCompleteNameTemplate = type.getTrainCompleteNameTemplate();
+        this.trainNameTemplate = type.getTrainNameTemplate() != null ?
+            new LSTextTemplate(type.getTrainNameTemplate()) : null;
+        this.trainCompleteNameTemplate = type.getTrainCompleteNameTemplate() != null ?
+            new LSTextTemplate(type.getTrainCompleteNameTemplate()) : null;
     }
 
     public String getAbbr() {
@@ -91,20 +92,20 @@ public class LSTrainType {
     }
 
     @XmlElement(name = "name_template")
-    public String getTrainNameTemplate() {
+    public LSTextTemplate getTrainNameTemplate() {
         return trainNameTemplate;
     }
 
-    public void setTrainNameTemplate(String trainNameTemplate) {
+    public void setTrainNameTemplate(LSTextTemplate trainNameTemplate) {
         this.trainNameTemplate = trainNameTemplate;
     }
 
     @XmlElement(name = "complete_name_template")
-    public String getTrainCompleteNameTemplate() {
+    public LSTextTemplate getTrainCompleteNameTemplate() {
         return trainCompleteNameTemplate;
     }
 
-    public void setTrainCompleteNameTemplate(String trainCompleteNameTemplate) {
+    public void setTrainCompleteNameTemplate(LSTextTemplate trainCompleteNameTemplate) {
         this.trainCompleteNameTemplate = trainCompleteNameTemplate;
     }
     
@@ -115,8 +116,10 @@ public class LSTrainType {
         type.setDesc(desc);
         type.setPlatform(platform);
         type.setCategory(diagram.getPenaltyTable().getTrainTypeCategory(category));
-        type.setTrainCompleteNameTemplate(trainCompleteNameTemplate);
-        type.setTrainNameTemplate(trainNameTemplate);
+        type.setTrainCompleteNameTemplate(trainCompleteNameTemplate != null ?
+            trainCompleteNameTemplate.createTextTemplate() : null);
+        type.setTrainNameTemplate(trainNameTemplate != null ?
+            trainNameTemplate.createTextTemplate() : null);
         type.setTrainsData(diagram.getTrainsData());
         return type;
     }
