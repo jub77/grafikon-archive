@@ -2,7 +2,9 @@ package net.parostroj.timetable.model;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import net.parostroj.timetable.model.events.LineEvent;
 import net.parostroj.timetable.model.events.LineListener;
 
@@ -194,6 +196,11 @@ public class Line implements RouteSegment, AttributesHolder {
         return speed;
     }
 
+    private interface PenaltySolver {
+        int getDecelerationPenalty(int speed);
+        int getAccelerationPenalty(int speed);
+    }
+
     /**
      * computes running time for this track.
      *
@@ -204,37 +211,37 @@ public class Line implements RouteSegment, AttributesHolder {
      * @param toSpeed to speed
      * @return pair running time and speed
      */
-    public int computeRunningTime(Train train, int speed, TrainDiagram diagram, int fromSpeed, int toSpeed) {
+    public int computeRunningTime(final Train train, int speed, TrainDiagram diagram, int fromSpeed, int toSpeed) {
         Scale scale = (Scale) diagram.getAttribute("scale");
         double timeScale = (Double) diagram.getAttribute("time.scale");
+        final PenaltyTable penaltyTable = diagram.getPenaltyTable();
+        PenaltySolver ps = new PenaltySolver() {
 
-        // compute time for the train
-        int time = (int) Math.floor((((double) length) * scale.getRatio() * timeScale * 3.6) / (speed * 1000));
+            @Override
+            public int getDecelerationPenalty(int speed) {
+                return penaltyTable.getRowForSpeedAndCategory(train.getType().getCategory(), speed).getDeceleration();
+            }
 
-        // apply speeding and braking penalties
-        PenaltyTable penaltyTable = diagram.getPenaltyTable();
-        // braking penalty
-        if (toSpeed < speed) {
-            int penalty1 = adjustByRatio(penaltyTable.getRowForSpeedAndCategory(train.getType().getCategory(), speed).getDeceleration(), timeScale);
-            int penalty2 = adjustByRatio(penaltyTable.getRowForSpeedAndCategory(train.getType().getCategory(), toSpeed).getDeceleration(), timeScale);
-            time = time + penalty1 - penalty2;
-        }
-        // speeding penalty
-        if (fromSpeed < speed) {
-            int penalty1 = adjustByRatio(penaltyTable.getRowForSpeedAndCategory(train.getType().getCategory(), fromSpeed).getAcceleration(), timeScale);
-            int penalty2 = adjustByRatio(penaltyTable.getRowForSpeedAndCategory(train.getType().getCategory(), speed).getAcceleration(), timeScale);
-            time = time + penalty2 - penalty1;
-        }
+            @Override
+            public int getAccelerationPenalty(int speed) {
+                return penaltyTable.getRowForSpeedAndCategory(train.getType().getCategory(), speed).getAcceleration();
+            }
+        };
 
-        // rounding to minutes (1 - 19 .. down, 20 - 59 .. up)
-        time = ((time + 40) / 60) * 60;
+        Map<String, Object> binding = new HashMap<String, Object>();
+        binding.put("speed", speed);
+        binding.put("fromSpeed", fromSpeed);
+        binding.put("toSpeed", toSpeed);
+        binding.put("timeScale", timeScale);
+        binding.put("scale", scale.getRatio());
+        binding.put("length", length);
+        binding.put("penaltySolver", ps);
 
-        return time;
-    }
+        Object result = diagram.getTrainsData().getRunningTimeScript().evaluate(binding);
+        if (!(result instanceof Integer))
+            throw new IllegalStateException("Unexpected result: " + result);
 
-    private static final double ADJUST_RATIO = 0.18d;
-    private int adjustByRatio(int penalty, double timeScale) {
-        return (int) Math.round(penalty * ADJUST_RATIO * timeScale);
+        return ((Integer)result).intValue();
     }
 
     @Override

@@ -1,5 +1,6 @@
 package net.parostroj.timetable.model.ls.impl4;
 
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 import net.parostroj.timetable.model.LineTrack;
 
@@ -23,6 +24,7 @@ public class LSLineTrack extends LSTrack {
     public LSLineTrack() {
     }
 
+    @XmlElement(name = "from_straight_track")
     public String getFromStraightTrack() {
         return fromStraightTrack;
     }
@@ -31,6 +33,7 @@ public class LSLineTrack extends LSTrack {
         this.fromStraightTrack = fromStraightTrack;
     }
 
+    @XmlElement(name = "to_straight_track")
     public String getToStraightTrack() {
         return toStraightTrack;
     }

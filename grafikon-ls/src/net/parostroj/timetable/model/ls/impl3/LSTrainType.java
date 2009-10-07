@@ -5,9 +5,10 @@ import java.awt.Color;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
+import net.parostroj.timetable.model.Language;
+import net.parostroj.timetable.model.TextTemplate;
 import net.parostroj.timetable.model.TrainDiagram;
 import net.parostroj.timetable.model.TrainTypeCategory;
-import net.parostroj.timetable.model.TrainsData;
 import net.parostroj.timetable.utils.Conversions;
 
 /**
@@ -38,8 +39,10 @@ public class LSTrainType {
         this.platform = type.isPlatform();
         Color c = type.getColor();
         this.color = Conversions.convertColorToText(c);
-        this.trainNameTemplate = type.getTrainNameTemplate();
-        this.trainCompleteNameTemplate = type.getTrainCompleteNameTemplate();
+        this.trainNameTemplate = type.getTrainNameTemplate() != null ?
+            type.getTrainNameTemplate().getTemplate() : null;
+        this.trainCompleteNameTemplate = type.getTrainCompleteNameTemplate() != null ?
+            type.getTrainCompleteNameTemplate().getTemplate() : null;
     }
 
     public String getAbbr() {
@@ -115,8 +118,10 @@ public class LSTrainType {
         type.setDesc(desc);
         type.setPlatform(platform);
         type.setCategory(this.convertToCategory(diagram));
-        type.setTrainCompleteNameTemplate(trainCompleteNameTemplate);
-        type.setTrainNameTemplate(trainNameTemplate);
+        type.setTrainCompleteNameTemplate(trainCompleteNameTemplate != null ?
+            TextTemplate.createTextTemplate(trainCompleteNameTemplate, Language.MVEL): null);
+        type.setTrainNameTemplate(trainNameTemplate != null ?
+            TextTemplate.createTextTemplate(trainNameTemplate, Language.MVEL) : null);
         type.setTrainsData(diagram.getTrainsData());
         return type;
     }

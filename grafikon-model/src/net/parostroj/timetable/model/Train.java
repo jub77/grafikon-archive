@@ -993,4 +993,14 @@ public class Train implements AttributesHolder, ObjectWithId {
     public boolean isAttached() {
         return attached;
     }
+
+    /**
+     * @return binding for template
+     */
+    public Map<String,Object> createTemplateBinding() {
+        Map<String,Object> variables = new HashMap<String, Object>();
+        variables.put("train", this);
+        variables.put("type", this.getType());
+        return variables;
+    }
 }

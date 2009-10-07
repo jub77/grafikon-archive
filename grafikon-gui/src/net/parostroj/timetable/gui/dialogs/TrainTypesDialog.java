@@ -305,23 +305,23 @@ public class TrainTypesDialog extends javax.swing.JDialog {
             brakeComboBox.setSelectedItem(CategoryWrapper.getCategory(selected.getCategory()));
             if (selected.getTrainNameTemplate() == null) {
                 nameTemplateCheckBox.setSelected(false);
-                nameTemplateTextField.setText(selected.getTrainsData().getTrainNameTemplate());
+                nameTemplateTextField.setText(selected.getTrainsData().getTrainNameTemplate().getTemplate());
                 nameTemplateTextField.setEnabled(false);
                 nameTemplateTextField.setCaretPosition(0);
             } else {
                 nameTemplateCheckBox.setSelected(true);
-                nameTemplateTextField.setText(selected.getTrainNameTemplate());
+                nameTemplateTextField.setText(selected.getTrainNameTemplate().getTemplate());
                 nameTemplateTextField.setEnabled(true);
                 nameTemplateTextField.setCaretPosition(0);
             }
             if (selected.getTrainCompleteNameTemplate() == null) {
                 completeNameTemplateCheckBox.setSelected(false);
-                completeNameTemplateTextField.setText(selected.getTrainsData().getTrainCompleteNameTemplate());
+                completeNameTemplateTextField.setText(selected.getTrainsData().getTrainCompleteNameTemplate().getTemplate());
                 completeNameTemplateTextField.setEnabled(false);
                 completeNameTemplateTextField.setCaretPosition(0);
             } else {
                 completeNameTemplateCheckBox.setSelected(true);
-                completeNameTemplateTextField.setText(selected.getTrainCompleteNameTemplate());
+                completeNameTemplateTextField.setText(selected.getTrainCompleteNameTemplate().getTemplate());
                 completeNameTemplateTextField.setEnabled(true);
                 completeNameTemplateTextField.setCaretPosition(0);
             }
@@ -332,11 +332,11 @@ public class TrainTypesDialog extends javax.swing.JDialog {
             colorLabel.setForeground(Color.BLACK);
             brakeComboBox.setSelectedItem(CategoryWrapper.PASSENGER);
             nameTemplateCheckBox.setSelected(false);
-            nameTemplateTextField.setText(model.getDiagram().getTrainsData().getTrainNameTemplate());
+            nameTemplateTextField.setText(model.getDiagram().getTrainsData().getTrainNameTemplate().getTemplate());
             nameTemplateTextField.setEnabled(false);
             nameTemplateTextField.setCaretPosition(0);
             completeNameTemplateCheckBox.setSelected(false);
-            completeNameTemplateTextField.setText(model.getDiagram().getTrainsData().getTrainCompleteNameTemplate());
+            completeNameTemplateTextField.setText(model.getDiagram().getTrainsData().getTrainCompleteNameTemplate().getTemplate());
             completeNameTemplateTextField.setEnabled(false);
             completeNameTemplateTextField.setCaretPosition(0);
         }
@@ -381,12 +381,12 @@ public class TrainTypesDialog extends javax.swing.JDialog {
             type.setColor(Conversions.convertTextToColor(colorLabel.getText()));
             type.setCategory(((CategoryWrapper)brakeComboBox.getSelectedItem()).category);
             if (nameTemplateCheckBox.isSelected()) {
-                type.setTrainNameTemplate(nameTemplateTextField.getText());
+                type.setTrainNameTemplate(TextTemplate.createTextTemplate(nameTemplateTextField.getText(), Language.MVEL));
             } else {
                 type.setTrainNameTemplate(null);
             }
             if (completeNameTemplateCheckBox.isSelected()) {
-                type.setTrainCompleteNameTemplate(completeNameTemplateTextField.getText());
+                type.setTrainCompleteNameTemplate(TextTemplate.createTextTemplate(completeNameTemplateTextField.getText(), Language.MVEL));
             } else {
                 type.setTrainCompleteNameTemplate(null);
             }
@@ -440,10 +440,10 @@ public class TrainTypesDialog extends javax.swing.JDialog {
             type.setColor(Conversions.convertTextToColor(colorLabel.getText()));
             type.setCategory(((CategoryWrapper)brakeComboBox.getSelectedItem()).category);
             if (nameTemplateCheckBox.isSelected()) {
-                type.setTrainNameTemplate(nameTemplateTextField.getText());
+                type.setTrainNameTemplate(TextTemplate.createTextTemplate(nameTemplateTextField.getText(), Language.MVEL));
             }
             if (completeNameTemplateCheckBox.isSelected()) {
-                type.setTrainCompleteNameTemplate(completeNameTemplateTextField.getText());
+                type.setTrainCompleteNameTemplate(TextTemplate.createTextTemplate(completeNameTemplateTextField.getText(), Language.MVEL));
             }
             int index = typesModel.add(type);
             trainTypesList.setSelectedIndex(index);
