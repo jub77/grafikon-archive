@@ -1,6 +1,8 @@
 package net.parostroj.timetable.model;
 
 import java.awt.Color;
+import net.parostroj.timetable.model.events.TrainTypeEvent;
+import net.parostroj.timetable.model.events.TrainTypeListener;
 
 /**
  * Train type.
@@ -26,7 +28,9 @@ public class TrainType implements ObjectWithId {
     private TextTemplate trainCompleteNameTemplate;
     /** Reference to trains data. */
     private TrainsData trainsData;
-    
+    /** Listener support. */
+    private GTListenerSupport<TrainTypeListener, TrainTypeEvent> listenerSupport;
+
     /**
      * creates instance.
      * 
@@ -34,6 +38,13 @@ public class TrainType implements ObjectWithId {
      */
     public TrainType(String id) {
         this.id = id;
+        listenerSupport = new GTListenerSupport<TrainTypeListener, TrainTypeEvent>(new GTEventSender<TrainTypeListener, TrainTypeEvent>() {
+
+            @Override
+            public void fireEvent(TrainTypeListener listener, TrainTypeEvent event) {
+                listener.trainTypeChanged(event);
+            }
+        });
     }
 
     /**
@@ -64,6 +75,7 @@ public class TrainType implements ObjectWithId {
      */
     public void setAbbr(String abbr) {
         this.abbr = abbr;
+        this.listenerSupport.fireEvent(new TrainTypeEvent(this, "abbr"));
     }
 
     /**
@@ -78,6 +90,7 @@ public class TrainType implements ObjectWithId {
      */
     public void setColor(Color color) {
         this.color = color;
+        this.listenerSupport.fireEvent(new TrainTypeEvent(this, "color"));
     }
 
     /**
@@ -92,6 +105,7 @@ public class TrainType implements ObjectWithId {
      */
     public void setDesc(String desc) {
         this.desc = desc;
+        this.listenerSupport.fireEvent(new TrainTypeEvent(this, "desc"));
     }
 
     /**
@@ -106,6 +120,7 @@ public class TrainType implements ObjectWithId {
      */
     public void setPlatform(boolean platform) {
         this.platform = platform;
+        this.listenerSupport.fireEvent(new TrainTypeEvent(this, "platform"));
     }
 
     /**
@@ -120,6 +135,7 @@ public class TrainType implements ObjectWithId {
      */
     public void setCategory(TrainTypeCategory category) {
         this.category = category;
+        this.listenerSupport.fireEvent(new TrainTypeEvent(this, "category"));
     }
 
     /**
@@ -134,6 +150,7 @@ public class TrainType implements ObjectWithId {
      */
     public void setTrainNameTemplate(TextTemplate trainNameTemplate) {
         this.trainNameTemplate = trainNameTemplate;
+        this.listenerSupport.fireEvent(new TrainTypeEvent(this, "trainNameTemplate"));
     }
 
     /**
@@ -148,6 +165,7 @@ public class TrainType implements ObjectWithId {
      */
     public void setTrainCompleteNameTemplate(TextTemplate trainCompleteNameTemplate) {
         this.trainCompleteNameTemplate = trainCompleteNameTemplate;
+        this.listenerSupport.fireEvent(new TrainTypeEvent(this, "trainCompleteNameTemplate"));
     }
 
     /**
@@ -176,6 +194,22 @@ public class TrainType implements ObjectWithId {
         return template.evaluate(train, train.createTemplateBinding());
     }
     
+    /**
+     * adds listener to train.
+     * @param listener listener
+     */
+    public void addListener(TrainTypeListener listener) {
+        listenerSupport.addListener(listener);
+    }
+
+    /**
+     * removes listener from train.
+     * @param listener listener
+     */
+    public void removeListener(TrainTypeListener listener) {
+        listenerSupport.removeListener(listener);
+    }
+
     @Override
     public String toString() {
         return abbr + " - " + desc;
