@@ -14,6 +14,7 @@
   <AuxValues>
     <AuxValue name="FormSettings_autoResourcing" type="java.lang.Integer" value="0"/>
     <AuxValue name="FormSettings_autoSetComponentName" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_generateFQN" type="java.lang.Boolean" value="true"/>
     <AuxValue name="FormSettings_generateMnemonicsCode" type="java.lang.Boolean" value="false"/>
     <AuxValue name="FormSettings_i18nAutoMode" type="java.lang.Boolean" value="false"/>
     <AuxValue name="FormSettings_layoutCodeTarget" type="java.lang.Integer" value="1"/>
@@ -28,7 +29,7 @@
     <Component class="javax.swing.JLabel" name="jLabel1">
       <Properties>
         <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-          <ResourceString bundle="gt_texts.properties" key="modelinfo.scales" replaceFormat="ResourceLoader.getString(&quot;{key}&quot;)"/>
+          <ResourceString bundle="net/parostroj/timetable/gui/components_texts.properties" key="modelinfo.scales" replaceFormat="ResourceLoader.getString(&quot;{key}&quot;)"/>
         </Property>
       </Properties>
       <AuxValues>
@@ -56,7 +57,7 @@
     <Component class="javax.swing.JLabel" name="jLabel2">
       <Properties>
         <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-          <ResourceString bundle="gt_texts.properties" key="modelinfo.ratio" replaceFormat="ResourceLoader.getString(&quot;{key}&quot;)"/>
+          <ResourceString bundle="net/parostroj/timetable/gui/components_texts.properties" key="modelinfo.ratio" replaceFormat="ResourceLoader.getString(&quot;{key}&quot;)"/>
         </Property>
       </Properties>
       <AuxValues>
@@ -98,7 +99,7 @@
         <Component class="javax.swing.JButton" name="okButton">
           <Properties>
             <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-              <ResourceString bundle="gt_texts.properties" key="button.ok" replaceFormat="ResourceLoader.getString(&quot;{key}&quot;)"/>
+              <ResourceString bundle="net/parostroj/timetable/gui/components_texts.properties" key="button.ok" replaceFormat="ResourceLoader.getString(&quot;{key}&quot;)"/>
             </Property>
           </Properties>
           <Events>
@@ -108,7 +109,7 @@
         <Component class="javax.swing.JButton" name="cancelButton">
           <Properties>
             <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-              <ResourceString bundle="gt_texts.properties" key="button.cancel" replaceFormat="ResourceLoader.getString(&quot;{key}&quot;)"/>
+              <ResourceString bundle="net/parostroj/timetable/gui/components_texts.properties" key="button.cancel" replaceFormat="ResourceLoader.getString(&quot;{key}&quot;)"/>
             </Property>
           </Properties>
           <Events>
