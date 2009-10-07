@@ -9,25 +9,27 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import net.parostroj.timetable.gui.*;
+import net.parostroj.timetable.gui.utils.ResourceLoader;
 import net.parostroj.timetable.model.*;
-import net.parostroj.timetable.utils.ResourceLoader;
 
 /**
  * Dialog for settings modification of the train diagram.
  *
  * @author jub
  */
-public class SettingsDialog extends javax.swing.JDialog implements ApplicationModelListener {
+public class SettingsDialog extends javax.swing.JDialog {
     
     private static final Logger LOG = Logger.getLogger(SettingsDialog.class.getName());
-    
-    private ApplicationModel model;
+    private boolean diagramChanged;
+    private TrainDiagram diagram;
     
     /** Creates new form SettingsDialog */
     public SettingsDialog(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
-        
+
+        diagramChanged = false;
+
         sortComboBox.addItem(ResourceLoader.getString("modelinfo.sort.number"));
         sortComboBox.addItem(ResourceLoader.getString("modelinfo.sort.string"));
         sortComboBox.setPrototypeDisplayValue("nnnnnnnnnnnnn");
@@ -37,9 +39,9 @@ public class SettingsDialog extends javax.swing.JDialog implements ApplicationMo
         pack();
     }
     
-    public void setModel(ApplicationModel model) {
-        this.model = model;
-        this.model.addListener(this);
+    public void setTrainDiagram(TrainDiagram diagram) {
+        this.diagram = diagram;
+        this.diagramChanged = false;
         
         for (Scale scale : Scale.getPredefined()) {
             scaleComboBox.addItem(scale);
@@ -55,13 +57,13 @@ public class SettingsDialog extends javax.swing.JDialog implements ApplicationMo
     }
     
     private void updateValues() {
-        if (model.getDiagram() != null) {
+        if (diagram != null) {
             // set original values ...
-            scaleComboBox.setSelectedItem(model.getDiagram().getAttribute("scale"));
-            ratioComboBox.setSelectedItem(((Double)model.getDiagram().getAttribute("time.scale")).toString());
+            scaleComboBox.setSelectedItem(diagram.getAttribute("scale"));
+            ratioComboBox.setSelectedItem(((Double)diagram.getAttribute("time.scale")).toString());
             
             // sorting
-            TrainsData trainsData = model.getDiagram().getTrainsData();
+            TrainsData trainsData = diagram.getTrainsData();
             SortPatternGroup firstGroup = trainsData.getTrainSortPattern().getGroups().get(0);
             if (firstGroup.getType() == SortPatternGroup.Type.NUMBER) {
                 sortComboBox.setSelectedIndex(0);
@@ -74,7 +76,7 @@ public class SettingsDialog extends javax.swing.JDialog implements ApplicationMo
             nameTemplateTextField.setCaretPosition(0);
 
             // set crossing time in minutes
-            Integer transferTime = (Integer)model.getDiagram().getAttribute("station.transfer.time");
+            Integer transferTime = (Integer)diagram.getAttribute("station.transfer.time");
             if (transferTime != null) {
                 stationTransferTextField.setText(transferTime.toString());
             } else {
@@ -82,31 +84,30 @@ public class SettingsDialog extends javax.swing.JDialog implements ApplicationMo
                 stationTransferTextField.setText("");
             }
             // set station lengths information
-            lengthInAxlesCheckBox.setSelected(Boolean.TRUE.equals(model.getDiagram().getAttribute("station.length.in.axles")));
+            lengthInAxlesCheckBox.setSelected(Boolean.TRUE.equals(diagram.getAttribute("station.length.in.axles")));
             stationLengthUnitTextField.setEnabled(!lengthInAxlesCheckBox.isSelected());
-            String stationLengthUnit = (String)model.getDiagram().getAttribute("station.length.unit");
+            String stationLengthUnit = (String)diagram.getAttribute("station.length.unit");
             stationLengthUnitTextField.setText(stationLengthUnit == null ? "" : stationLengthUnit);
 
             // weight ratios
-            Double emptyRatio = (Double)model.getDiagram().getAttribute("weight.ratio.empty");
-            Double loadedRatio = (Double)model.getDiagram().getAttribute("weight.ratio.loaded");
+            Double emptyRatio = (Double)diagram.getAttribute("weight.ratio.empty");
+            Double loadedRatio = (Double)diagram.getAttribute("weight.ratio.loaded");
 
             if (emptyRatio != null)
                 emptyRatioTextField.setText(emptyRatio.toString());
             if (loadedRatio != null)
                 loadedRatioTextField.setText(loadedRatio.toString());
+
+            // script
+            scriptTextArea.setText(trainsData.getRunningTimeScript().getSourceCode());
+            scriptTextArea.setCaretPosition(0);
         }
     }
 
-    @Override
-    public void modelChanged(ApplicationModelEvent event) {
-        switch(event.getType()) {
-            case SET_DIAGRAM_CHANGED:
-                this.updateValues();
-                break;
-        }
+    public boolean isDiagramChanged() {
+        return diagramChanged;
     }
-    
+
     /** This method is called from within the constructor to
      * initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is
@@ -140,6 +141,9 @@ public class SettingsDialog extends javax.swing.JDialog implements ApplicationMo
         emptyRatioTextField = new javax.swing.JTextField();
         javax.swing.JLabel jLabel10 = new javax.swing.JLabel();
         loadedRatioTextField = new javax.swing.JTextField();
+        javax.swing.JLabel jLabel11 = new javax.swing.JLabel();
+        javax.swing.JScrollPane scrollPane = new javax.swing.JScrollPane();
+        scriptTextArea = new javax.swing.JTextArea();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         setTitle(ResourceLoader.getString("modelinfo")); // NOI18N
@@ -190,10 +194,9 @@ public class SettingsDialog extends javax.swing.JDialog implements ApplicationMo
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 13;
+        gridBagConstraints.gridy = 15;
         gridBagConstraints.gridwidth = 3;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
-        gridBagConstraints.weighty = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(0, 0, 10, 5);
         getContentPane().add(panel1, gridBagConstraints);
 
@@ -285,7 +288,7 @@ public class SettingsDialog extends javax.swing.JDialog implements ApplicationMo
         gridBagConstraints.gridy = 10;
         gridBagConstraints.gridwidth = 2;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.insets = new java.awt.Insets(0, 10, 5, 10);
+        gridBagConstraints.insets = new java.awt.Insets(0, 10, 5, 0);
         getContentPane().add(jLabel7, gridBagConstraints);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -319,14 +322,39 @@ public class SettingsDialog extends javax.swing.JDialog implements ApplicationMo
         gridBagConstraints.gridwidth = 3;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(0, 10, 0, 0);
         getContentPane().add(ratioPanel, gridBagConstraints);
+
+        jLabel11.setText(ResourceLoader.getString("modelinfo.running.time.script")); // NOI18N
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 13;
+        gridBagConstraints.gridwidth = 3;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(5, 10, 5, 10);
+        getContentPane().add(jLabel11, gridBagConstraints);
+
+        scriptTextArea.setColumns(20);
+        scriptTextArea.setFont(new java.awt.Font("Monospaced", 0, 11)); // NOI18N
+        scriptTextArea.setRows(5);
+        scrollPane.setViewportView(scriptTextArea);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 14;
+        gridBagConstraints.gridwidth = 3;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.weighty = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(0, 10, 0, 10);
+        getContentPane().add(scrollPane, gridBagConstraints);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
     private void okButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_okButtonActionPerformed
         // get templates' values
-        TrainsData trainsData = model.getDiagram().getTrainsData();
+        TrainsData trainsData = diagram.getTrainsData();
         String completeName = completeNameTemplateTextField.getText();
         String name = nameTemplateTextField.getText();
         
@@ -350,8 +378,8 @@ public class SettingsDialog extends javax.swing.JDialog implements ApplicationMo
             return;
         }
         if (s != null)
-            model.getDiagram().setAttribute("scale", s);
-        model.getDiagram().setAttribute("time.scale", sp);
+            diagram.setAttribute("scale", s);
+        diagram.setAttribute("time.scale", sp);
         
         // set templates
         trainsData.setTrainCompleteNameTemplate(TextTemplate.createTextTemplate(completeName, Language.MVEL));
@@ -373,47 +401,53 @@ public class SettingsDialog extends javax.swing.JDialog implements ApplicationMo
         try {
             Integer difference = Integer.valueOf(stationTransferTextField.getText());
             if (difference != null)
-                model.getDiagram().setAttribute("station.transfer.time", difference);
+                diagram.setAttribute("station.transfer.time", difference);
         } catch (NumberFormatException e) {
             LOG.warning("Cannot parse station transfer time: " + stationTransferTextField.getText());
         }
 
         // get back values for stations' lengths
-        model.getDiagram().setAttribute("station.length.in.axles", Boolean.valueOf(lengthInAxlesCheckBox.isSelected()));
+        diagram.setAttribute("station.length.in.axles", Boolean.valueOf(lengthInAxlesCheckBox.isSelected()));
         if (lengthInAxlesCheckBox.isSelected())
-            model.getDiagram().removeAttribute("station.length.unit");
+            diagram.removeAttribute("station.length.unit");
         else
-            model.getDiagram().setAttribute("station.length.unit", stationLengthUnitTextField.getText());
+            diagram.setAttribute("station.length.unit", stationLengthUnitTextField.getText());
 
         // weight ratios
         try {
             Double emptyRatio = Double.valueOf(emptyRatioTextField.getText());
             Double loadedRatio = Double.valueOf(loadedRatioTextField.getText());
 
-            model.getDiagram().setAttribute("weight.ratio.empty", emptyRatio);
-            model.getDiagram().setAttribute("weight.ratio.loaded", loadedRatio);
+            diagram.setAttribute("weight.ratio.empty", emptyRatio);
+            diagram.setAttribute("weight.ratio.loaded", loadedRatio);
         } catch (NumberFormatException e) {
             LOG.warning("Cannot convert weight ratios to doubles: " + e.getMessage());
         }
 
+        // set running time script
+        if (scriptTextArea.getText() != null && !scriptTextArea.getText().equals(""))
+            diagram.getTrainsData().setRunningTimeScript(
+                    Script.createScript(scriptTextArea.getText(),
+                    diagram.getTrainsData().getRunningTimeScript().getLanguage()));
+
         // update model
-        for (Train train : model.getDiagram().getTrains()) {
-            train.recalculate(model.getDiagram());
+        for (Train train : diagram.getTrains()) {
+            train.recalculate(diagram);
         }
         // clear cached information for train names
-        for (Train train : model.getDiagram().getTrains())
+        for (Train train : diagram.getTrains())
             train.clearCachedData();
 
         this.updateValues();
-        model.fireEvent(new ApplicationModelEvent(ApplicationModelEventType.SET_DIAGRAM_CHANGED,model));
-        model.setModelChanged(true);
         
         this.setVisible(false);
+        this.diagramChanged = true;
     }//GEN-LAST:event_okButtonActionPerformed
     
     private void cancelButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelButtonActionPerformed
         this.updateValues();
         this.setVisible(false);
+        this.diagramChanged = false;
     }//GEN-LAST:event_cancelButtonActionPerformed
 
     private void lengthInAxlesCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_lengthInAxlesCheckBoxActionPerformed
@@ -436,6 +470,7 @@ public class SettingsDialog extends javax.swing.JDialog implements ApplicationMo
     private javax.swing.JComboBox ratioComboBox;
     private javax.swing.JPanel ratioPanel;
     private javax.swing.JComboBox scaleComboBox;
+    private javax.swing.JTextArea scriptTextArea;
     private javax.swing.JComboBox sortComboBox;
     private javax.swing.JTextField stationLengthUnitTextField;
     private javax.swing.JTextField stationTransferTextField;
