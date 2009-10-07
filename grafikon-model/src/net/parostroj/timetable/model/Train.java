@@ -519,21 +519,6 @@ public class Train implements AttributesHolder, ObjectWithId {
         this.listenerSupport.fireEvent(new TrainEvent(this, TrainEvent.Type.TIME_INTERVAL_LIST));
     }
 
-    private void removeFromOwner(TimeInterval interval) {
-        if (isAttached())
-            interval.removeFromOwner();
-    }
-
-    private void addToOwner(TimeInterval interval) {
-        if (isAttached())
-            interval.addToOwner();
-    }
-
-    private void removeFromAddToOwner(TimeInterval interval) {
-        removeFromOwner(interval);
-        addToOwner(interval);
-    }
-
     /**
      * changes time for stop for specified node.
      * 
