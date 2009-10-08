@@ -48,7 +48,7 @@ public class StationTimetablesExtractor {
         TimeIntervalList list = new TimeIntervalList();
         for (NodeTrack track : node.getTracks()) {
             for (TimeInterval i : track.getTimeIntervalList()) {
-                list.addIntervalByStartTime(i);
+                list.addIntervalByNormalizedStartTime(i);
             }
         }
         return list;
@@ -61,8 +61,8 @@ public class StationTimetablesExtractor {
         String fromNodeName = TransformUtil.getFromAbbr(interval);
         String toNodeName = TransformUtil.getToAbbr(interval);
 
-        String fromTime = (from == null && !interval.getType().isTechnological()) ? null : TimeConverter.convertFromIntToText(interval.getStart());
-        String toTime = (to == null && !interval.getType().isTechnological()) ? null : TimeConverter.convertFromIntToText(interval.getEnd());
+        String fromTime = (from == null && !interval.isTechnological()) ? null : TimeConverter.convertFromIntToText(interval.getStart());
+        String toTime = (to == null && !interval.isTechnological()) ? null : TimeConverter.convertFromIntToText(interval.getEnd());
         StationTimetableRow row = new StationTimetableRow(interval.getTrain().getName(), fromNodeName, fromTime, toNodeName, toTime, interval.getTrack().getNumber());
         this.addOtherData(interval, row);
         return row;
@@ -70,7 +70,7 @@ public class StationTimetablesExtractor {
 
     private void addOtherData(TimeInterval interval, StationTimetableRow row) {
         // technological time handle differently
-        row.setTechnologicalTime(interval.getType().isTechnological());
+        row.setTechnologicalTime(interval.isTechnological());
         if (row.isTechnologicalTime())
             return;
 
@@ -118,7 +118,7 @@ public class StationTimetablesExtractor {
     private LengthInfo getLength(TimeInterval interval) {
         LengthInfo lengthInfo = null;
         Train train = interval.getTrain();
-        if (train.getIntervalAfter(interval) != null && interval.getType().isStop() && train.getType().getSbType() == SpeedingBrakingType.FREIGHT) {
+        if (train.getIntervalAfter(interval) != null && interval.isStop() && train.getType().getCategory().equals(TrainTypeCategory.fromString("freight"))) {
             Pair<Node, Integer> length = TrainsHelper.getNextLength(interval.getOwnerAsNode(), train, diagram);
             if (length == null) {
                 // check old style comment
