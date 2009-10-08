@@ -1,7 +1,10 @@
 package net.parostroj.timetable.actions;
 
+import java.util.ArrayList;
+import java.util.List;
 import net.parostroj.timetable.model.*;
 import net.parostroj.timetable.utils.IdGenerator;
+import net.parostroj.timetable.utils.Pair;
 
 /**
  * TrainCreator creates train with specified parameters for established route.
@@ -42,7 +45,7 @@ public class TrainBuilder {
             train.addInterval(interval);
         }
 
-        // move to new time (automatically attaches the train to nodes and lines)
+        // move to new time
         train.move(time);
 
         return train;
@@ -57,75 +60,103 @@ public class TrainBuilder {
      * @param topSpeed top speed
      * @param route route
      * @param time starting time
-     * @param data data
+     * @param diagram train diagram
      * @param defaultStop default stop time
      * @return created train
      */
     public Train createTrain(String id, String name, TrainType trainType, int topSpeed, Route route, int time, TrainDiagram diagram, int defaultStop) {
         Train train = new Train(id, name, trainType);
-
         train.setTopSpeed(topSpeed);
 
+        List<Pair<RouteSegment, Integer>> data = this.createDataForRoute(route);
+        this.adjustSpeedsAndStops(data, train, topSpeed, defaultStop);
+
         int i = 0;
-        int last = route.getSegments().size() - 1;
-
-        // create new data
+        TimeInterval interval;
         Node lastNode = null;
-        int nextStop = 1;
-        int lastStop = 0;
-        for (RouteSegment part : route.getSegments()) {
-            if (part.asLine() != null) {
-                int index = route.getSegments().indexOf(part);
-                Node nextNode = (Node) route.getSegments().get(index + 1);
-                lastStop = nextStop;
-                if ((index + 1) == last) {
-                    nextStop = 1;
-                } else if (nextNode.getType() == NodeType.SIGNAL) {
-                    nextStop = 0;
-                } else {
-                    nextStop = defaultStop;
-                }
+
+        for (Pair<RouteSegment, Integer> pair : data) {
+            if (pair.first instanceof Node) {
+                // handle node
+                Node node = (Node)pair.first;
+                interval = node.createTimeInterval(
+                        IdGenerator.getInstance().getId(),
+                        train, time, diagram, pair.second);
+                lastNode = node;
+            } else {
+                // handle line
+                Line line = (Line)pair.first;
+                TimeIntervalDirection direction =
+                        (line.getFrom() == lastNode) ?
+                            TimeIntervalDirection.FORWARD :
+                            TimeIntervalDirection.BACKWARD;
+                interval = line.createTimeInterval(
+                        IdGenerator.getInstance().getId(),
+                        train, time, diagram,
+                        direction, pair.second,
+                        this.computeFromSpeed(pair, data, i),
+                        this.computeToSpeed(pair, data, i));
             }
 
-            TimeIntervalType type = null;
-            if (part.asNode() != null) {
-                if (i == 0) {
-                    type = TimeIntervalType.NODE_START;
-                } else if (i == last) {
-                    type = TimeIntervalType.NODE_END;
-                } else {
-                    if (nextStop == 0) {
-                        type = TimeIntervalType.NODE_THROUGH;
-                    } else {
-                        type = TimeIntervalType.NODE_STOP;
-                    }
-                }
-            } else if (part.asLine() != null) {
-                if (lastStop == 0 && nextStop == 0) {
-                    type = TimeIntervalType.LINE_THROUGH;
-                } else if (lastStop != 0 && nextStop != 0) {
-                    type = TimeIntervalType.LINE_START_STOP;
-                } else if (lastStop == 0) {
-                    type = TimeIntervalType.LINE_THROUGH_STOP;
-                } else {
-                    type = TimeIntervalType.LINE_START_THROUGH;
-                }
-            } else {
-                type = TimeIntervalType.NODE_THROUGH;
-            }
-            TimeInterval interval = null;
-            if (part.asNode() != null) {
-                interval = part.asNode().createTimeInterval(IdGenerator.getInstance().getId(), train, time, diagram, type, nextStop);
-                lastNode = part.asNode();
-            } else {
-                TimeIntervalDirection direction = (part.asLine().getFrom() == lastNode) ? TimeIntervalDirection.FORWARD : TimeIntervalDirection.BACKWARD;
-                interval = part.asLine().createTimeInterval(IdGenerator.getInstance().getId(), train, time, diagram, type, direction, TimeInterval.NO_SPEED);
-            }
+            // add created interval to train and set current time
             time = interval.getEnd();
             train.addInterval(interval);
+
             i++;
         }
 
         return train;
+    }
+
+    private List<Pair<RouteSegment, Integer>> createDataForRoute(Route route) {
+        List<Pair<RouteSegment, Integer>> data = new ArrayList<Pair<RouteSegment, Integer>>(route.getSegments().size());
+        for (RouteSegment segment : route.getSegments()) {
+            data.add(new Pair<RouteSegment, Integer>(segment, 0));
+        }
+        return data;
+    }
+
+    private void adjustSpeedsAndStops(List<Pair<RouteSegment, Integer>> data, Train train, int speed, int defaultStop) {
+        int size = data.size();
+        int i = 0;
+        for (Pair<RouteSegment,Integer> pair : data) {
+            i++;
+            if (pair.first instanceof Node) {
+                // node
+                Node node = (Node)pair.first;
+                if (i != 1 && i != size && node.getType() != NodeType.ROUTE_SPLIT && node.getType() != NodeType.SIGNAL) {
+                    // set default stop
+                    pair.second = defaultStop;
+                }
+            } else {
+                // line
+                Line line = (Line)pair.first;
+                pair.second = line.computeSpeed(train, speed);
+            }
+        }
+    }
+
+    private int computeFromSpeed(Pair<RouteSegment,Integer> pair, List<Pair<RouteSegment, Integer>> data, int i) {
+        if (!(pair.first instanceof Line))
+            throw new IllegalArgumentException("Cannot find speed for node.");
+        // previous node is stop - first node or node has not null time
+        if ((i - 1) == 0 || data.get(i - 1).second != 0)
+            return 0;
+        else {
+            // check speed of previous line
+            return data.get(i - 2).second;
+        }
+    }
+
+    private int computeToSpeed(Pair<RouteSegment,Integer> pair, List<Pair<RouteSegment, Integer>> data, int i) {
+        if (!(pair.first instanceof Line))
+            throw new IllegalArgumentException("Cannot find speed for node.");
+        // next node is stop - last node or node has not null time
+        if ((i + 1) == (data.size() - 1) || data.get(i + 1).second != 0)
+            return 0;
+        else {
+            // check speed of previous line
+            return data.get(i + 2).second;
+        }
     }
 }

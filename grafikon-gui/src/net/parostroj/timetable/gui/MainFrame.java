@@ -277,7 +277,6 @@ public class MainFrame extends javax.swing.JFrame implements ApplicationModelLis
         model.addListener(statusBar);
         
         settingsDialog = new SettingsDialog(this, true);
-        settingsDialog.setModel(model);
         
         imagesDialog = new EditImagesDialog(this, true);
         imagesDialog.setModel(model);
@@ -1054,7 +1053,13 @@ private void cleanUpBeforeApplicationEnd() {
 
 private void settingsMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_settingsMenuItemActionPerformed
     settingsDialog.setLocationRelativeTo(this);
+    settingsDialog.setTrainDiagram(model.getDiagram());
     settingsDialog.setVisible(true);
+    // check and send event if neccessary
+    if (settingsDialog.isDiagramChanged()) {
+        model.fireEvent(new ApplicationModelEvent(ApplicationModelEventType.SET_DIAGRAM_CHANGED,model));
+        model.setModelChanged(true);
+    }
 }//GEN-LAST:event_settingsMenuItemActionPerformed
 
 private void tucListMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tucListMenuItemActionPerformed
@@ -1306,7 +1311,7 @@ private void recalculateStopsMenuItemActionPerformed(java.awt.event.ActionEvent 
             for (Train train : model.getDiagram().getTrains()) {
                 // convert stops ...
                 for (TimeInterval interval : train.getTimeIntervalList()) {
-                    if (interval.getType() == TimeIntervalType.NODE_STOP) {
+                    if (interval.isInnerStop()) {
                         // recalculate time ...
                         int time = interval.getLength();
                         time = this.convertTime(time, ratio);

@@ -3,9 +3,9 @@ package net.parostroj.timetable.gui.views;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
-import net.parostroj.timetable.model.SpeedingBrakingType;
 import net.parostroj.timetable.model.Train;
 import net.parostroj.timetable.model.TrainType;
+import net.parostroj.timetable.model.TrainTypeCategory;
 
 /**
  * Class for filtering train according to some criteria.
@@ -18,20 +18,23 @@ public abstract class TrainFilter {
         FREIGHT, PASSENGER;
     }
 
+    private static final TrainTypeCategory C_FREIGHT = TrainTypeCategory.fromString("freight");
+    private static final TrainTypeCategory C_PASSENGER = TrainTypeCategory.fromString("passenger");
+
     public static TrainFilter getTrainFilter(PredefinedType type) {
         switch (type) {
             case FREIGHT:
                 return new TrainFilter() {
                     @Override
                     public boolean filter(Train train) {
-                        return train.getType().getSbType() == SpeedingBrakingType.FREIGHT;
+                        return train.getType().getCategory().equals(C_FREIGHT);
                     }
                 };
             case PASSENGER:
                 return new TrainFilter() {
                     @Override
                     public boolean filter(Train train) {
-                        return train.getType().getSbType() == SpeedingBrakingType.PASSENGER;
+                        return train.getType().getCategory().equals(C_PASSENGER);
                     }
                 };
             default:

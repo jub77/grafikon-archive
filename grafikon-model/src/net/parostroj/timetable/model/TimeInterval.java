@@ -1,6 +1,7 @@
 package net.parostroj.timetable.model;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -10,11 +11,11 @@ import java.util.Set;
  */
 public class TimeInterval implements AttributesHolder, ObjectWithId {
 
+    public static final int DAY = 24 * 3600;
+
     private final String id;
-    /** Start time. */
-    private int start;
-    /** End time. */
-    private int end;
+    /** Interval. */
+    private Interval interval;
     /** Train. */
     private Train train;
     /** Owner. */
@@ -25,8 +26,6 @@ public class TimeInterval implements AttributesHolder, ObjectWithId {
     private int speed = NO_SPEED;
     /** Attributes. */
     private Attributes attributes;
-    /** Time interval type. */
-    private TimeIntervalType type;
     /** For tests - overlapping time intervals. */
     private Set<TimeInterval> overlappingIntervals;
     /** No speed constant. */
@@ -44,15 +43,12 @@ public class TimeInterval implements AttributesHolder, ObjectWithId {
      * @param end end time
      * @param speed speed for line time interval
      * @param direction direction of the line time interval
-     * @param type type of the interval
      * @param track track
      */
-    public TimeInterval(String id, Train train, RouteSegment owner, int start, int end, int speed, TimeIntervalDirection direction, TimeIntervalType type, Track track) {
+    public TimeInterval(String id, Train train, RouteSegment owner, int start, int end, int speed, TimeIntervalDirection direction, Track track) {
         this.train = train;
         this.setOwner(owner);
-        this.start = start;
-        this.end = end;
-        this.type = type;
+        this.interval = new Interval(start, end);
         this.speed = speed;
         this.direction = direction;
         this.track = track;
@@ -68,11 +64,10 @@ public class TimeInterval implements AttributesHolder, ObjectWithId {
      * @param owner time interval owner
      * @param start start time
      * @param end end time
-     * @param type type of the interval
      * @param track track
      */
-    public TimeInterval(String id, Train train, RouteSegment owner, int start, int end, TimeIntervalType type, Track track) {
-        this(id, train, owner, start, end, NO_SPEED, null, type, track);
+    public TimeInterval(String id, Train train, RouteSegment owner, int start, int end, Track track) {
+        this(id, train, owner, start, end, NO_SPEED, null, track);
     }
 
     /**
@@ -83,7 +78,7 @@ public class TimeInterval implements AttributesHolder, ObjectWithId {
     public TimeInterval(String id, TimeInterval interval) {
         this(id, interval.getTrain(), interval.getOwner(), interval.getStart(),
                 interval.getEnd(), interval.getSpeed(), interval.getDirection(),
-                interval.getType(), interval.getTrack());
+                interval.getTrack());
         this.setAttributes(new Attributes(interval.getAttributes()));
     }
 
@@ -91,28 +86,35 @@ public class TimeInterval implements AttributesHolder, ObjectWithId {
      * @return end time
      */
     public int getEnd() {
-        return end;
+        return interval.getEnd();
     }
 
     /**
      * @param end end time to be set
      */
     public void setEnd(int end) {
-        this.end = end;
+        this.interval = new Interval(interval.getStart(), end);
     }
 
     /**
      * @return start time
      */
     public int getStart() {
-        return start;
+        return interval.getStart();
     }
 
     /**
      * @param start start time to be set
      */
     public void setStart(int start) {
-        this.start = start;
+        this.interval = new Interval(start, interval.getEnd());
+    }
+
+    /**
+     * @return interval
+     */
+    public Interval getInterval() {
+        return interval;
     }
 
     /**
@@ -130,40 +132,50 @@ public class TimeInterval implements AttributesHolder, ObjectWithId {
     }
 
     /**
-     * compares intervals for route part.
+     * compares intervals for route part. Open/unbounded interval. It uses
+     * normalized intervals.
      *
      * @param o interval
      * @return comparison
      */
-    public int compareToForRoutePart(TimeInterval o) {
-        if (o.end < start) {
-            return -1;
+    public int compareOpenNormalized(TimeInterval o) {
+        List<Interval> ints = this.getInterval().computeNormalizedIntervalsAll();
+        List<Interval> oInts = o.getInterval().computeNormalizedIntervalsAll();
+        for (Interval i : ints) {
+            for (Interval j: oInts) {
+                if (i.compareOpen(j) == 0)
+                    return 0;
+            }
         }
-        if (o.start > end) {
-            return 1;
-        }
-        return 0;
+        // if not overlapped then compare the ones with normalized start time
+        // (always the first ones)
+        return ints.get(0).compareOpen(oInts.get(0));
     }
 
     /**
-     * compares intervals for trains.
+     * compares intervals for trains. Closed/bounded interval. It uses
+     * normalized intervals.
      *
      * @param o interval
      * @return comparison
      */
-    public int compareToForTrain(TimeInterval o) {
-        if (o.end <= start) {
-            return -1;
+    public int compareClosedNormalized(TimeInterval o) {
+        List<Interval> ints = this.getInterval().computeNormalizedIntervalsAll();
+        List<Interval> oInts = o.getInterval().computeNormalizedIntervalsAll();
+        for (Interval i : ints) {
+            for (Interval j: oInts) {
+                if (i.compareClosed(j) == 0)
+                    return 0;
+            }
         }
-        if (o.start >= end) {
-            return 1;
-        }
-        return 0;
+        // if not overlapped then compare the ones with normalized start time
+        // (always the first ones)
+        return ints.get(0).compareClosed(oInts.get(0));
     }
 
     @Override
     public String toString() {
-        return train + "(" + start + "," + end + ")";
+        return train + "(" + getStart() + "," + getEnd() + ")";
     }
 
     /**
@@ -178,20 +190,6 @@ public class TimeInterval implements AttributesHolder, ObjectWithId {
      */
     public void setSpeed(int speed) {
         this.speed = speed;
-    }
-
-    /**
-     * @return the type
-     */
-    public TimeIntervalType getType() {
-        return type;
-    }
-
-    /**
-     * @param type the type to set
-     */
-    public void setType(TimeIntervalType type) {
-        this.type = type;
     }
 
     /**
@@ -236,7 +234,7 @@ public class TimeInterval implements AttributesHolder, ObjectWithId {
      * @return <code>false</code> if there is no platform for train that needs one (in any other case it returns <code>true</code>)
      */
     public boolean isPlatformOk() {
-        if (type == TimeIntervalType.NODE_END || type == TimeIntervalType.NODE_START || type == TimeIntervalType.NODE_STOP) {
+        if (this.isStop()) {
             return !(train.getType().isPlatform() && !((NodeTrack) track).isPlatform());
         } else {
             // otherwise ok
@@ -250,8 +248,7 @@ public class TimeInterval implements AttributesHolder, ObjectWithId {
      * @param timeShift shift time
      */
     public void shift(int timeShift) {
-        start += timeShift;
-        end += timeShift;
+        this.interval = new Interval(interval.getStart() + timeShift, interval.getEnd() + timeShift);
     }
 
     /**
@@ -259,8 +256,7 @@ public class TimeInterval implements AttributesHolder, ObjectWithId {
      */
     public void move(int aStart) {
         int length = this.getLength();
-        this.start = aStart;
-        this.end = aStart + length;
+        this.interval = new Interval(aStart, aStart + length);
     }
 
     /**
@@ -269,7 +265,7 @@ public class TimeInterval implements AttributesHolder, ObjectWithId {
      * @return length of the interval
      */
     public int getLength() {
-        return end - start;
+        return interval.getEnd() - interval.getStart();
     }
 
     /**
@@ -278,7 +274,7 @@ public class TimeInterval implements AttributesHolder, ObjectWithId {
      * @param length new length of the interval
      */
     public void setLength(int length) {
-        end = start + length;
+        this.interval = new Interval(interval.getStart(), interval.getStart() + length);
     }
 
     /**
@@ -382,6 +378,38 @@ public class TimeInterval implements AttributesHolder, ObjectWithId {
     
     public Line getOwnerAsLine() {
         return isLineOwner() ? (Line)owner : null;
+    }
+
+    public boolean isTechnological() {
+        return train.getTimeIntervalBefore() == this || train.getTimeIntervalAfter() == this;
+    }
+
+    public boolean isStop() {
+        return isInnerStop() || isFirst() || isLast();
+    }
+
+    public boolean isInnerStop() {
+        return isNodeOwner() && getLength() != 0;
+    }
+
+    public boolean isFirst() {
+        return train.getFirstInterval() == this;
+    }
+
+    public boolean isLast() {
+        return train.getLastInterval() == this;
+    }
+
+    public boolean isBoundary() {
+        return isFirst() || isLast();
+    }
+
+    public TimeInterval getNextTrainInterval() {
+        return train.getIntervalAfter(this);
+    }
+
+    public TimeInterval getPreviousTrainInterval() {
+        return train.getIntervalBefore(this);
     }
 
     @Override

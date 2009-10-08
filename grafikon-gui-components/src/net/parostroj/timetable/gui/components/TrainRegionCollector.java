@@ -3,9 +3,11 @@ package net.parostroj.timetable.gui.components;
 import java.awt.Shape;
 import java.awt.geom.Rectangle2D;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import net.parostroj.timetable.model.TimeInterval;
 import net.parostroj.timetable.model.Train;
 import net.parostroj.timetable.utils.Pair;
@@ -21,7 +23,7 @@ public class TrainRegionCollector {
     
     private boolean collected;
     
-    private Train modifiedTrain;
+    private Set<Train> modifiedTrains;
     
     // sensitivity radius
     private int radius;
@@ -29,19 +31,19 @@ public class TrainRegionCollector {
     public TrainRegionCollector(int radius) {
         regions = new HashMap<Train, List<Pair<Shape, TimeInterval>>>();
         collected = false;
-        modifiedTrain = null;
+        modifiedTrains = new HashSet<Train>();
         this.radius = radius;
     }
 
     public void clear() {
         regions.clear();
         collected = false;
-        modifiedTrain = null;
+        modifiedTrains = new HashSet<Train>();
     }
 
     public void addRegion(TimeInterval interval,Shape shape) {
         // check if the regions are already collected
-        if (collected && modifiedTrain != interval.getTrain())
+        if (collected && !modifiedTrains.contains(interval.getTrain()))
             return;
         // create key if doesn't exist
         if (!regions.containsKey(interval.getTrain())) {
@@ -53,11 +55,11 @@ public class TrainRegionCollector {
 
     public void finishCollecting() {
         this.collected = true;
-        modifiedTrain = null;
+        modifiedTrains = new HashSet<Train>();
     }
     
     public boolean isCollecting(Train train) {
-        return (!collected || modifiedTrain == train);
+        return (!collected || modifiedTrains.contains(train));
     }
     
     public void deleteTrain(Train train) {
@@ -65,12 +67,12 @@ public class TrainRegionCollector {
     }
     
     public void newTrain(Train train) {
-        modifiedTrain = train;
+        modifiedTrains.add(train);
     }
     
     public void modifiedTrain(Train train) {
         regions.remove(train);
-        modifiedTrain = train;
+        modifiedTrains.add(train);
     }
     
     public List<TimeInterval> getTrainForPoint(int x, int y) {

@@ -25,5 +25,8 @@ grafikon-save/nbproject/private/*
 grafikon-templates/build/*
 grafikon-templates/dist/*
 grafikon-templates/nbproject/private/*
+grafikon-ls4/build/*
+grafikon-ls4/dist/*
+grafikon-ls4/nbproject/private/*
 libs/nblibraries-private.properties
 /*.cmd

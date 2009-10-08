@@ -1,35 +1,37 @@
 package net.parostroj.timetable.model;
 
 /**
- * Data about trains' names creation a sorting.
+ * Data about trains' names creation a sorting, computing of times.
  * 
  * @author jub
  */
 public class TrainsData {
 
     private SortPattern trainSortPattern;
-    private String trainNameTemplate;
-    private String trainCompleteNameTemplate;
+    private TextTemplate trainNameTemplate;
+    private TextTemplate trainCompleteNameTemplate;
+    private Script runningTimeScript;
 
-    public TrainsData(String trainNameTemplate, String trainCompleteNameTemplate, SortPattern trainSortPattern) {
+    public TrainsData(TextTemplate trainNameTemplate, TextTemplate trainCompleteNameTemplate, SortPattern trainSortPattern, Script runningTimeScript) {
         this.trainNameTemplate = trainNameTemplate;
         this.trainSortPattern = trainSortPattern;
         this.trainCompleteNameTemplate = trainCompleteNameTemplate;
+        this.runningTimeScript = runningTimeScript;
     }
 
-    public String getTrainNameTemplate() {
+    public TextTemplate getTrainNameTemplate() {
         return trainNameTemplate;
     }
 
-    public void setTrainNameTemplate(String trainNameTemplate) {
+    public void setTrainNameTemplate(TextTemplate trainNameTemplate) {
         this.trainNameTemplate = trainNameTemplate;
     }
 
-    public String getTrainCompleteNameTemplate() {
+    public TextTemplate getTrainCompleteNameTemplate() {
         return trainCompleteNameTemplate;
     }
 
-    public void setTrainCompleteNameTemplate(String trainCompleteNameTemplate) {
+    public void setTrainCompleteNameTemplate(TextTemplate trainCompleteNameTemplate) {
         this.trainCompleteNameTemplate = trainCompleteNameTemplate;
     }
 
@@ -39,5 +41,13 @@ public class TrainsData {
 
     public void setTrainSortPattern(SortPattern trainSortPattern) {
         this.trainSortPattern = trainSortPattern;
+    }
+
+    public Script getRunningTimeScript() {
+        return runningTimeScript;
+    }
+
+    public void setRunningTimeScript(Script runningTimeScript) {
+        this.runningTimeScript = runningTimeScript;
     }
 }

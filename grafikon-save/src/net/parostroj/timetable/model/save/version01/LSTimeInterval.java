@@ -26,7 +26,6 @@ public class LSTimeInterval {
         routePartId = data.getIdForObject(interval.getOwner());
         speed = interval.getSpeed();
         stationTrackId = data.getIdForObject(interval.getTrack());
-        type = interval.getType().name();
         direction = (interval.getDirection() != null) ? interval.getDirection().getNumerical() : 0;
         comment = (String)interval.getAttribute("comment");
     }
