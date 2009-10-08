@@ -397,6 +397,7 @@ public class MainFrame extends javax.swing.JFrame implements ApplicationModelLis
         trainTypesMenuItem.setEnabled(model.getDiagram() != null);
         lineClassesMenuItem.setEnabled(model.getDiagram() != null);
         weightTablesMenuItem.setEnabled(model.getDiagram() != null);
+        penaltyTableMenuItem.setEnabled(model.getDiagram() != null);
         trainTimetableListByTimeFilteredMenuItem.setEnabled(model.getDiagram() != null);
         fileImportMenuItem.setEnabled(model.getDiagram() != null);
     }
@@ -435,6 +436,7 @@ public class MainFrame extends javax.swing.JFrame implements ApplicationModelLis
         trainTypesMenuItem = new javax.swing.JMenuItem();
         lineClassesMenuItem = new javax.swing.JMenuItem();
         weightTablesMenuItem = new javax.swing.JMenuItem();
+        penaltyTableMenuItem = new javax.swing.JMenuItem();
         javax.swing.JSeparator separator2 = new javax.swing.JSeparator();
         languageMenu = new javax.swing.JMenu();
         systemLanguageRadioButtonMenuItem = new javax.swing.JRadioButtonMenuItem();
@@ -595,6 +597,14 @@ public class MainFrame extends javax.swing.JFrame implements ApplicationModelLis
             }
         });
         fileMenu.add(weightTablesMenuItem);
+
+        penaltyTableMenuItem.setText(ResourceLoader.getString("menu.file.penaltytable")); // NOI18N
+        penaltyTableMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                penaltyTableMenuItemActionPerformed(evt);
+            }
+        });
+        fileMenu.add(penaltyTableMenuItem);
         fileMenu.add(separator2);
 
         languageMenu.setText(ResourceLoader.getString("menu.language")); // NOI18N
@@ -1478,6 +1488,15 @@ private void nodeTimetableListSelectMenuItemActionPerformed(java.awt.event.Actio
     }
 }//GEN-LAST:event_nodeTimetableListSelectMenuItemActionPerformed
 
+private void penaltyTableMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_penaltyTableMenuItemActionPerformed
+    TrainTypesCategoriesDialog dialog = new TrainTypesCategoriesDialog(this, true);
+    dialog.setTrainDiagram(model.getDiagram());
+    dialog.updateValues();
+    dialog.setLocationRelativeTo(this);
+    dialog.setVisible(true);
+
+}//GEN-LAST:event_penaltyTableMenuItemActionPerformed
+
     private void trainTimetableListByDc(final List<TrainsCycle> cycles) {
         final JFileChooser allHtmlFileChooser = getFileChooser(MainFrame.FileChooserType.ALL_HTML);
         int result = allHtmlFileChooser.showSaveDialog(this);
@@ -1771,6 +1790,7 @@ private void nodeTimetableListSelectMenuItemActionPerformed(java.awt.event.Actio
     private javax.swing.JMenu oLanguageMenu;
     private javax.swing.JRadioButtonMenuItem oSystemLRadioButtonMenuItem;
     private javax.swing.ButtonGroup outputLbuttonGroup;
+    private javax.swing.JMenuItem penaltyTableMenuItem;
     private javax.swing.JMenuItem recalculateMenuItem;
     private javax.swing.JMenuItem recalculateStopsMenuItem;
     private javax.swing.JSeparator separator3;

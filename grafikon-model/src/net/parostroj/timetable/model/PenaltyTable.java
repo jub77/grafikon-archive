@@ -1,5 +1,6 @@
 package net.parostroj.timetable.model;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -7,7 +8,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
-import java.util.Set;
 import net.parostroj.timetable.utils.IdGenerator;
 
 /**
@@ -19,9 +19,11 @@ public class PenaltyTable implements ObjectWithId {
 
     private String id;
     private Map<TrainTypeCategory, List<PenaltyTableRow>> rowsMap;
+    private List<TrainTypeCategory> categories;
 
     public PenaltyTable() {
         rowsMap = new HashMap<TrainTypeCategory, List<PenaltyTableRow>>();
+        categories = new ArrayList<TrainTypeCategory>(TrainTypeCategory.getPredefined().size());
         id = IdGenerator.getInstance().getId();
         // fill default categories
         for (TrainTypeCategory cat : TrainTypeCategory.getPredefined()) {
@@ -112,7 +114,7 @@ public class PenaltyTable implements ObjectWithId {
 
     public TrainTypeCategory getTrainTypeCategory(String categoryString) {
         TrainTypeCategory searched = TrainTypeCategory.fromString(categoryString);
-        for (TrainTypeCategory category : rowsMap.keySet()) {
+        for (TrainTypeCategory category : categories) {
             if (category.equals(searched)) {
                 return category;
             }
@@ -123,15 +125,31 @@ public class PenaltyTable implements ObjectWithId {
     public void addTrainTypeCategory(TrainTypeCategory category) {
         if (!rowsMap.containsKey(category)) {
             rowsMap.put(category, new LinkedList<PenaltyTableRow>());
+            categories.add(category);
+        }
+    }
+
+    public void addTrainTypeCategory(TrainTypeCategory category, int index) {
+        if (!rowsMap.containsKey(category)) {
+            rowsMap.put(category, new LinkedList<PenaltyTableRow>());
+            categories.add(index, category);
         }
     }
 
     public void removeTrainTypeCategory(TrainTypeCategory category) {
         rowsMap.remove(category);
+        categories.remove(category);
     }
 
-    public Set<TrainTypeCategory> getTrainTypeCategories() {
-        return Collections.unmodifiableSet(rowsMap.keySet());
+    public void moveTrainTypeCategory(TrainTypeCategory category, int toIndex) {
+        if (rowsMap.containsKey(category) && toIndex >= 0 && toIndex < categories.size()) {
+            categories.remove(category);
+            categories.add(toIndex, category);
+        }
+    }
+
+    public List<TrainTypeCategory> getTrainTypeCategories() {
+        return Collections.unmodifiableList(categories);
     }
 
     public List<PenaltyTableRow> getPenaltyTableRowsForCategory(TrainTypeCategory category) {
