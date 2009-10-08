@@ -100,7 +100,14 @@ public class TrainsCyclesPane extends javax.swing.JPanel {
 
             @Override
             public void modelChanged(ApplicationModelEvent event) {
-                graphicalTimetableView.setTrainDiagram(model.getDiagram());
+                switch (event.getType()) {
+                    case SET_DIAGRAM_CHANGED:
+                        graphicalTimetableView.setTrainDiagram(model.getDiagram());
+                        break;
+                    default:
+                        // nothing
+                        break;
+                }
             }
         });
         graphicalTimetableView.setTrainColors(TrainColors.BY_COLOR_CHOOSER, hts);

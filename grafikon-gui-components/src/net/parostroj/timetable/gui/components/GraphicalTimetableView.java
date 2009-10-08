@@ -134,6 +134,8 @@ public class GraphicalTimetableView extends javax.swing.JPanel implements Change
             this.diagram.addListenerWithNested(this.currentListener);
             if (diagram.getRoutes().size() > 0) {
                 this.setRoute(diagram.getRoutes().get(0));
+            } else {
+                this.setRoute(null);
             }
         }
     }
