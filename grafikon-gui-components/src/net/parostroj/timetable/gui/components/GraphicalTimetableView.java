@@ -17,6 +17,7 @@ import net.parostroj.timetable.model.events.LineEvent;
 import net.parostroj.timetable.model.events.TrainDiagramEvent;
 import net.parostroj.timetable.model.events.TrainDiagramListenerWithNested;
 import net.parostroj.timetable.model.events.TrainEvent;
+import net.parostroj.timetable.model.events.TrainTypeEvent;
 
 /**
  * Graphical timetable view.
@@ -126,8 +127,9 @@ public class GraphicalTimetableView extends javax.swing.JPanel implements Change
                         } else if (event.getNestedEvent() instanceof LineEvent) {
                             LineEvent lEvent = (LineEvent) event.getNestedEvent();
                             lineChanged(lEvent);
+                        } else if (event.getNestedEvent() instanceof TrainTypeEvent) {
+                            trainTypeChanged((TrainTypeEvent)event.getNestedEvent());
                         }
-                        // TODO add train type (color and names) when the event is available ...
                     }
                 }
             };
@@ -177,6 +179,16 @@ public class GraphicalTimetableView extends javax.swing.JPanel implements Change
                     // redraw all
                     recreateDraw(this.getRoute());
                 }
+                break;
+        }
+    }
+
+    private void trainTypeChanged(TrainTypeEvent event) {
+        switch (event.getType()) {
+            case ATTRIBUTE:
+                if (event.getAttributeName().equals("color") || event.getAttributeName().equals("trainNameTemplate"))
+                    // repait
+                    this.repaint();
                 break;
         }
     }

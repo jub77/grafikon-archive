@@ -27,18 +27,14 @@ public class GetTrainTimetable {
             if (node != null) {
                 Formatter f = new Formatter(buffer);
                 f.format("%1$-20s", node.getName());
-                switch (time.getType()) {
-                    case NODE_STOP:
-                        buffer.append(" ").append(TimeConverter.convertFromIntToTextWS(time.getStart())).append(" ").append(TimeConverter.convertFromIntToTextWS(time.getEnd())).append("\n");
-                        break;
-                    case NODE_START: case NODE_THROUGH:
-                        buffer.append(" ").append("     ").append(" ").append(TimeConverter.convertFromIntToTextWS(time.getEnd())).append("\n");
-                        break;
-                    case NODE_END:
-                        buffer.append(" ").append(TimeConverter.convertFromIntToTextWS(time.getStart())).append("\n");
-                        break;
-                    default:
-                        buffer.append('\n');
+                if (time.isFirst() || !time.isStop()) {
+                    buffer.append(" ").append("     ").append(" ").append(TimeConverter.convertFromIntToTextWS(time.getEnd())).append("\n");
+                } else if (time.isLast()) {
+                    buffer.append(" ").append(TimeConverter.convertFromIntToTextWS(time.getStart())).append("\n");
+                } else if (time.isStop()) {
+                    buffer.append(" ").append(TimeConverter.convertFromIntToTextWS(time.getStart())).append(" ").append(TimeConverter.convertFromIntToTextWS(time.getEnd())).append("\n");
+                } else {
+                    buffer.append('\n');
                 }
             }
         }

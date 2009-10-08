@@ -213,30 +213,44 @@ abstract public class GTDraw {
         }
     }
     
-    abstract protected Line2D createTrainLine(TimeInterval interval, double timeStep);
+    abstract protected Line2D createTrainLine(TimeInterval interval, Interval i, double timeStep);
     
     protected void paintTrainsOnLine(Line line, Graphics2D g, double timeStep, Stroke trainStroke) {
         g.setStroke(trainStroke);
         for (LineTrack track : line.getTracks()) {
             for (TimeInterval interval : track.getTimeIntervalList()) {
-                g.setColor(this.getIntervalColor(interval));
+                boolean paintTrainName = (interval.getFrom().getType() != NodeType.SIGNAL) &&
+                        (preferences.get(GTDrawPreference.TRAIN_NAMES) == Boolean.TRUE);
+                boolean paintMinutes = preferences.get(GTDrawPreference.ARRIVAL_DEPARTURE_DIGITS) == Boolean.TRUE;
 
-                Line2D line2D = this.createTrainLine(interval, timeStep);
-
-                // add shape to collector
-                this.addShapeToCollector(interval, line2D);
-
-                g.draw(line2D);
-
-                if ((interval.getFrom().getType() != NodeType.SIGNAL) &&
-                        (preferences.get(GTDrawPreference.TRAIN_NAMES) == Boolean.TRUE))
-                    this.paintTrainNameOnLine(g, interval, line2D);
-
-                if (preferences.get(GTDrawPreference.ARRIVAL_DEPARTURE_DIGITS) == Boolean.TRUE)
-                    this.paintMinutesOnLine(g, interval, line2D);
+                List<Interval> inters  = interval.getInterval().computeNormalizedIntervals();
+                if (inters == null) {
+                    g.setColor(this.getIntervalColor(interval));
+                    this.paintTrainOnLineWithInterval(g, paintTrainName, paintMinutes, interval, interval.getInterval(), timeStep);
+                } else {
+                    for (Interval i : inters) {
+                    g.setColor(this.getIntervalColor(interval));
+                    this.paintTrainOnLineWithInterval(g, paintTrainName, paintMinutes, interval, i, timeStep);
+                    }
+                }
             }
         }
         g.setColor(Color.BLACK);
+    }
+
+    private void paintTrainOnLineWithInterval(Graphics2D g, boolean paintTrainName, boolean paintMinutes, TimeInterval interval, Interval i, double timeStep) {
+        Line2D line2D = this.createTrainLine(interval, i, timeStep);
+
+        // add shape to collector
+        this.addShapeToCollector(interval, line2D);
+
+        g.draw(line2D);
+
+        if (paintTrainName)
+            this.paintTrainNameOnLine(g, interval, line2D);
+        if (paintMinutes)
+            this.paintMinutesOnLine(g, interval, line2D);
+
     }
 
     protected void paintStationNames(Graphics2D g, List<Node> stations, Map<Node, Integer> positions) {
@@ -295,7 +309,7 @@ abstract public class GTDraw {
                 try {
                     nameShape = old.createInverse().createTransformedShape(nameShape);
                 } catch (Exception e) {
-                    LOG.log(Level.SEVERE, "Error trainsform name shape.", e);
+                    LOG.log(Level.SEVERE, "Error transform name shape.", e);
                 }
             }
         }
@@ -316,9 +330,9 @@ abstract public class GTDraw {
     }
     
     protected void paintMinutesOnLine(Graphics2D g, TimeInterval interval, Line2D line) {
-        // check if I should draw endd time
+        // check if I should draw end time
         boolean endTime = true;
-        if (interval.getType() == TimeIntervalType.LINE_START_THROUGH || interval.getType() == TimeIntervalType.LINE_THROUGH) {
+        if (!interval.getNextTrainInterval().isStop()) {
             Train train = interval.getTrain();
             int ind = train.getTimeIntervalList().indexOf(interval);
             if ((ind + 2) < train.getTimeIntervalList().size()) {

@@ -79,8 +79,8 @@ public class NodeTimetablesList {
         if (i.getOwner() != i.getTrain().getEndNode())
             endNodeName = i.getTrain().getEndNode().getAbbr();
         
-        String fromTime = (from == null && !i.getType().isTechnological()) ? "&nbsp;" : TimeConverter.convertFromIntToText(i.getStart());
-        String toTime = (to == null && !i.getType().isTechnological()) ? "&nbsp;" : TimeConverter.convertFromIntToText(i.getEnd());
+        String fromTime = (from == null && !i.isTechnological()) ? "&nbsp;" : TimeConverter.convertFromIntToText(i.getStart());
+        String toTime = (to == null && !i.isTechnological()) ? "&nbsp;" : TimeConverter.convertFromIntToText(i.getEnd());
         
         String comment = this.generateComment(i);
         
@@ -91,7 +91,7 @@ public class NodeTimetablesList {
         TimeIntervalList list = new TimeIntervalList();
         for (NodeTrack track : node.getTracks()) {
             for (TimeInterval i : track.getTimeIntervalList()) {
-                list.addIntervalByStartTime(i);
+                list.addIntervalByNormalizedStartTime(i);
             }
         }
         return list;
@@ -99,7 +99,7 @@ public class NodeTimetablesList {
     
     private String generateComment(TimeInterval interval) {
         // technological time handle differently
-        if (interval.getType().isTechnological())
+        if (interval.isTechnological())
             return templates.getString("technological.time");
 
         StringBuilder comment = new StringBuilder();
@@ -175,7 +175,7 @@ public class NodeTimetablesList {
 
     private void generateCommentWithLength(TimeInterval interval, StringBuilder comment) {
         Train train = interval.getTrain();
-        if (train.getIntervalAfter(interval) != null && interval.getType().isStop() && train.getType().getSbType() == SpeedingBrakingType.FREIGHT) {
+        if (train.getIntervalAfter(interval) != null && interval.isStop() && train.getType().getCategory().equals(TrainTypeCategory.fromString("freight"))) {
             Pair<Node, Integer> length = TrainsHelper.getNextLength(interval.getOwnerAsNode(), train, diagram);
             if (length == null) {
                 // check old style comment

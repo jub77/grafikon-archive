@@ -3,6 +3,7 @@ package net.parostroj.timetable.model.events;
 import net.parostroj.timetable.model.Route;
 import net.parostroj.timetable.model.Train;
 import net.parostroj.timetable.model.TrainDiagram;
+import net.parostroj.timetable.model.TrainType;
 
 /**
  * Train diagram event.
@@ -12,12 +13,14 @@ import net.parostroj.timetable.model.TrainDiagram;
 public class TrainDiagramEvent extends GTEvent<TrainDiagram> {
 
     public enum Type {
-        NESTED, ROUTE_ADDED, ROUTE_REMOVED, TRAIN_ADDED, TRAIN_REMOVED
+        NESTED, ROUTE_ADDED, ROUTE_REMOVED, TRAIN_ADDED, TRAIN_REMOVED,
+        TRAIN_TYPE_ADDED, TRAIN_TYPE_REMOVED;
     }
     private Type type;
     private String attributeName;
     private Route route;
     private Train train;
+    private TrainType trainType;
 
     public TrainDiagramEvent(TrainDiagram diagram, Type type) {
         super(diagram);
@@ -41,6 +44,12 @@ public class TrainDiagramEvent extends GTEvent<TrainDiagram> {
         this.train = train;
     }
 
+    public TrainDiagramEvent(TrainDiagram diagram, Type type, TrainType trainType) {
+        super(diagram);
+        this.type = type;
+        this.trainType = trainType;
+    }
+
     public String getAttributeName() {
         return attributeName;
     }
@@ -55,6 +64,10 @@ public class TrainDiagramEvent extends GTEvent<TrainDiagram> {
 
     public Train getTrain() {
         return train;
+    }
+
+    public TrainType getTrainType() {
+        return trainType;
     }
 
     @Override

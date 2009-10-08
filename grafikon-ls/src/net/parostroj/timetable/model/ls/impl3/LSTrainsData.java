@@ -3,6 +3,9 @@ package net.parostroj.timetable.model.ls.impl3;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
+import net.parostroj.timetable.model.Language;
+import net.parostroj.timetable.model.Script;
+import net.parostroj.timetable.model.TextTemplate;
 import net.parostroj.timetable.model.TrainsData;
 
 /**
@@ -23,8 +26,8 @@ public class LSTrainsData {
 
     public LSTrainsData(TrainsData data) {
         this();
-        trainNameTemplate = data.getTrainNameTemplate();
-        trainCompleteNameTemplate = data.getTrainCompleteNameTemplate();
+        trainNameTemplate = data.getTrainNameTemplate().getTemplate();
+        trainCompleteNameTemplate = data.getTrainCompleteNameTemplate().getTemplate();
         trainSortPattern = new LSSortPattern(data.getTrainSortPattern());
     }
 
@@ -56,6 +59,25 @@ public class LSTrainsData {
     }
     
     public TrainsData createTrainsData() {
-        return new TrainsData(trainNameTemplate, trainCompleteNameTemplate, trainSortPattern.createSortPattern());
+        return new TrainsData(
+                TextTemplate.createTextTemplate(trainNameTemplate, Language.MVEL),
+                TextTemplate.createTextTemplate(trainCompleteNameTemplate, Language.MVEL),
+                trainSortPattern.createSortPattern(),
+                Script.createScript(
+                "int time = (int) Math.floor((((double) length) * scale * timeScale * 3.6) / (speed * 1000));\n" +
+                "int penalty = 0;\n" +
+                "if (toSpeed < speed) {\n" +
+                "  int penalty1 = penaltySolver.getDecelerationPenalty(speed);\n" +
+                "  int penalty2 = penaltySolver.getDecelerationPenalty(toSpeed);\n" +
+                "  penalty = penalty1 - penalty2;\n" +
+                "}\n" +
+                "if (fromSpeed < speed) {\n" +
+                "  int penalty1 = penaltySolver.getAccelerationPenalty(fromSpeed);\n" +
+                "  int penalty2 = penaltySolver.getAccelerationPenalty(speed);\n" +
+                "  penalty = penalty + penalty2 - penalty1;\n" +
+                "}\n" +
+                "time = time + (int)Math.round(penalty * 0.18d * timeScale);\n" +
+                "time = ((int)((time + 40) / 60)) * 60;\n" +
+                "return time;\n", Language.GROOVY));
     }
 }

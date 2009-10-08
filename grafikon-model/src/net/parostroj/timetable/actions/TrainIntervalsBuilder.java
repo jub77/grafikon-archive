@@ -1,8 +1,7 @@
 package net.parostroj.timetable.actions;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.logging.Logger;
 import net.parostroj.timetable.model.*;
 import net.parostroj.timetable.utils.IdGenerator;
@@ -28,7 +27,7 @@ public class TrainIntervalsBuilder {
         this.lastInterval = null;
         this.startTime = startTime;
         this.finished = false;
-        this.timeIntervals = new LinkedList<TimeInterval>();
+        this.timeIntervals = new ArrayList<TimeInterval>();
     }
 
     public void addNode(String intervalId, Node node, NodeTrack track, int stop, Attributes attributes) {
@@ -41,13 +40,13 @@ public class TrainIntervalsBuilder {
         }
         if (lastInterval == null) {
             // create first time interval
-            lastInterval = new TimeInterval(intervalId, train, node, startTime, startTime, TimeIntervalType.NODE_START, track);
+            lastInterval = new TimeInterval(intervalId, train, node, startTime, startTime, track);
         } else {
             if (lastInterval.getOwner().asLine() == null) {
                 throw new IllegalStateException("Last interval owner was not line.");
             }
             lastInterval = new TimeInterval(intervalId,
-                    train, node, 0, stop, stop == 0 ? TimeIntervalType.NODE_THROUGH : TimeIntervalType.NODE_STOP, track);
+                    train, node, 0, stop, track);
         }
         lastInterval.setAttributes(attributes);
         timeIntervals.add(lastInterval);
@@ -68,7 +67,6 @@ public class TrainIntervalsBuilder {
         lastInterval = new TimeInterval(
                 intervalId, train, line, 0, 0, speed,
                 lastInterval.getOwner().asNode() == line.getFrom() ? TimeIntervalDirection.FORWARD : TimeIntervalDirection.BACKWARD,
-                lastInterval.getType() == TimeIntervalType.NODE_THROUGH ? TimeIntervalType.LINE_THROUGH_STOP : TimeIntervalType.LINE_START_STOP,
                 track);
         lastInterval.setAttributes(attributes);
         timeIntervals.add(lastInterval);
@@ -78,42 +76,64 @@ public class TrainIntervalsBuilder {
         if (finished) {
             throw new IllegalStateException("Cannot finish already finished train.");
         }
-        // finish last node interval
-        if (lastInterval == null || lastInterval.getOwner().asNode() == null || lastInterval.getType() == TimeIntervalType.NODE_START) {
-            throw new IllegalStateException("Cannot finish train interval building.");
-        }
-        
-        ListIterator<TimeInterval> iterator = timeIntervals.listIterator();
-        TimeInterval last = iterator.next();
-        int start = startTime;
-        while (iterator.hasNext()) {
-            TimeInterval current = iterator.next();
-            TimeInterval created = null;
-            if (current.getOwner().asNode() != null) {
-                // finish last line interval
-                TimeIntervalType type = null;
-                if (current.getLength() != 0 || !iterator.hasNext())
-                    type = last.getType().changeToNextStop();
-                else
-                    type = last.getType().changeToNextThrough();
-                created = last.getOwner().asLine().createTimeInterval(last.getId(), train, start, diagram, type, last.getDirection(), last.getSpeed());
-                created.setTrack(last.getTrack());
+
+        // finish train
+        int i = 0;
+        TimeInterval createdInterval;
+        int time = this.startTime;
+
+        for (TimeInterval interval : timeIntervals) {
+            if (interval.isNodeOwner()) {
+                // handle node
+                Node node = interval.getOwnerAsNode();
+                createdInterval = node.createTimeInterval(
+                        interval.getId(), train, time,
+                        diagram, interval.getLength());
             } else {
-                // finish last node interval
-                created = last.getOwner().asNode().createTimeInterval(last.getId(), train, start, diagram, last.getType(), last.getLength());
-                created.setTrack(last.getTrack());
+                // handle line
+                Line line = interval.getOwnerAsLine();
+                createdInterval = line.createTimeInterval(
+                        interval.getId(), train, time, diagram,
+                        interval.getDirection(), interval.getSpeed(),
+                        this.computeFromSpeed(interval, timeIntervals, i),
+                        this.computeToSpeed(interval, timeIntervals, i));
             }
-            created.setAttributes(last.getAttributes());
-            train.addInterval(created);
-            start = created.getEnd();
-            last = current;
+
+            // set track and attributes
+            createdInterval.setTrack(interval.getTrack());
+            createdInterval.setAttributes(interval.getAttributes());
+
+            // add created interval to train and set current time
+            time = createdInterval.getEnd();
+            train.addInterval(createdInterval);
+
+            i++;
         }
-        // finish last node
-        TimeInterval lastCreated = last.getOwner().asNode().createTimeInterval(last.getId(), train, start, diagram, TimeIntervalType.NODE_END, last.getLength());
-        lastCreated.setAttributes(last.getAttributes());
-        lastCreated.setTrack(last.getTrack());
-        train.addInterval(lastCreated);
         
         finished = true;
+    }
+
+    private int computeFromSpeed(TimeInterval interval, List<TimeInterval> intervals, int i) {
+        if (!interval.isLineOwner())
+            throw new IllegalArgumentException("Cannot find speed for node.");
+        // previous node is stop - first node or node has not null time
+        if ((i - 1) == 0 || intervals.get(i - 1).getLength() != 0)
+            return 0;
+        else {
+            // check speed of previous line
+            return intervals.get(i - 2).getSpeed();
+        }
+    }
+
+    private int computeToSpeed(TimeInterval interval, List<TimeInterval> intervals, int i) {
+        if (!interval.isLineOwner())
+            throw new IllegalArgumentException("Cannot find speed for node.");
+        // next node is stop - last node or node has not null time
+        if ((i + 1) == (intervals.size() - 1) || intervals.get(i + 1).getLength() != 0)
+            return 0;
+        else {
+            // check speed of previous line
+            return intervals.get(i + 2).getSpeed();
+        }
     }
 }

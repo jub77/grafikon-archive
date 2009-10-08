@@ -2,10 +2,11 @@ package net.parostroj.timetable.model;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import net.parostroj.timetable.model.events.LineEvent;
 import net.parostroj.timetable.model.events.LineListener;
-import net.parostroj.timetable.utils.Pair;
 
 /**
  * Track between two route points.
@@ -103,12 +104,12 @@ public class Line implements RouteSegment, AttributesHolder {
         this.listenerSupport.fireEvent(new LineEvent(this, "length"));
     }
 
-    public TimeInterval createTimeInterval(String intervalId, Train train, int start, TrainDiagram diagram, TimeIntervalType type, TimeIntervalDirection direction, int prefferedSpeed) {
-        Pair<Integer, Integer> computed = this.computeRunningTime(train, prefferedSpeed, diagram, type);
-        int end = start + computed.first;
+    public TimeInterval createTimeInterval(String intervalId, Train train, int start, TrainDiagram diagram, TimeIntervalDirection direction, int speed, int fromSpeed, int toSpeed) {
+        int computedTime = this.computeRunningTime(train, speed, diagram, fromSpeed, toSpeed);
+        int end = start + computedTime;
 
         LineTrack selectedTrack = null;
-        TimeInterval interval = new TimeInterval(null, train, this, start, end, computed.second, direction, type, null);
+        TimeInterval interval = new TimeInterval(null, train, this, start, end, speed, direction, null);
 
         // check which track is free for adding
         for (LineTrack lineTrack : tracks) {
@@ -124,7 +125,7 @@ public class Line implements RouteSegment, AttributesHolder {
             selectedTrack = tracks.get(0);
         }
 
-        return new TimeInterval(intervalId, train, this, start, end, computed.second, direction, type, selectedTrack);
+        return new TimeInterval(intervalId, train, this, start, end, speed, direction, selectedTrack);
     }
 
     /**
@@ -179,19 +180,7 @@ public class Line implements RouteSegment, AttributesHolder {
         this.listenerSupport.fireEvent(new LineEvent(this, "topSpeed"));
     }
 
-    /**
-     * computes running time for this track.
-     *
-     * @param train train
-     * @param prefferedSpeed preffered speed
-     * @param data data
-     * @param type type of the interval
-     * @return pair running time and speed
-     */
-    public Pair<Integer, Integer> computeRunningTime(Train train, int prefferedSpeed, TrainDiagram diagram, TimeIntervalType type) {
-        Scale scale = (Scale) diagram.getAttribute("scale");
-        double timeScale = (Double) diagram.getAttribute("time.scale");
-
+    public int computeSpeed(Train train, int prefferedSpeed) {
         int speed;
         if (prefferedSpeed != NO_SPEED) {
             speed = Math.min(prefferedSpeed, train.getTopSpeed());
@@ -204,22 +193,55 @@ public class Line implements RouteSegment, AttributesHolder {
         if (this.topSpeed != UNLIMITED_SPEED) {
             speed = Math.min(speed, this.topSpeed);
         }
-        // compute time for the train
-        int time = (int) Math.floor((((double) length) * scale.getRatio() * timeScale * 3.6) / (speed * 1000));
+        return speed;
+    }
 
-        // apply speeding and braking penalties
-        PenaltyTable penaltyTable = RunningTimeComputationHelper.getPenaltyTable();
-        if (type == TimeIntervalType.LINE_THROUGH_STOP || type == TimeIntervalType.LINE_START_STOP) {
-            time = time + penaltyTable.getBrakingTimePenalty(train.getType().getSbType(), speed, timeScale);
-        }
-        if (type == TimeIntervalType.LINE_START_THROUGH || type == TimeIntervalType.LINE_START_STOP) {
-            time = time + penaltyTable.getSpeedingTimePenalty(train.getType().getSbType(), speed, timeScale);
-        }
+    private interface PenaltySolver {
+        int getDecelerationPenalty(int speed);
+        int getAccelerationPenalty(int speed);
+    }
 
-        // rounding to minutes (1 - 19 .. down, 20 - 59 .. up)
-        time = ((time + 40) / 60) * 60;
+    /**
+     * computes running time for this track.
+     *
+     * @param train train
+     * @param speed speed
+     * @param diagram train diagram
+     * @param fromSpeed from speed
+     * @param toSpeed to speed
+     * @return pair running time and speed
+     */
+    public int computeRunningTime(final Train train, int speed, TrainDiagram diagram, int fromSpeed, int toSpeed) {
+        Scale scale = (Scale) diagram.getAttribute("scale");
+        double timeScale = (Double) diagram.getAttribute("time.scale");
+        final PenaltyTable penaltyTable = diagram.getPenaltyTable();
+        PenaltySolver ps = new PenaltySolver() {
 
-        return new Pair<Integer, Integer>(time, speed);
+            @Override
+            public int getDecelerationPenalty(int speed) {
+                return penaltyTable.getRowForSpeedAndCategory(train.getType().getCategory(), speed).getDeceleration();
+            }
+
+            @Override
+            public int getAccelerationPenalty(int speed) {
+                return penaltyTable.getRowForSpeedAndCategory(train.getType().getCategory(), speed).getAcceleration();
+            }
+        };
+
+        Map<String, Object> binding = new HashMap<String, Object>();
+        binding.put("speed", speed);
+        binding.put("fromSpeed", fromSpeed);
+        binding.put("toSpeed", toSpeed);
+        binding.put("timeScale", timeScale);
+        binding.put("scale", scale.getRatio());
+        binding.put("length", length);
+        binding.put("penaltySolver", ps);
+
+        Object result = diagram.getTrainsData().getRunningTimeScript().evaluate(binding);
+        if (!(result instanceof Integer))
+            throw new IllegalStateException("Unexpected result: " + result);
+
+        return ((Integer)result).intValue();
     }
 
     @Override

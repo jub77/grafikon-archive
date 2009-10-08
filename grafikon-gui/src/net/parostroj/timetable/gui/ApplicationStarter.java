@@ -17,7 +17,7 @@ import javax.swing.SwingUtilities;
  * @author jub
  */
 public class ApplicationStarter {
-    private static final Logger LOGGER = Logger.getLogger(ApplicationStarter.class.getName());
+    private static final Logger LOG = Logger.getLogger(ApplicationStarter.class.getName());
     
     private Class<? extends JFrame> applicationClass;
     
@@ -46,13 +46,13 @@ public class ApplicationStarter {
     }
     
     public void start() throws ApplicationStarterException {
-            LOGGER.fine("Start starter.");
+            LOG.finer("Start starter.");
             if (SplashScreen.getSplashScreen() == null)
                 startFrame();
             else {
                 startOriginal();
             }
-            LOGGER.fine("End starter.");
+            LOG.finer("End starter.");
     }
     
     private JFrame getApplicationInstance(SplashScreenInfo splash) throws ApplicationStarterException {
@@ -84,7 +84,7 @@ public class ApplicationStarter {
     }
     
     private void startOriginal() throws ApplicationStarterException {
-        LOGGER.fine("Using Java 1.6 splash screen.");
+        LOG.fine("Using Java 1.6 splash screen.");
         SplashScreen splash = SplashScreen.getSplashScreen();
         SplashScreenInfoOrig info = new SplashScreenInfoOrig(splash, x, y);
         final JFrame frm = this.getApplicationInstance(info);
@@ -97,10 +97,10 @@ public class ApplicationStarter {
     }
     
     private void startFrame() throws ApplicationStarterException {
-        LOGGER.fine("Showing JFrame splash screen.");
+        LOG.fine("Showing JFrame splash screen.");
         final SplashScreenFrame spl = new SplashScreenFrame(x, y, image);
         spl.setVisible(true);
-        LOGGER.fine("Splash initialized.");
+        LOG.finer("Splash initialized.");
         final JFrame frm = this.getApplicationInstance(spl);
         SwingUtilities.invokeLater(new Runnable() {
             @Override

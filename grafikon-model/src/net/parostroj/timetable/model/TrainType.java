@@ -1,9 +1,8 @@
 package net.parostroj.timetable.model;
 
 import java.awt.Color;
-import java.util.HashMap;
-import java.util.Map;
-import org.mvel2.templates.TemplateRuntime;
+import net.parostroj.timetable.model.events.TrainTypeEvent;
+import net.parostroj.timetable.model.events.TrainTypeListener;
 
 /**
  * Train type.
@@ -19,17 +18,19 @@ public class TrainType implements ObjectWithId {
     private String desc;
     /** Color for GT. */
     private Color color;
-    /** Brake type. */
-    private SpeedingBrakingType sbType;
+    /** Category. */
+    private TrainTypeCategory category;
     /** Needs platform in the station. */
     private boolean platform;
     /** Template for train name. */
-    private String trainNameTemplate;
+    private TextTemplate trainNameTemplate;
     /** Template for complete train name. */
-    private String trainCompleteNameTemplate;
+    private TextTemplate trainCompleteNameTemplate;
     /** Reference to trains data. */
     private TrainsData trainsData;
-    
+    /** Listener support. */
+    private GTListenerSupport<TrainTypeListener, TrainTypeEvent> listenerSupport;
+
     /**
      * creates instance.
      * 
@@ -37,6 +38,13 @@ public class TrainType implements ObjectWithId {
      */
     public TrainType(String id) {
         this.id = id;
+        listenerSupport = new GTListenerSupport<TrainTypeListener, TrainTypeEvent>(new GTEventSender<TrainTypeListener, TrainTypeEvent>() {
+
+            @Override
+            public void fireEvent(TrainTypeListener listener, TrainTypeEvent event) {
+                listener.trainTypeChanged(event);
+            }
+        });
     }
 
     /**
@@ -67,6 +75,7 @@ public class TrainType implements ObjectWithId {
      */
     public void setAbbr(String abbr) {
         this.abbr = abbr;
+        this.listenerSupport.fireEvent(new TrainTypeEvent(this, "abbr"));
     }
 
     /**
@@ -81,6 +90,7 @@ public class TrainType implements ObjectWithId {
      */
     public void setColor(Color color) {
         this.color = color;
+        this.listenerSupport.fireEvent(new TrainTypeEvent(this, "color"));
     }
 
     /**
@@ -95,6 +105,7 @@ public class TrainType implements ObjectWithId {
      */
     public void setDesc(String desc) {
         this.desc = desc;
+        this.listenerSupport.fireEvent(new TrainTypeEvent(this, "desc"));
     }
 
     /**
@@ -109,48 +120,52 @@ public class TrainType implements ObjectWithId {
      */
     public void setPlatform(boolean platform) {
         this.platform = platform;
+        this.listenerSupport.fireEvent(new TrainTypeEvent(this, "platform"));
     }
 
     /**
-     * @return brake type
+     * @return category of train type
      */
-    public SpeedingBrakingType getSbType() {
-        return sbType;
+    public TrainTypeCategory getCategory() {
+        return category;
     }
 
     /**
-     * @param sbType sets brake type
+     * @param category sets category of train type
      */
-    public void setSbType(SpeedingBrakingType sbType) {
-        this.sbType = sbType;
+    public void setCategory(TrainTypeCategory category) {
+        this.category = category;
+        this.listenerSupport.fireEvent(new TrainTypeEvent(this, "category"));
     }
 
     /**
      * @return train's name template
      */
-    public String getTrainNameTemplate() {
+    public TextTemplate getTrainNameTemplate() {
         return trainNameTemplate;
     }
 
     /**
      * @param trainNameTemplate sets train's name template
      */
-    public void setTrainNameTemplate(String trainNameTemplate) {
+    public void setTrainNameTemplate(TextTemplate trainNameTemplate) {
         this.trainNameTemplate = trainNameTemplate;
+        this.listenerSupport.fireEvent(new TrainTypeEvent(this, "trainNameTemplate"));
     }
 
     /**
      * @return train's complete name template
      */
-    public String getTrainCompleteNameTemplate() {
+    public TextTemplate getTrainCompleteNameTemplate() {
         return trainCompleteNameTemplate;
     }
 
     /**
      * @param trainCompleteNameTemplate sets template with complete train's name
      */
-    public void setTrainCompleteNameTemplate(String trainCompleteNameTemplate) {
+    public void setTrainCompleteNameTemplate(TextTemplate trainCompleteNameTemplate) {
         this.trainCompleteNameTemplate = trainCompleteNameTemplate;
+        this.listenerSupport.fireEvent(new TrainTypeEvent(this, "trainCompleteNameTemplate"));
     }
 
     /**
@@ -160,10 +175,10 @@ public class TrainType implements ObjectWithId {
      * @return formatted train's name
      */
     public String formatTrainName(Train train) {
-        String template = (trainNameTemplate == null) ?
+        TextTemplate template = (trainNameTemplate == null) ?
             trainsData.getTrainNameTemplate() :
             trainNameTemplate;
-        return (String)TemplateRuntime.eval(template, this.createVariablesForTemplate(train));
+        return template.evaluate(train, train.createTemplateBinding());
     }
 
     /**
@@ -173,19 +188,28 @@ public class TrainType implements ObjectWithId {
      * @return formatted complete train's name
      */
     public String formatTrainCompleteName(Train train) {
-        String template = (trainCompleteNameTemplate == null) ?
+        TextTemplate template = (trainCompleteNameTemplate == null) ?
             trainsData.getTrainCompleteNameTemplate() :
             trainCompleteNameTemplate;
-        return (String)TemplateRuntime.eval(template, this.createVariablesForTemplate(train));
+        return template.evaluate(train, train.createTemplateBinding());
     }
     
-    private Map<String,Object> createVariablesForTemplate(Train train) {
-        Map<String,Object> variables = new HashMap<String, Object>();
-        variables.put("train", train);
-        variables.put("type", this);
-        return variables;
+    /**
+     * adds listener to train.
+     * @param listener listener
+     */
+    public void addListener(TrainTypeListener listener) {
+        listenerSupport.addListener(listener);
     }
-    
+
+    /**
+     * removes listener from train.
+     * @param listener listener
+     */
+    public void removeListener(TrainTypeListener listener) {
+        listenerSupport.removeListener(listener);
+    }
+
     @Override
     public String toString() {
         return abbr + " - " + desc;

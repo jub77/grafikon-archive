@@ -4,6 +4,7 @@ import java.awt.*;
 import java.awt.geom.Line2D;
 import java.util.*;
 import net.parostroj.timetable.model.*;
+import net.parostroj.timetable.model.Interval;
 
 /**
  * Classic graphical timetable.
@@ -91,9 +92,9 @@ public class GTDrawClassic extends GTDraw {
     }
 
     @Override
-    protected Line2D createTrainLine(TimeInterval interval, double timeStep) {
-        int x1 = (int)(start.x + interval.getStart() * timeStep);
-        int x2 = (int)(start.x + interval.getEnd() * timeStep);
+    protected Line2D createTrainLine(TimeInterval interval, Interval i, double timeStep) {
+        int x1 = (int)(start.x + i.getStart() * timeStep);
+        int x2 = (int)(start.x + i.getEnd() * timeStep);
         int y1 = start.y + positions.get(interval.getFrom());
         int y2 = start.y + positions.get(interval.getTo());
 

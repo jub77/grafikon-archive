@@ -85,7 +85,7 @@ class ImagePanel extends JPanel {
 
     @Override
     public void paint(Graphics g) {
-        LOG.fine("Splash paint start.");
+        LOG.finer("Splash paint start.");
         super.paint(g);
         g.drawImage(image, 0, 0, null);
         if (text != null) {
@@ -94,6 +94,6 @@ class ImagePanel extends JPanel {
             LOG.finest(String.format("Text %d,%d,%s", x, y, text));
             g.drawString(text, x, y);
         }
-        LOG.fine("Splash paint end.");
+        LOG.finer("Splash paint end.");
     }
 }

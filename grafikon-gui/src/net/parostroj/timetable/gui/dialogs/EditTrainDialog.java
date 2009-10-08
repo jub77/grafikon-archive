@@ -10,9 +10,9 @@ import javax.swing.DefaultComboBoxModel;
 import net.parostroj.timetable.gui.ApplicationModel;
 import net.parostroj.timetable.gui.ApplicationModelEvent;
 import net.parostroj.timetable.gui.ApplicationModelEventType;
-import net.parostroj.timetable.model.SpeedingBrakingType;
 import net.parostroj.timetable.model.Train;
 import net.parostroj.timetable.model.TrainType;
+import net.parostroj.timetable.model.TrainTypeCategory;
 import net.parostroj.timetable.utils.ResourceLoader;
 
 /**
@@ -49,7 +49,7 @@ public class EditTrainDialog extends javax.swing.JDialog {
             dieselCheckBox.setSelected((Boolean)train.getAttribute("diesel"));
             electricCheckBox.setSelected((Boolean)train.getAttribute("electric"));
             showLengthCheckBox.setSelected(Boolean.TRUE.equals(train.getAttribute("show.station.length")));
-            if (train.getType().getSbType() == SpeedingBrakingType.FREIGHT) {
+            if (train.getType().getCategory().equals(TrainTypeCategory.fromString("freight"))) {
                 emptyCheckBox.setEnabled(true);
                 emptyCheckBox.setSelected(Boolean.TRUE.equals(train.getAttribute("empty")));
             } else {
