@@ -1,0 +1,10 @@
+TODO
+    - highlight selected time interval for train ...
+    - add filtering in trains' list
+    - more scales (including 1:1)
+    - adding output points to nodes (especially stations :)
+    - lines - adding different parts (different speed and possibly other information) ...
+    - technological times (before and after train)
+    - technological times for trains have missing events implementation
+
+BUGS
