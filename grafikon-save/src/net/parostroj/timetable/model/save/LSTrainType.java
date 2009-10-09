@@ -5,6 +5,7 @@ import java.awt.Color;
 import java.util.UUID;
 import net.parostroj.timetable.model.Language;
 import net.parostroj.timetable.model.TextTemplate;
+import net.parostroj.timetable.model.TrainDiagram;
 import net.parostroj.timetable.model.TrainTypeCategory;
 import net.parostroj.timetable.utils.Conversions;
 
@@ -109,17 +110,25 @@ public class LSTrainType {
         this.trainCompleteNameTemplate = trainCompleteNameTemplate;
     }
 
-    public TrainType convertToTrainType() {
+    public TrainType convertToTrainType(TrainDiagram diagram) {
         TrainType type = new TrainType(UUID.randomUUID().toString());
         type.setAbbr(this.abbr);
         type.setColor(Conversions.convertTextToColor(this.color));
         type.setDesc(this.desc);
         type.setPlatform(this.platform);
-        type.setCategory(TrainTypeCategory.fromString(this.braking.toLowerCase()));
+        type.setCategory(this.getCategory(diagram));
         type.setTrainNameTemplate(this.trainNameTemplate != null ?
             TextTemplate.createTextTemplate(this.trainNameTemplate, Language.MVEL) : null);
         type.setTrainCompleteNameTemplate(this.trainCompleteNameTemplate != null ?
             TextTemplate.createTextTemplate(this.trainCompleteNameTemplate, Language.MVEL) : null);
         return type;
+    }
+
+    private TrainTypeCategory getCategory(TrainDiagram diagram) {
+        for (TrainTypeCategory cat : diagram.getPenaltyTable().getTrainTypeCategories()) {
+            if (cat.getKey().equals(braking.toLowerCase()))
+                return cat;
+        }
+        return null;
     }
 }

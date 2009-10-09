@@ -46,7 +46,6 @@ public class LoadSave implements FileLoadSave {
         loadFilters = new LinkedList<TrainDiagramFilter>();
         loadFilters.add(new TrainsNamesLoadFilter());
         loadFilters.add(new LineTypeLoadFilter());
-        loadFilters.add(new PenaltyTableFilter());
         saveFilters = new LinkedList<TrainDiagramFilter>();
     }
     
@@ -86,7 +85,6 @@ public class LoadSave implements FileLoadSave {
             }
             LSTrainTypeSerializer tts = LSTrainTypeSerializer.getLSTrainTypeSerializer(modelVersion);
             LSTrainTypeList trainTypeList = tts.load(new InputStreamReader(isTypes, "utf-8"));
-
 
             // load model
             entry = zip.getEntry(TRAIN_DIAGRAM_NAME);

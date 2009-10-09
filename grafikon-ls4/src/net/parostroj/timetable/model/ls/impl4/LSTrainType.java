@@ -14,14 +14,14 @@ import net.parostroj.timetable.utils.Conversions;
  * @author jub
  */
 @XmlRootElement(name = "train_type")
-@XmlType(propOrder = {"id", "abbr", "desc", "color", "category", "platform", "trainNameTemplate", "trainCompleteNameTemplate"})
+@XmlType(propOrder = {"id", "abbr", "desc", "color", "categoryId", "platform", "trainNameTemplate", "trainCompleteNameTemplate"})
 public class LSTrainType {
 
     private String id;
     private String abbr;
     private String desc;
     private String color;
-    private String category;
+    private String categoryId;
     private boolean platform;
     private LSTextTemplate trainNameTemplate;
     private LSTextTemplate trainCompleteNameTemplate;
@@ -36,7 +36,7 @@ public class LSTrainType {
         this.platform = type.isPlatform();
         Color c = type.getColor();
         this.color = Conversions.convertColorToText(c);
-        this.category = type.getCategory().getKey();
+        this.categoryId = type.getCategory().getId();
         this.trainNameTemplate = type.getTrainNameTemplate() != null ?
             new LSTextTemplate(type.getTrainNameTemplate()) : null;
         this.trainCompleteNameTemplate = type.getTrainCompleteNameTemplate() != null ?
@@ -51,12 +51,13 @@ public class LSTrainType {
         this.abbr = abbr;
     }
 
-    public String getCategory() {
-        return category;
+    @XmlElement(name = "category_id")
+    public String getCategoryId() {
+        return categoryId;
     }
 
-    public void setCategory(String category) {
-        this.category = category;
+    public void setCategoryId(String categoryId) {
+        this.categoryId = categoryId;
     }
 
     public String getColor() {
@@ -115,7 +116,7 @@ public class LSTrainType {
         type.setColor(Conversions.convertTextToColor(color));
         type.setDesc(desc);
         type.setPlatform(platform);
-        type.setCategory(diagram.getPenaltyTable().getTrainTypeCategory(category));
+        type.setCategory(diagram.getPenaltyTable().getTrainTypeCategoryById(categoryId));
         type.setTrainCompleteNameTemplate(trainCompleteNameTemplate != null ?
             trainCompleteNameTemplate.createTextTemplate() : null);
         type.setTrainNameTemplate(trainNameTemplate != null ?

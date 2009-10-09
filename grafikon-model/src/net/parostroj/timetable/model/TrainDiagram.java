@@ -5,6 +5,7 @@ import net.parostroj.timetable.model.events.GTEvent;
 import net.parostroj.timetable.model.events.TrainDiagramEvent;
 import net.parostroj.timetable.model.events.TrainDiagramListener;
 import net.parostroj.timetable.model.events.TrainDiagramListenerWithNested;
+import net.parostroj.timetable.utils.IdGenerator;
 
 /**
  * Collection of all parts of graphical timetable.
@@ -50,7 +51,7 @@ public class TrainDiagram implements AttributesHolder, ObjectWithId {
         this.cycles = new EnumMap<TrainsCycleType, List<TrainsCycle>>(TrainsCycleType.class);
         this.images = new LinkedList<TimetableImage>();
         this.engineClasses = new LinkedList<EngineClass>();
-        this.penaltyTable = new PenaltyTable();
+        this.penaltyTable = new PenaltyTable(IdGenerator.getInstance().getId());
         this.net = new Net();
         this.trainTypes = new LinkedList<TrainType>();
         this.attributes = new Attributes();

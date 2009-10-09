@@ -8,6 +8,7 @@ import javax.xml.bind.Unmarshaller;
 import net.parostroj.timetable.model.PenaltyTable;
 import net.parostroj.timetable.model.PenaltyTableRow;
 import net.parostroj.timetable.model.TrainTypeCategory;
+import net.parostroj.timetable.utils.IdGenerator;
 
 /**
  * This class holds usefull information for computation of running time.
@@ -46,8 +47,13 @@ public class LSPenaltyTableHelper {
      * @param pTable penalty table
      */
     public static void fillPenaltyTable(PenaltyTable pTable) {
+        // passenger and freight categories
+        TrainTypeCategory pCat = new TrainTypeCategory(IdGenerator.getInstance().getId(), "passenger", "passenger");
+        TrainTypeCategory fCat = new TrainTypeCategory(IdGenerator.getInstance().getId(), "freight", "freight");
+        pTable.addTrainTypeCategory(pCat);
+        pTable.addTrainTypeCategory(fCat);
         for (LSPenaltyTableItem item : getLSPenaltyTable().getItemList()) {
-            TrainTypeCategory cat = TrainTypeCategory.fromString(item.getType().toString().toLowerCase());
+            TrainTypeCategory cat = item.getType() == LSSBType.FREIGHT ? fCat : pCat;
             // upper limit decreased by one - backward compatibility with new implementation
             pTable.addRowForCategory(cat, new PenaltyTableRow(item.getUpperLimit() - 1, item.getSpeedingPenalty(), item.getBrakingPenalty()));
         }
