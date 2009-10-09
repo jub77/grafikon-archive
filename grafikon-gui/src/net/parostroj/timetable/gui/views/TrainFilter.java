@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Set;
 import net.parostroj.timetable.model.Train;
 import net.parostroj.timetable.model.TrainType;
-import net.parostroj.timetable.model.TrainTypeCategory;
 
 /**
  * Class for filtering train according to some criteria.
@@ -15,11 +14,18 @@ import net.parostroj.timetable.model.TrainTypeCategory;
 public abstract class TrainFilter {
 
     public static enum PredefinedType {
-        FREIGHT, PASSENGER;
-    }
+        FREIGHT("freight"), PASSENGER("passenger");
 
-    private static final TrainTypeCategory C_FREIGHT = TrainTypeCategory.fromString("freight");
-    private static final TrainTypeCategory C_PASSENGER = TrainTypeCategory.fromString("passenger");
+        private String key;
+
+        private PredefinedType(String key) {
+            this.key = key;
+        }
+
+        public String getKey() {
+            return key;
+        }
+    }
 
     public static TrainFilter getTrainFilter(PredefinedType type) {
         switch (type) {
@@ -27,14 +33,14 @@ public abstract class TrainFilter {
                 return new TrainFilter() {
                     @Override
                     public boolean filter(Train train) {
-                        return train.getType().getCategory().equals(C_FREIGHT);
+                        return train.getType().getCategory().getKey().equals(PredefinedType.FREIGHT.getKey());
                     }
                 };
             case PASSENGER:
                 return new TrainFilter() {
                     @Override
                     public boolean filter(Train train) {
-                        return train.getType().getCategory().equals(C_PASSENGER);
+                        return train.getType().getCategory().getKey().equals(PredefinedType.PASSENGER.getKey());
                     }
                 };
             default:

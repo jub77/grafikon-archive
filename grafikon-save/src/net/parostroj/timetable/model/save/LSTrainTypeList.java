@@ -8,6 +8,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import net.parostroj.timetable.model.Language;
 import net.parostroj.timetable.model.Script;
 import net.parostroj.timetable.model.TextTemplate;
+import net.parostroj.timetable.model.TrainDiagram;
 import net.parostroj.timetable.model.TrainType;
 import net.parostroj.timetable.model.TrainsData;
 
@@ -125,11 +126,16 @@ public class LSTrainTypeList {
 
     public void setTrainType(LSTrainType[] trainType) {
         this.trainType = trainType;
+    }
+
+    public void updateMapping(TrainDiagram diagram) {
         // create mappings
-        for(LSTrainType lsTrainType : trainType) {
-            TrainType tt = lsTrainType.convertToTrainType();
-            mappingByKey.put(lsTrainType.getKey(), tt);
-            trainTypeList.add(tt);
+        if (trainType != null) {
+            for(LSTrainType lsTrainType : trainType) {
+                TrainType tt = lsTrainType.convertToTrainType(diagram);
+                mappingByKey.put(lsTrainType.getKey(), tt);
+                trainTypeList.add(tt);
+            }
         }
     }
 }

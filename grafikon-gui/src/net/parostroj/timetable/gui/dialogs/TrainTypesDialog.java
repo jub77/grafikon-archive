@@ -13,6 +13,7 @@ import javax.swing.JOptionPane;
 import net.parostroj.timetable.gui.ApplicationModel;
 import net.parostroj.timetable.gui.ApplicationModelEvent;
 import net.parostroj.timetable.gui.ApplicationModelEventType;
+import net.parostroj.timetable.gui.helpers.TrainsTypeCategoryWrapper;
 import net.parostroj.timetable.utils.Conversions;
 import net.parostroj.timetable.model.*;
 import net.parostroj.timetable.utils.IdGenerator;
@@ -29,43 +30,11 @@ public class TrainTypesDialog extends javax.swing.JDialog {
     
     private TrainTypesModel typesModel;
     
-    private static enum CategoryWrapper {
-        
-        PASSENGER(TrainTypeCategory.fromString("passenger"), "edit.traintypes.brake.passenger"),
-        FREIGHT(TrainTypeCategory.fromString("freight"), "edit.traintypes.brake.freight");
-        
-        private TrainTypeCategory category;
-        
-        private String name;
-        
-        private CategoryWrapper(TrainTypeCategory category, String key) {
-            this.category = category;
-            this.name = ResourceLoader.getString(key);
-        }
-        
-        @Override
-        public String toString() {
-            return name;
-        }
-        
-        public static CategoryWrapper getCategory(TrainTypeCategory category) {
-            for (CategoryWrapper w : values()) {
-                if (category.equals(w.category))
-                    return w;
-            }
-            return null;
-        }
-    }
-
     /** Creates new form TrainTypesDialog */
     public TrainTypesDialog(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
         this.setComponentsEnabled(false);
-        
-        // category values ...
-        brakeComboBox.addItem(CategoryWrapper.PASSENGER);
-        brakeComboBox.addItem(CategoryWrapper.FREIGHT);
     }
     
     public void setModel(ApplicationModel model) {
@@ -76,6 +45,13 @@ public class TrainTypesDialog extends javax.swing.JDialog {
         // fill train type jlist
         typesModel = new TrainTypesModel(model.getDiagram());
         trainTypesList.setModel(typesModel);
+        brakeComboBox.removeAllItems();
+        if (model.getDiagram() != null) {
+            for (TrainTypeCategory cat : model.getDiagram().getPenaltyTable().getTrainTypeCategories()) {
+                brakeComboBox.addItem(new TrainsTypeCategoryWrapper(cat));
+            }
+        }
+        brakeComboBox.setMaximumRowCount(Math.min(10, brakeComboBox.getItemCount()));
         this.updateValuesForTrainType(null);
     }
     
@@ -131,7 +107,7 @@ public class TrainTypesDialog extends javax.swing.JDialog {
 
         brakeComboBox.setMaximumRowCount(2);
 
-        jLabel3.setText(ResourceLoader.getString("edit.traintypes.brake")); // NOI18N
+        jLabel3.setText(ResourceLoader.getString("edit.traintypes.category")); // NOI18N
 
         jLabel4.setText(ResourceLoader.getString("edit.traintypes.color")); // NOI18N
 
@@ -202,10 +178,10 @@ public class TrainTypesDialog extends javax.swing.JDialog {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(completeNameTemplateCheckBox)
                     .addComponent(nameTemplateCheckBox)
-                    .addComponent(completeNameTemplateTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 355, Short.MAX_VALUE)
-                    .addComponent(descTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 355, Short.MAX_VALUE)
+                    .addComponent(completeNameTemplateTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 391, Short.MAX_VALUE)
+                    .addComponent(descTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 391, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jScrollPane1)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 264, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(updateButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -229,7 +205,7 @@ public class TrainTypesDialog extends javax.swing.JDialog {
                                 .addComponent(editColorButton))
                             .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                     .addComponent(jLabel2)
-                    .addComponent(nameTemplateTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 355, Short.MAX_VALUE))
+                    .addComponent(nameTemplateTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 391, Short.MAX_VALUE))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -302,7 +278,7 @@ public class TrainTypesDialog extends javax.swing.JDialog {
             descTextField.setText(selected.getDesc());
             colorLabel.setText(Conversions.convertColorToText(selected.getColor()));
             colorLabel.setForeground(selected.getColor());
-            brakeComboBox.setSelectedItem(CategoryWrapper.getCategory(selected.getCategory()));
+            brakeComboBox.setSelectedItem(new TrainsTypeCategoryWrapper(selected.getCategory()));
             if (selected.getTrainNameTemplate() == null) {
                 nameTemplateCheckBox.setSelected(false);
                 nameTemplateTextField.setText(selected.getTrainsData().getTrainNameTemplate().getTemplate());
@@ -330,7 +306,7 @@ public class TrainTypesDialog extends javax.swing.JDialog {
             descTextField.setText("");
             colorLabel.setText("0x000000");
             colorLabel.setForeground(Color.BLACK);
-            brakeComboBox.setSelectedItem(CategoryWrapper.PASSENGER);
+            brakeComboBox.setSelectedItem(model.getDiagram().getPenaltyTable().getTrainTypeCategories().get(0));
             nameTemplateCheckBox.setSelected(false);
             nameTemplateTextField.setText(model.getDiagram().getTrainsData().getTrainNameTemplate().getTemplate());
             nameTemplateTextField.setEnabled(false);
@@ -379,7 +355,7 @@ public class TrainTypesDialog extends javax.swing.JDialog {
             type.setAbbr(abbr);
             type.setDesc(desc);
             type.setColor(Conversions.convertTextToColor(colorLabel.getText()));
-            type.setCategory(((CategoryWrapper)brakeComboBox.getSelectedItem()).category);
+            type.setCategory(((TrainsTypeCategoryWrapper)brakeComboBox.getSelectedItem()).getElement());
             if (nameTemplateCheckBox.isSelected()) {
                 type.setTrainNameTemplate(TextTemplate.createTextTemplate(nameTemplateTextField.getText(), Language.MVEL));
             } else {
@@ -438,7 +414,7 @@ public class TrainTypesDialog extends javax.swing.JDialog {
             type.setAbbr(abbr);
             type.setDesc(desc);
             type.setColor(Conversions.convertTextToColor(colorLabel.getText()));
-            type.setCategory(((CategoryWrapper)brakeComboBox.getSelectedItem()).category);
+            type.setCategory(((TrainsTypeCategoryWrapper)brakeComboBox.getSelectedItem()).getElement());
             if (nameTemplateCheckBox.isSelected()) {
                 type.setTrainNameTemplate(TextTemplate.createTextTemplate(nameTemplateTextField.getText(), Language.MVEL));
             }

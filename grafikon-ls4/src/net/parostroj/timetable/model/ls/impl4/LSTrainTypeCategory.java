@@ -13,9 +13,11 @@ import net.parostroj.timetable.model.TrainTypeCategory;
  *
  * @author jub
  */
-@XmlType(propOrder = {"key", "rows"})
+@XmlType(propOrder = {"id", "name", "key", "rows"})
 public class LSTrainTypeCategory {
 
+    private String id;
+    private String name;
     private String key;
     private List<LSPenaltyTableRow> rows;
 
@@ -23,6 +25,8 @@ public class LSTrainTypeCategory {
     }
 
     public LSTrainTypeCategory(TrainTypeCategory category, List<PenaltyTableRow> penaltyRows) {
+        this.id = category.getId();
+        this.name = category.getName();
         this.key = category.getKey();
         this.rows = new LinkedList<LSPenaltyTableRow>();
         for (PenaltyTableRow r : penaltyRows) {
@@ -48,7 +52,23 @@ public class LSTrainTypeCategory {
         this.rows = rows;
     }
 
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
     public TrainTypeCategory createTrainTypeCategory() {
-        return TrainTypeCategory.fromString(key);
+        return new TrainTypeCategory(id, name, key);
     }
 }

@@ -17,6 +17,7 @@ import net.parostroj.timetable.gui.utils.ResourceLoader;
 import net.parostroj.timetable.model.PenaltyTableRow;
 import net.parostroj.timetable.model.TrainDiagram;
 import net.parostroj.timetable.model.TrainTypeCategory;
+import net.parostroj.timetable.utils.IdGenerator;
 
 /**
  * List of train type categories.
@@ -229,6 +230,7 @@ public class TrainTypesCategoriesDialog extends javax.swing.JDialog {
         scrollPane1 = new javax.swing.JScrollPane();
         trainTypeCategoriesList = new javax.swing.JList();
         nameTextField = new javax.swing.JTextField();
+        keyTextField = new javax.swing.JTextField();
         newButton = new javax.swing.JButton();
         deleteButton = new javax.swing.JButton();
         upButton = new javax.swing.JButton();
@@ -239,6 +241,7 @@ public class TrainTypesCategoriesDialog extends javax.swing.JDialog {
         deleteRowButton = new javax.swing.JButton();
         speedTextField = new javax.swing.JTextField();
         javax.swing.JLabel jLabel1 = new javax.swing.JLabel();
+        javax.swing.JLabel jLabel2 = new javax.swing.JLabel();
 
         trainTypeCategoriesList.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         trainTypeCategoriesList.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
@@ -300,6 +303,8 @@ public class TrainTypesCategoriesDialog extends javax.swing.JDialog {
 
         jLabel1.setText(ResourceLoader.getString("categories.speed") + ":"); // NOI18N
 
+        jLabel2.setText(ResourceLoader.getString("categories.key") + ":"); // NOI18N
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -308,10 +313,12 @@ public class TrainTypesCategoriesDialog extends javax.swing.JDialog {
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(scrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 370, Short.MAX_VALUE)
-                    .addGroup(layout.createSequentialGroup()
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addComponent(scrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 283, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(keyTextField)
                             .addComponent(downButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(upButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(deleteButton, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -332,9 +339,12 @@ public class TrainTypesCategoriesDialog extends javax.swing.JDialog {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(scrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(nameTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jLabel2)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(keyTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(newButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -342,9 +352,10 @@ public class TrainTypesCategoriesDialog extends javax.swing.JDialog {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(upButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(downButton)))
+                        .addComponent(downButton))
+                    .addComponent(scrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 182, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(scrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 150, Short.MAX_VALUE)
+                .addComponent(scrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 191, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(newRowButton)
@@ -360,9 +371,12 @@ public class TrainTypesCategoriesDialog extends javax.swing.JDialog {
 private void newButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newButtonActionPerformed
     if (nameTextField != null && !"".equals(nameTextField.getText())) {
         // create new LineClass
-        TrainTypeCategory category = TrainTypeCategory.fromString(nameTextField.getText());
+        TrainTypeCategory category = new TrainTypeCategory(IdGenerator.getInstance().getId(),
+                nameTextField.getText(),
+                keyTextField.getText());
         listModel.addTrainTypeCategory(category);
         nameTextField.setText("");
+        keyTextField.setText("");
     }
 }//GEN-LAST:event_newButtonActionPerformed
 
@@ -434,10 +448,12 @@ private void deleteRowButtonActionPerformed(java.awt.event.ActionEvent evt) {//G
         tableModel.removePenaltyTableRow(selectedRow);
     }
 }//GEN-LAST:event_deleteRowButtonActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton deleteButton;
     private javax.swing.JButton deleteRowButton;
     private javax.swing.JButton downButton;
+    private javax.swing.JTextField keyTextField;
     private javax.swing.JTextField nameTextField;
     private javax.swing.JButton newButton;
     private javax.swing.JButton newRowButton;

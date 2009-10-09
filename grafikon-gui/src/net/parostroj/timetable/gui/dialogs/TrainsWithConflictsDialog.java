@@ -197,6 +197,7 @@ public class TrainsWithConflictsDialog extends javax.swing.JDialog implements Ap
         this.setBounds(r);
     }
 }
+
 class TrainsListModel extends AbstractListModel {
     
     private List<Train> trains = new ArrayList<Train>();

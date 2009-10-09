@@ -3,12 +3,13 @@ package net.parostroj.timetable.model;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
-import net.parostroj.timetable.utils.IdGenerator;
+import java.util.Set;
 
 /**
  * Penalty table.
@@ -21,18 +22,9 @@ public class PenaltyTable implements ObjectWithId {
     private Map<TrainTypeCategory, List<PenaltyTableRow>> rowsMap;
     private List<TrainTypeCategory> categories;
 
-    public PenaltyTable() {
-        rowsMap = new HashMap<TrainTypeCategory, List<PenaltyTableRow>>();
-        categories = new ArrayList<TrainTypeCategory>(TrainTypeCategory.getPredefined().size());
-        id = IdGenerator.getInstance().getId();
-        // fill default categories
-        for (TrainTypeCategory cat : TrainTypeCategory.getPredefined()) {
-            this.addTrainTypeCategory(cat);
-        }
-    }
-
     public PenaltyTable(String id) {
-        this();
+        rowsMap = new HashMap<TrainTypeCategory, List<PenaltyTableRow>>();
+        categories = new ArrayList<TrainTypeCategory>();
         this.id = id;
     }
 
@@ -89,7 +81,7 @@ public class PenaltyTable implements ObjectWithId {
         return null;
     }
 
-    public PenaltyTableRow getForSpeedExactAndCategory(TrainTypeCategory category, int speed) {
+    public PenaltyTableRow getRowForSpeedExactAndCategory(TrainTypeCategory category, int speed) {
         List<PenaltyTableRow> rows = rowsMap.get(category);
         if (rows != null) {
             ListIterator<PenaltyTableRow> i = rows.listIterator();
@@ -112,14 +104,28 @@ public class PenaltyTable implements ObjectWithId {
         this.id = id;
     }
 
-    public TrainTypeCategory getTrainTypeCategory(String categoryString) {
-        TrainTypeCategory searched = TrainTypeCategory.fromString(categoryString);
+    public TrainTypeCategory getTrainTypeCategoryById(String id) {
         for (TrainTypeCategory category : categories) {
-            if (category.equals(searched)) {
+            if (category.getId().equals(id)) {
                 return category;
             }
         }
         return null;
+    }
+
+    public Set<TrainTypeCategory> getTrainTypeCategoriesByKey(String key) {
+        Set<TrainTypeCategory> cs = null;
+        for (TrainTypeCategory category : categories) {
+            if (category.getKey().equals(key)) {
+                if (cs == null)
+                    cs = new HashSet<TrainTypeCategory>();
+                cs.add(category);
+            }
+        }
+        if (cs == null)
+            return Collections.emptySet();
+        else
+            return cs;
     }
 
     public void addTrainTypeCategory(TrainTypeCategory category) {
