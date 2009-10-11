@@ -42,9 +42,6 @@ public class TrainRegionCollector {
     }
 
     public void addRegion(TimeInterval interval,Shape shape) {
-        // check if the regions are already collected
-        if (collected && !modifiedTrains.contains(interval.getTrain()))
-            return;
         // create key if doesn't exist
         if (!regions.containsKey(interval.getTrain())) {
             regions.put(interval.getTrain(), new LinkedList<Pair<Shape, TimeInterval>>());

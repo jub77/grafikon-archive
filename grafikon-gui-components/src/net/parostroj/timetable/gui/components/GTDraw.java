@@ -242,7 +242,8 @@ abstract public class GTDraw {
         Line2D line2D = this.createTrainLine(interval, i, timeStep);
 
         // add shape to collector
-        this.addShapeToCollector(interval, line2D);
+        if (this.isCollectorCollecting(interval.getTrain()))
+            this.addShapeToCollector(interval, line2D);
 
         g.draw(line2D);
 
