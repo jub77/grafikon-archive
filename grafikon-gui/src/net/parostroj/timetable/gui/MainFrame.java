@@ -400,6 +400,11 @@ public class MainFrame extends javax.swing.JFrame implements ApplicationModelLis
         penaltyTableMenuItem.setEnabled(model.getDiagram() != null);
         trainTimetableListByTimeFilteredMenuItem.setEnabled(model.getDiagram() != null);
         fileImportMenuItem.setEnabled(model.getDiagram() != null);
+        dcListSelectMenuItem.setEnabled(model.getDiagram() != null);
+        trainTimetableListByDcSelectMenuItem.setEnabled(model.getDiagram() != null);
+        nodeTimetableListSelectMenuItem.setEnabled(model.getDiagram() != null);
+        ecListSelectMenuItem.setEnabled(model.getDiagram() != null);
+        tucListSelectMenuItem.setEnabled(model.getDiagram() != null);
     }
     
     /** This method is called from within the constructor to
