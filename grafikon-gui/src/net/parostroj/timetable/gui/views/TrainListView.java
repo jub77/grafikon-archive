@@ -137,7 +137,7 @@ public class TrainListView extends javax.swing.JPanel implements ApplicationMode
         selecting = true;
         if (e.isAddedPath()) {
             Object selected = e.getPath().getLastPathComponent();
-            if (!(selected instanceof TrainTreeNodeTrain)) {
+            if (!(selected instanceof TrainTreeNodeTrain) || trainTree.getSelectionCount() > 1) {
                 if (model.getSelectedTrain() != null)
                     model.setSelectedTrain(null);
             } else {
