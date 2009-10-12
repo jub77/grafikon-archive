@@ -6,8 +6,10 @@
 package net.parostroj.timetable.gui.views;
 
 import java.awt.Frame;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultTreeModel;
@@ -20,6 +22,7 @@ import net.parostroj.timetable.gui.ApplicationModelEventType;
 import net.parostroj.timetable.gui.ApplicationModelListener;
 import net.parostroj.timetable.gui.dialogs.CreateTrainDialog;
 import net.parostroj.timetable.model.Train;
+import net.parostroj.timetable.model.TrainDiagram;
 import net.parostroj.timetable.model.TrainsCycle;
 import net.parostroj.timetable.model.TrainsCycleItem;
 import net.parostroj.timetable.model.TrainsCycleType;
@@ -37,6 +40,7 @@ public class TrainListView extends javax.swing.JPanel implements ApplicationMode
     private static enum TreeType { FLAT, TYPES }
     
     private TreeType treeType = TreeType.TYPES;
+    private boolean selecting = false;
     
     /**
      * Creates new form TrainListView.
@@ -45,7 +49,7 @@ public class TrainListView extends javax.swing.JPanel implements ApplicationMode
         initComponents();
         trainTree.setModel(null);
         trainTree.addTreeSelectionListener(this);
-        trainTree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
+        trainTree.getSelectionModel().setSelectionMode(TreeSelectionModel.DISCONTIGUOUS_TREE_SELECTION);
     }
 
     public void setModel(ApplicationModel model) {
@@ -62,7 +66,7 @@ public class TrainListView extends javax.swing.JPanel implements ApplicationMode
             DefaultTreeModel treeModel = new DefaultTreeModel(root);
             trainTree.setModel(treeModel);
             createButton.setEnabled(true);
-            deleteButton.setEnabled(true);
+            deleteButton.setEnabled(false);
         } else {
             trainTree.setModel(null);
             createButton.setEnabled(false);
@@ -83,8 +87,9 @@ public class TrainListView extends javax.swing.JPanel implements ApplicationMode
                 this.deleteAndDeselectTrain((Train)event.getObject());
                 break;
             case SELECTED_TRAIN_CHANGED:
-                deleteButton.setEnabled(model.getSelectedTrain() != null);
-                this.selectTrain((Train)event.getObject());
+                if (!selecting) {
+                    this.selectTrain((Train)event.getObject());
+                }
                 break;
             case MODIFIED_TRAIN_NAME_TYPE:
                 this.modifyAndSelectTrain((Train)event.getObject());
@@ -129,17 +134,20 @@ public class TrainListView extends javax.swing.JPanel implements ApplicationMode
 
     @Override
     public void valueChanged(TreeSelectionEvent e) {
-        if (!e.isAddedPath())
-            return;
-        Object selected = e.getPath().getLastPathComponent();
-        if (!(selected instanceof TrainTreeNodeTrain)) {
-            if (model.getSelectedTrain() != null)
-                model.setSelectedTrain(null);
-        } else {
-            TrainTreeNodeTrain trainNode = (TrainTreeNodeTrain)selected;
-            if (model.getSelectedTrain() != trainNode.getTrain())
-                model.setSelectedTrain(trainNode.getTrain());
+        selecting = true;
+        if (e.isAddedPath()) {
+            Object selected = e.getPath().getLastPathComponent();
+            if (!(selected instanceof TrainTreeNodeTrain)) {
+                if (model.getSelectedTrain() != null)
+                    model.setSelectedTrain(null);
+            } else {
+                TrainTreeNodeTrain trainNode = (TrainTreeNodeTrain)selected;
+                if (model.getSelectedTrain() != trainNode.getTrain())
+                    model.setSelectedTrain(trainNode.getTrain());
+            }
         }
+        deleteButton.setEnabled(!trainTree.isSelectionEmpty());
+        selecting = false;
     }
     
     /** This method is called from within the constructor to
@@ -201,12 +209,12 @@ public class TrainListView extends javax.swing.JPanel implements ApplicationMode
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(scrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 365, Short.MAX_VALUE)
+                    .addComponent(scrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 435, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(createButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(deleteButton)
-                        .addContainerGap(205, Short.MAX_VALUE))))
+                        .addContainerGap(275, Short.MAX_VALUE))))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -222,9 +230,32 @@ public class TrainListView extends javax.swing.JPanel implements ApplicationMode
     }// </editor-fold>//GEN-END:initComponents
 
 private void deleteButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteButtonActionPerformed
-    Train deletedTrain = model.getSelectedTrain();
-    model.getDiagram().removeTrain(deletedTrain);    // remove from list of trains
-    
+    Set<Train> selectedTrains = this.getSelectedTrains();
+
+    model.setSelectedTrain(null);           // no train selected
+
+    for (Train deletedTrain : selectedTrains) {
+        this.deleteTrain(deletedTrain, model.getDiagram());
+    }
+}//GEN-LAST:event_deleteButtonActionPerformed
+
+private Set<Train> getSelectedTrains() {
+    TreePath[] paths = trainTree.getSelectionPaths();
+    Set<Train> selected = new HashSet<Train>();
+    if (paths != null) {
+        for (TreePath path : paths) {
+            TrainTreeNode node = (TrainTreeNode)path.getLastPathComponent();
+            Set<Train> trains = node.getTrains(model.getDiagram());
+            selected.addAll(trains);
+        }
+    }
+
+    return selected;
+}
+
+private void deleteTrain(Train deletedTrain, TrainDiagram diagram) {
+    diagram.removeTrain(deletedTrain);    // remove from list of trains
+
     // remove train from engine cycle
     if (!deletedTrain.getCycles(TrainsCycleType.ENGINE_CYCLE).isEmpty()) {
         this.removeTrainFromCycles(deletedTrain.getCycles(TrainsCycleType.ENGINE_CYCLE), ApplicationModelEventType.MODIFIED_ENGINE_CYCLE);
@@ -235,18 +266,14 @@ private void deleteButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-
     if (!deletedTrain.getCycles(TrainsCycleType.DRIVER_CYCLE).isEmpty()) {
         this.removeTrainFromCycles(deletedTrain.getCycles(TrainsCycleType.DRIVER_CYCLE), ApplicationModelEventType.MODIFIED_DRIVER_CYCLE);
     }
-    
-    model.setSelectedTrain(null);           // no train selected
+
     model.fireEvent(new ApplicationModelEvent(ApplicationModelEventType.DELETE_TRAIN, model, deletedTrain));
-}//GEN-LAST:event_deleteButtonActionPerformed
+
+}
 
 private void removeTrainFromCycles(List<TrainsCycleItem> items, ApplicationModelEventType eventType) {
     for (TrainsCycleItem item : new LinkedList<TrainsCycleItem>(items)) {
-        System.out.println(item.getCycle());
-        System.out.println(item.getTrain());
-        System.out.println(item.getFrom());
         TrainsCycle cycle = item.getCycle();
-        System.out.println(cycle);
         item.getCycle().removeItem(item);
         model.fireEvent(new ApplicationModelEvent(eventType, model, cycle));
     }

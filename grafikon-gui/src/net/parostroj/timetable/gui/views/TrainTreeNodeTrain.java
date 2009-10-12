@@ -5,16 +5,19 @@
  */
 package net.parostroj.timetable.gui.views;
 
+import java.util.Collections;
 import java.util.Enumeration;
+import java.util.Set;
 import javax.swing.tree.TreeNode;
 import net.parostroj.timetable.model.Train;
+import net.parostroj.timetable.model.TrainDiagram;
 
 /**
  * Node for JTree with train in it.
  * 
  * @author jub
  */
-public class TrainTreeNodeTrain implements TreeNode {
+public class TrainTreeNodeTrain implements TrainTreeNode {
 
     private Train train;
 
@@ -67,5 +70,10 @@ public class TrainTreeNodeTrain implements TreeNode {
     @Override
     public String toString() {
         return train.getName();
+    }
+
+    @Override
+    public Set<Train> getTrains(TrainDiagram diagram) {
+        return Collections.singleton(train);
     }
 }

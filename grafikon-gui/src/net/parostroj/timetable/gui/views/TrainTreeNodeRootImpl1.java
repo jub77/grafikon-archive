@@ -113,13 +113,19 @@ public class TrainTreeNodeRootImpl1 implements TrainTreeNodeRoot {
     @Override
     public TreePath getTrainPath(Train train) {
         TreePath path = new TreePath(this);
+        TreePath result = null;
         for (TrainTreeNodeType nodeType : children) {
             TreePath selectedPath = nodeType.getTrainPath(path,train);
             if (selectedPath != null) {
-                path = selectedPath;
+                result = selectedPath;
                 break;
             }
         }
-        return path;
+        return result;
+    }
+
+    @Override
+    public Set<Train> getTrains(TrainDiagram diagram) {
+        return new HashSet<Train>(diagram.getTrains());
     }
 }
