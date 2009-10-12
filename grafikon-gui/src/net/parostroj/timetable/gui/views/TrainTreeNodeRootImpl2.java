@@ -18,7 +18,7 @@ import net.parostroj.timetable.model.TrainDiagram;
  * 
  * @author jub
  */
-public class TrainTreeNodeRootImpl2 implements TrainTreeNodeRoot, TreeNode {
+public class TrainTreeNodeRootImpl2 implements TrainTreeNodeRoot {
 
     private List<TrainTreeNodeTrain> children;
 
@@ -121,5 +121,10 @@ public class TrainTreeNodeRootImpl2 implements TrainTreeNodeRoot, TreeNode {
             }
         }
         return null;
+    }
+
+    @Override
+    public Set<Train> getTrains(TrainDiagram diagram) {
+        return new HashSet<Train>(diagram.getTrains());
     }
 }

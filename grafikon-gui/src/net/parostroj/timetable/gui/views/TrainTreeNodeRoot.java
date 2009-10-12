@@ -5,7 +5,6 @@
  */
 package net.parostroj.timetable.gui.views;
 
-import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 import net.parostroj.timetable.model.Train;
 
@@ -14,7 +13,7 @@ import net.parostroj.timetable.model.Train;
  * 
  * @author jub
  */
-public interface TrainTreeNodeRoot extends TreeNode {
+public interface TrainTreeNodeRoot extends TrainTreeNode {
 
     /**
      * adds new train to the tree and returns its path.
@@ -39,4 +38,5 @@ public interface TrainTreeNodeRoot extends TreeNode {
      * @return path
      */
     public TreePath getTrainPath(Train train);
+
 }

@@ -19,7 +19,7 @@ import net.parostroj.timetable.model.Train;
  * 
  * @author jub
  */
-public class TrainTreeNodeType implements TreeNode {
+public class TrainTreeNodeType implements TrainTreeNode {
 
     private List<TrainTreeNodeTrain> children;
 
@@ -124,5 +124,17 @@ public class TrainTreeNodeType implements TreeNode {
     @Override
     public String toString() {
         return trainType.getDesc();
+    }
+
+    @Override
+    public Set<Train> getTrains(TrainDiagram diagram) {
+        // filter by train type
+        Set<Train> trainSet = new HashSet<Train>();
+        for (Train train : diagram.getTrains()) {
+            if (train.getType() == this.trainType) {
+                trainSet.add(train);
+            }
+        }
+        return trainSet;
     }
 }
