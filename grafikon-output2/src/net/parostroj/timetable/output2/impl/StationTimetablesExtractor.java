@@ -118,7 +118,7 @@ public class StationTimetablesExtractor {
     private LengthInfo getLength(TimeInterval interval) {
         LengthInfo lengthInfo = null;
         Train train = interval.getTrain();
-        if (train.getIntervalAfter(interval) != null && interval.isStop() && train.getType().getCategory().equals(TrainTypeCategory.fromString("freight"))) {
+        if (train.getIntervalAfter(interval) != null && interval.isStop() && train.getType().getCategory().getKey().equals("freight")) {
             Pair<Node, Integer> length = TrainsHelper.getNextLength(interval.getOwnerAsNode(), train, diagram);
             if (length == null) {
                 // check old style comment
