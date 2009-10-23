@@ -72,7 +72,8 @@ public class DriverCyclesList {
             Train t = item.getTrain();
             f.format(templates.getDcLine(), t.getName(), TimeConverter.convertFromIntToText(item.getStartTime()), item.getFromInterval().getOwnerAsNode().getAbbr(), item.getToInterval().getOwnerAsNode().getAbbr(), (item.getComment() != null) ? item.getComment() : "&nbsp;");
             for (Tuple<TrainsCycleItem> tuple : conflicts) {
-                if (tuple.first.getTrain() == t) {
+                if (tuple.first == item &&
+                        tuple.first.getToInterval().getOwnerAsNode() != tuple.second.getFromInterval().getOwnerAsNode()) {
                     f.format(templates.getDcLineMove(), tuple.second.getFromInterval().getOwnerAsNode().getName(), templates.getString("move.to.station"));
                 }
             }
