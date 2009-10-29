@@ -36,7 +36,7 @@ public class LoadSave implements FileLoadSave {
     private static final List<ModelVersion> VERSIONS;
 
     static {
-        VERSIONS = Collections.unmodifiableList(Arrays.asList(new ModelVersion(1,0), new ModelVersion(2, 0)));
+        VERSIONS = Collections.unmodifiableList(Arrays.asList(new ModelVersion(1, 0), new ModelVersion(2, 0), new ModelVersion(2, 1), new ModelVersion(2, 2)));
     }
     
     private List<TrainDiagramFilter> loadFilters;
@@ -175,7 +175,12 @@ public class LoadSave implements FileLoadSave {
     }
 
     @Override
-    public List<ModelVersion> getVersions() {
+    public List<ModelVersion> getLoadVersions() {
         return VERSIONS;
+    }
+
+    @Override
+    public ModelVersion getSaveVersion() {
+        return null;
     }
 }

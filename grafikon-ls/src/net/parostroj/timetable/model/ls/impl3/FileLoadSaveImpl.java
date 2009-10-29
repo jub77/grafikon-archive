@@ -1,6 +1,7 @@
 package net.parostroj.timetable.model.ls.impl3;
 
 import java.io.*;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -33,7 +34,7 @@ public class FileLoadSaveImpl implements FileLoadSave {
     private static final List<ModelVersion> VERSIONS;
 
     static {
-        VERSIONS = Collections.singletonList(new ModelVersion(3, 0));
+        VERSIONS = Collections.unmodifiableList(Arrays.asList(new ModelVersion(3, 0), new ModelVersion(3, 1)));
     }
 
     public FileLoadSaveImpl() throws LSException {
@@ -194,7 +195,12 @@ public class FileLoadSaveImpl implements FileLoadSave {
     }
 
     @Override
-    public List<ModelVersion> getVersions() {
+    public List<ModelVersion> getLoadVersions() {
         return VERSIONS;
+    }
+
+    @Override
+    public ModelVersion getSaveVersion() {
+        return null;
     }
 }

@@ -951,7 +951,7 @@ private void fileSaveMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//
     }
 
     private void saveModelData(File file) throws LSException {
-        FileLoadSave ls = LSFileFactory.getInstance().createLatest();
+        FileLoadSave ls = LSFileFactory.getInstance().createLatestForSave();
         ls.save(model.getDiagram(), file);
     }
     
@@ -979,7 +979,7 @@ private void fileOpenMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//
                 try {
                     if (retVal == JFileChooser.APPROVE_OPTION) {
                         model.setOpenedFile(xmlFileChooser.getSelectedFile());
-                        FileLoadSave ls = LSFileFactory.getInstance().create(xmlFileChooser.getSelectedFile());
+                        FileLoadSave ls = LSFileFactory.getInstance().createForLoad(xmlFileChooser.getSelectedFile());
                         diagram = ls.load(xmlFileChooser.getSelectedFile());
                     }
                 } catch (LSException e) {
@@ -1410,7 +1410,7 @@ private void fileImportMenuItemActionPerformed(java.awt.event.ActionEvent evt) {
 
     try {
         if (retVal == JFileChooser.APPROVE_OPTION) {
-            FileLoadSave ls = LSFileFactory.getInstance().create(xmlFileChooser.getSelectedFile());
+            FileLoadSave ls = LSFileFactory.getInstance().createForLoad(xmlFileChooser.getSelectedFile());
             diagram = ls.load(xmlFileChooser.getSelectedFile());
         } else {
             // skip the rest
