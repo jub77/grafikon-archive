@@ -21,5 +21,7 @@ public interface FileLoadSave {
     
     public void save(TrainDiagram diagram, ZipOutputStream os) throws LSException;
 
-    public List<ModelVersion> getVersions();
+    public List<ModelVersion> getLoadVersions();
+
+    public ModelVersion getSaveVersion();
 }

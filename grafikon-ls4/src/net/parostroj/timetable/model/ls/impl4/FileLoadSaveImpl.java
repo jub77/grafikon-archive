@@ -20,7 +20,7 @@ public class FileLoadSaveImpl implements FileLoadSave {
 
     private static final String METADATA = "metadata.properties";
     private static final String METADATA_KEY_MODEL_VERSION = "model.version";
-    private static final String METADATA_MODEL_VERSION = "4.0";
+    private static final ModelVersion METADATA_MODEL_VERSION = new ModelVersion(4, 0);
     private static final String DATA_TRAIN_DIAGRAM = "train_diagram.xml";
     private static final String DATA_PENALTY_TABLE = "penalty_table.xml";
     private static final String DATA_NET = "net.xml";
@@ -70,12 +70,12 @@ public class FileLoadSaveImpl implements FileLoadSave {
 
     private Properties createMetadata() {
         Properties metadata = new Properties();
-        metadata.setProperty(METADATA_KEY_MODEL_VERSION, METADATA_MODEL_VERSION);
+        metadata.setProperty(METADATA_KEY_MODEL_VERSION, METADATA_MODEL_VERSION.toString());
         return metadata;
     }
 
     private void checkVersion(Properties props) throws LSException {
-        ModelVersion current = new ModelVersion(METADATA_MODEL_VERSION);
+        ModelVersion current = METADATA_MODEL_VERSION;
         ModelVersion loaded = new ModelVersion(props.getProperty(METADATA_KEY_MODEL_VERSION));
         if (current.compareTo(loaded) < 0)
             throw new LSException(String.format("Current version [%s] is older than the version of loaded file [%s].", current.toString(), loaded.toString()));
@@ -199,7 +199,12 @@ public class FileLoadSaveImpl implements FileLoadSave {
     }
 
     @Override
-    public List<ModelVersion> getVersions() {
+    public List<ModelVersion> getLoadVersions() {
         return VERSIONS;
+    }
+
+    @Override
+    public ModelVersion getSaveVersion() {
+        return METADATA_MODEL_VERSION;
     }
 }

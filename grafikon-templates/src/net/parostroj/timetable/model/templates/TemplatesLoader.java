@@ -47,7 +47,7 @@ public class TemplatesLoader {
             if (template.getName().equals(name)) {
                 // create file with template location
                 ZipInputStream is = new ZipInputStream(TemplatesLoader.class.getResourceAsStream(TEMPLATES_LOCATION + template.getFilename()));
-                FileLoadSave ls = LSFileFactory.getInstance().create(is);
+                FileLoadSave ls = LSFileFactory.getInstance().createForLoad(is);
                 return ls.load(is);
             }
         }
