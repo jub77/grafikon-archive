@@ -45,7 +45,7 @@ public class LSFileFactory {
 
     public synchronized FileLoadSave createLatestForSave() throws LSException {
         ModelVersion latestVersion = this.getLatestSaveVersion();
-        return this.createFLSInstanceForSave(latestVersion);
+        return latestVersion != null ? this.createFLSInstanceForSave(latestVersion) : null;
     }
 
     public synchronized FileLoadSave createForSave(ModelVersion modelVersion) throws LSException {
