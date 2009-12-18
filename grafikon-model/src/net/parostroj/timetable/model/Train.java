@@ -406,6 +406,7 @@ public class Train implements AttributesHolder, ObjectWithId {
      * @param length technological time before train's start
      */
     public void setTimeBefore(int length) {
+        boolean fireEvent = true;
         if (length == 0 && timeBefore != null) {
             if (isAttached())
                 timeBefore.removeFromOwner();
@@ -427,14 +428,18 @@ public class Train implements AttributesHolder, ObjectWithId {
             timeBefore.setTrack(firstInterval.getTrack());
             if (isAttached())
                 timeBefore.addToOwner();
+        } else {
+            fireEvent = false;
         }
-        listenerSupport.fireEvent(new TrainEvent(this, TrainEvent.Type.TECHNOLOGICAL));
+        if (fireEvent)
+            listenerSupport.fireEvent(new TrainEvent(this, TrainEvent.Type.TECHNOLOGICAL));
     }
 
     /**
      * @param length technological time after train's end
      */
     public void setTimeAfter(int length) {
+        boolean fireEvent = true;
         if (length == 0 && timeAfter != null) {
             if (isAttached())
                 timeAfter.removeFromOwner();
@@ -456,8 +461,11 @@ public class Train implements AttributesHolder, ObjectWithId {
             timeAfter.setTrack(lastInterval.getTrack());
             if (isAttached())
                 timeAfter.addToOwner();
+        } else {
+            fireEvent = false;
         }
-        listenerSupport.fireEvent(new TrainEvent(this, TrainEvent.Type.TECHNOLOGICAL));
+        if (fireEvent)
+            listenerSupport.fireEvent(new TrainEvent(this, TrainEvent.Type.TECHNOLOGICAL));
     }
 
     /**
@@ -492,8 +500,16 @@ public class Train implements AttributesHolder, ObjectWithId {
      * updates technological times.
      */
     private void updateTechnologicalTimes() {
-        this.setTimeBefore(this.getTimeBefore());
+        this.updateTechnologicalTimeBefore();
+        this.updateTechnologicalTimeAfter();
+    }
+
+    public void updateTechnologicalTimeAfter() {
         this.setTimeAfter(this.getTimeAfter());
+    }
+
+    public void updateTechnologicalTimeBefore() {
+        this.setTimeBefore(this.getTimeBefore());
     }
 
     /**
@@ -547,14 +563,14 @@ public class Train implements AttributesHolder, ObjectWithId {
         timeIntervalList.updateLineInterval(lineInterval, index - 1, isAttached(), diagram);
         // move time
         nodeInterval.move(lineInterval.getEnd());
-        timeIntervalList.updateNodeInterval(lineInterval, index, isAttached(), diagram);
+        timeIntervalList.updateNodeInterval(nodeInterval, index, isAttached(), diagram);
         // compute running time of line after
         lineInterval = timeIntervalList.get(index + 1);
         lineInterval.move(nodeInterval.getEnd());
         timeIntervalList.updateLineInterval(lineInterval, index + 1, isAttached(), diagram);
         // move rest
         timeIntervalList.moveFrom(index + 2, lineInterval.getEnd(), isAttached());
-        this.updateTechnologicalTimes();
+        this.updateTechnologicalTimeAfter();
         this.listenerSupport.fireEvent(new TrainEvent(this, TrainEvent.Type.TIME_INTERVAL_LIST));
     }
 
@@ -601,7 +617,7 @@ public class Train implements AttributesHolder, ObjectWithId {
             timeIntervalList.moveFrom(index + 1, lineInterval.getEnd(), isAttached());
         }
 
-        this.updateTechnologicalTimes();
+        this.updateTechnologicalTimeAfter();
         this.listenerSupport.fireEvent(new TrainEvent(this, TrainEvent.Type.TIME_INTERVAL_LIST));
     }
 
@@ -621,7 +637,10 @@ public class Train implements AttributesHolder, ObjectWithId {
             if (isAttached())
                 nodeInterval.addToOwner();
         }
-        this.updateTechnologicalTimes();
+        if (this.getTimeBefore() != 0 && nodeInterval.isFirst())
+            this.updateTechnologicalTimeBefore();
+        if (this.getTimeAfter() != 0 && nodeInterval.isLast())
+            this.updateTechnologicalTimeAfter();
         this.listenerSupport.fireEvent(new TrainEvent(this, TrainEvent.Type.TIME_INTERVAL_LIST));
     }
 

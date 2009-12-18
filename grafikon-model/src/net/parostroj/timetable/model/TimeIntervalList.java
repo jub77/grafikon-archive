@@ -270,6 +270,8 @@ public class TimeIntervalList extends ArrayList<TimeInterval> {
     }
 
     public void updateNodeInterval(TimeInterval interval, int i, boolean attached, TrainDiagram diagram) {
+        if (!interval.isNodeOwner())
+            throw new IllegalArgumentException("Node is not owner of the time interval.");
         if (attached)
             interval.removeFromOwner();
         // nothing to do
@@ -278,6 +280,8 @@ public class TimeIntervalList extends ArrayList<TimeInterval> {
     }
 
     public void updateLineInterval(TimeInterval interval, int i, boolean attached, TrainDiagram diagram) {
+        if (!interval.isLineOwner())
+            throw new IllegalArgumentException("Line is not owner of the interval.");
         if (attached)
             interval.removeFromOwner();
         // compute running time
