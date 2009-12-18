@@ -27,4 +27,8 @@ public class GTEvent<T> {
     public GTEvent<?> getNestedEvent() {
         return nestedEvent;
     }
+
+    public boolean isNested() {
+        return nestedEvent != null;
+    }
 }
