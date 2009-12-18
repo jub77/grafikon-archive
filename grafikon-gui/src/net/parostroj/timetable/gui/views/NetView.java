@@ -110,12 +110,14 @@ public class NetView extends javax.swing.JPanel implements ApplicationModelListe
         
         // initialize adapter
         netAdapter = new JGraphModelAdapter<Node, Line>(net.getGraph());
-        netAdapter.addGraphModelListener(this);
         jGraph.setModel(netAdapter);
         
         for (Node point : net.getNodes()) {
             this.positionVertexAt(point, point.getPositionX(), point.getPositionY());
         }
+
+        // set listener afterwards to not receive event of initial placement
+        netAdapter.addGraphModelListener(this);
     }
 
     /** This method is called from within the constructor to
