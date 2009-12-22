@@ -37,7 +37,7 @@ public class Applet extends javax.swing.JApplet {
                             u = new URL(u,getParameter("file"));
                             Logger.getLogger(Applet.class.getName()).log(Level.FINE, "Loading file: " + u);
                             ZipInputStream is = new ZipInputStream(u.openStream());
-                            FileLoadSave ls = factory.create(is);
+                            FileLoadSave ls = factory.createForLoad(is);
                             TrainDiagram td = ls.load(is);
                             graphicalTimetableView1.setTrainDiagram(td);
                         }
