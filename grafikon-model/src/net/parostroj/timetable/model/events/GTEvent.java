@@ -1,11 +1,13 @@
 package net.parostroj.timetable.model.events;
 
+import java.util.Iterator;
+
 /**
  * Common predecessor for events.
  * 
  * @author jub
  */
-public class GTEvent<T> {
+public class GTEvent<T> implements Iterable<GTEvent<?>>{
 
     private final T source;
     private final GTEvent<?> nestedEvent;
@@ -30,5 +32,30 @@ public class GTEvent<T> {
 
     public boolean isNested() {
         return nestedEvent != null;
+    }
+
+    @Override
+    public Iterator<GTEvent<?>> iterator() {
+        return new Iterator<GTEvent<?>>() {
+
+            private GTEvent<?> current = GTEvent.this;
+
+            @Override
+            public boolean hasNext() {
+                return current != null;
+            }
+
+            @Override
+            public GTEvent<?> next() {
+                GTEvent<?> event = current;
+                current = event.getNestedEvent();
+                return event;
+            }
+
+            @Override
+            public void remove() {
+                throw new UnsupportedOperationException("Not supported.");
+            }
+        };
     }
 }
