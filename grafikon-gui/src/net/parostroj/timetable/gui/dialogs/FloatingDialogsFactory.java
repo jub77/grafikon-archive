@@ -45,28 +45,29 @@ public class FloatingDialogsFactory {
             @Override
             public void receiveMessage(Object message) {
                 if (message instanceof GTEvent<?>) {
-                    GTEvent<?> event = (GTEvent<?>)message;
-                    do {
+                    for (GTEvent<?> event : (GTEvent<?>)message)
                         this.processGTEvent(event);
-                        event = event.getNestedEvent();
-                    } while (event != null);
                 } else if (message instanceof ApplicationModelEvent)
                     this.processApplicationModelEvent((ApplicationModelEvent)message);
             }
 
             private void processGTEvent(GTEvent<?> event) {
                 if (event instanceof TrainEvent) {
-                    TrainEvent tEvent = (TrainEvent)event;
-                    if (tEvent.getType() == TrainEvent.Type.TIME_INTERVAL_LIST || tEvent.getType() == TrainEvent.Type.TECHNOLOGICAL) {
-                        panel.updateTrain(tEvent.getSource());
+                    switch(((TrainEvent)event).getType()) {
+                        case TIME_INTERVAL_LIST: case TECHNOLOGICAL:
+                            panel.updateTrain((Train)event.getSource());
+                            break;
                     }
                 } else if (event instanceof TrainDiagramEvent) {
                     TrainDiagramEvent tEvent = (TrainDiagramEvent)event;
-                    TrainDiagramEvent.Type type = tEvent.getType();
-                    if (type == TrainDiagramEvent.Type.TRAIN_ADDED)
-                        panel.updateTrain(tEvent.getTrain());
-                    else if (type == TrainDiagramEvent.Type.TRAIN_REMOVED)
-                        panel.removeTrain(tEvent.getTrain());
+                    switch (tEvent.getType()) {
+                        case TRAIN_ADDED:
+                            panel.updateTrain(tEvent.getTrain());
+                            break;
+                        case TRAIN_REMOVED:
+                            panel.removeTrain(tEvent.getTrain());
+                            break;
+                    }
                 }
             }
 
