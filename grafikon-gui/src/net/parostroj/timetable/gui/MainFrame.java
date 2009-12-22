@@ -43,7 +43,7 @@ public class MainFrame extends javax.swing.JFrame implements ApplicationModelLis
     private EditImagesDialog imagesDialog;
     private EditInfoDialog infoDialog;
     private NewModelDialog newModelDialog;
-    private TrainsWithConflictsDialog conflictsDialog;
+    private FloatingDialogsList floatingDialogsList;
     private TrainTypesDialog trainTypesDialog;
     private LineClassesDialog lineClassesDialog;
     private EngineClassesDialog engineClassesDialog;
@@ -283,9 +283,8 @@ public class MainFrame extends javax.swing.JFrame implements ApplicationModelLis
         
         infoDialog = new EditInfoDialog(this, true);
         infoDialog.setModel(model);
-        
-        conflictsDialog = new TrainsWithConflictsDialog(this, false);
-        conflictsDialog.setModel(model);
+
+        floatingDialogsList = FloatingDialogsFactory.createDialogs(this, model.getMediator(), model);
         
         newModelDialog = new NewModelDialog(this, true);
         newModelDialog.setModel(model);
@@ -1212,10 +1211,12 @@ private void fileSaveAsMenuItemActionPerformed(java.awt.event.ActionEvent evt) {
 
 private void trainsConflictsViewMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_trainsConflictsViewMenuItemActionPerformed
     // show dialog
-    if (!conflictsDialog.isVisible())
-        conflictsDialog.setVisible(true);
+    // TODO replace with proper handling of all floating dialogs
+    FloatingDialog dialog = floatingDialogsList.get(0);
+    if (!dialog.isVisible())
+        dialog.setVisible(true);
     else
-        conflictsDialog.setLocationRelativeTo(this);
+        dialog.setLocationRelativeTo(this);
 }//GEN-LAST:event_trainsConflictsViewMenuItemActionPerformed
 
 private void trainTimetableListByDcMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_trainTimetableListByDcMenuItemActionPerformed
@@ -1739,7 +1740,7 @@ private void penaltyTableMenuItemActionPerformed(java.awt.event.ActionEvent evt)
             prefs.remove("locale.output");
         
         trainsPane.saveToPreferences(prefs);
-        conflictsDialog.saveToPreferences(prefs);
+        floatingDialogsList.saveToPreferences(prefs);
     }
     
     @Override
@@ -1762,7 +1763,7 @@ private void penaltyTableMenuItemActionPerformed(java.awt.event.ActionEvent evt)
             this.setBounds(r);
         }
         trainsPane.loadFromPreferences(prefs);
-        conflictsDialog.loadFromPreferences(prefs);
+        floatingDialogsList.loadFromPreferences(prefs);
     }
     
     // Variables declaration - do not modify//GEN-BEGIN:variables

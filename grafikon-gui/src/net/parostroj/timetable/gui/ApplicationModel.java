@@ -7,6 +7,8 @@ import java.util.Queue;
 import java.util.Set;
 import net.parostroj.timetable.gui.commands.Command;
 import net.parostroj.timetable.gui.commands.CommandException;
+import net.parostroj.timetable.mediator.Mediator;
+import net.parostroj.timetable.mediator.TrainDiagramCollegue;
 import net.parostroj.timetable.model.TrainsCycle;
 import net.parostroj.timetable.model.Train;
 import net.parostroj.timetable.model.TrainDiagram;
@@ -19,22 +21,16 @@ import net.parostroj.timetable.model.TrainDiagram;
 public class ApplicationModel {
     
     private Set<ApplicationModelListener> listeners;
-    
     private Train selectedTrain;
-    
     private TrainsCycle selectedEngineCycle;
-    
     private TrainsCycle selectedDriverCycle;
-    
     private TrainsCycle selectedTrainUnitCycle;
-    
     private TrainDiagram diagram;
-    
     private Queue<Command> commandQueue;
-    
     private boolean modelChanged;
-    
     private File openedFile;
+    private Mediator mediator;
+    private TrainDiagramCollegue collegue;
     
     /**
      * Default constructor.
@@ -42,6 +38,10 @@ public class ApplicationModel {
     public ApplicationModel() {
         listeners = new HashSet<ApplicationModelListener>();
         commandQueue = new LinkedList<Command>();
+        mediator = new Mediator();
+        collegue = new TrainDiagramCollegue();
+        mediator.addColleague(collegue);
+        mediator.addColleague(new ApplicationModelColleague(this));
     }
 
     /**
@@ -99,6 +99,10 @@ public class ApplicationModel {
         return diagram;
     }
 
+    public Mediator getMediator() {
+        return mediator;
+    }
+
     /**
      * sets train diagram and generates event.
      * 
@@ -112,6 +116,7 @@ public class ApplicationModel {
         this.setSelectedTrainUnitCycle(null);
         
         this.diagram = diagram;
+        this.collegue.setTrainDiagram(diagram);
 
         // after set checker
         (new AfterSetChecker()).check(diagram);
