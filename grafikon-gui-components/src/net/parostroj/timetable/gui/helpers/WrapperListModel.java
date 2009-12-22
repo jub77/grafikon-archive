@@ -60,6 +60,11 @@ public class WrapperListModel<T> extends AbstractListModel {
         }
     }
 
+    public void removeObject(T object) {
+        Wrapper<T> wrapper = this.getWrapperForObject(object);
+        this.removeWrapper(wrapper);
+    }
+
     public void addWrapper(Wrapper<T> w) {
         // add to set
         if (set != null)
@@ -93,6 +98,33 @@ public class WrapperListModel<T> extends AbstractListModel {
         this.set = null;
         if (list.size() > 0)
             this.fireIntervalAdded(this, 0, list.size() - 1);
+    }
+
+    public int getIndexOfObject(T object) {
+        int i = 0;
+        for (Wrapper<T> wrapper : list) {
+            if (wrapper.getElement().equals(object))
+                return i;
+            i++;
+        }
+        return -1;
+    }
+
+    public Wrapper<T> getWrapperForObject(T object) {
+        for (Wrapper<T> wrapper : list) {
+            if (wrapper.getElement().equals(object))
+                return wrapper;
+        }
+        return null;
+    }
+
+    public void clear() {
+        int size = list.size();
+        list.clear();
+        if (set != null)
+            initializeSet();
+        if (size != 0)
+            this.fireIntervalRemoved(this, 0, size - 1);
     }
 
     @Override
