@@ -202,10 +202,10 @@ public class TimeIntervalList extends ArrayList<TimeInterval> {
         while (i.hasNext()) {
             TimeInterval item = i.next();
             if (attached)
-                item.getOwner().removeTimeInterval(item);
+                item.removeFromOwner();
             item.shift(timeShift);
             if (attached)
-                item.getOwner().addTimeInterval(item);
+                item.addToOwner();
         }
     }
 
