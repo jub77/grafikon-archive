@@ -2,6 +2,9 @@ package net.parostroj.timetable.gui.dialogs;
 
 import java.awt.Frame;
 import java.awt.Rectangle;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.StringTokenizer;
 import javax.swing.JPanel;
 import net.parostroj.timetable.gui.AppPreferences;
 import net.parostroj.timetable.gui.StorableGuiData;
@@ -49,30 +52,41 @@ public class FloatingDialog extends javax.swing.JDialog implements StorableGuiDa
         return new StringBuilder(storageKeyPrefix).append('.').append(keySuffix).toString();
     }
 
+    private List<Integer> parsePosition(String preferences) {
+        StringTokenizer tokenizer = new StringTokenizer(preferences, "|");
+        List<Integer> positions = new LinkedList<Integer>();
+        while (tokenizer.hasMoreTokens()) {
+            String token = tokenizer.nextToken();
+            positions.add(Integer.valueOf(token));
+        }
+        return (positions.size() != 4) ? null : positions;
+    }
+
+    private String createPosition() {
+        return String.format("%d|%d|%d|%d", this.getX(), this.getY(), this.getWidth(), this.getHeight());
+    }
+
     @Override
     public void saveToPreferences(AppPreferences prefs) {
-        prefs.setInt(this.createStorageKey("x"), this.getX());
-        prefs.setInt(this.createStorageKey("y"), this.getY());
-        prefs.setInt(this.createStorageKey("width"), this.getWidth());
-        prefs.setInt(this.createStorageKey("height"), this.getHeight());
+        prefs.removeWithPrefix(storageKeyPrefix);
+        prefs.setString(this.createStorageKey("position"), this.createPosition());
         prefs.setBoolean(this.createStorageKey("visible"), this.isVisible());
     }
 
     @Override
     public void loadFromPreferences(AppPreferences prefs) {
-        if ((prefs.getInt(this.createStorageKey("x")) == null) ||
-                (prefs.getInt(this.createStorageKey("y")) == null) ||
-                (prefs.getInt(this.createStorageKey("height")) == null) ||
-                (prefs.getInt(this.createStorageKey("width")) == null)) {
-            return;
+        // set position
+        String positionStr = prefs.getString(this.createStorageKey("position"));
+        if (positionStr != null) {
+            List<Integer> positions = this.parsePosition(positionStr);
+            if (positions != null) {
+                Rectangle r = new Rectangle(positions.get(0),
+                        positions.get(1),
+                        positions.get(2),
+                        positions.get(3));
+                this.setBounds(r);
+            }
         }
-        Rectangle r = new Rectangle(
-                prefs.getInt(this.createStorageKey("x")),
-                prefs.getInt(this.createStorageKey("y")),
-                prefs.getInt(this.createStorageKey("width")),
-                prefs.getInt(this.createStorageKey("height")));
-        // set position and size
-        this.setBounds(r);
         // set visibility
         if (Boolean.TRUE.equals(prefs.getBoolean(this.createStorageKey("visible"))))
                 this.setVisible(true);

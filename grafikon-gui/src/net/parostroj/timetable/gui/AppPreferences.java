@@ -4,7 +4,9 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.Properties;
+import java.util.Set;
 
 /**
  * Application preferences.
@@ -67,6 +69,21 @@ public class AppPreferences {
 
     public void remove(String key) {
         preferencesProps.remove(key);
+    }
+
+    public void removeWithPrefix(String keyPrefix) {
+        Set<String> removedKeys = null;
+        for (Object obj : preferencesProps.keySet()) {
+            String key = (String)obj;
+            if (key.startsWith(keyPrefix)) {
+                if (removedKeys == null)
+                    removedKeys = new HashSet<String>();
+                removedKeys.add(key);
+            }
+        }
+        if (removedKeys != null)
+            for (String key : removedKeys)
+                preferencesProps.remove(key);
     }
 
     /**
