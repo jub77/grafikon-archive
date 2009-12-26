@@ -88,6 +88,8 @@ public class TCListView extends javax.swing.JPanel implements ApplicationModelLi
 
     @Override
     public void valueChanged(ListSelectionEvent e) {
+        if (e.getValueIsAdjusting())
+            return;
         // set selected engine
         Object[] selectedValues = ecList.getSelectedValues();
         if (selectedValues.length == 1)
