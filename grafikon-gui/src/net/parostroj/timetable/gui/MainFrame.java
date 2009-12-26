@@ -1425,7 +1425,7 @@ private void fileImportMenuItemActionPerformed(java.awt.event.ActionEvent evt) {
 private void trainTimetableListByDcSelectMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_trainTimetableListByDcSelectMenuItemActionPerformed
     ElementSelectionDialog<TrainsCycle> selDialog = new ElementSelectionDialog<TrainsCycle>(this, true);
     selDialog.setLocationRelativeTo(this);
-    List<TrainsCycle> selection = selDialog.selectElements(model.getDiagram().getCycles(TrainsCycleType.DRIVER_CYCLE), model.getDiagram());
+    List<TrainsCycle> selection = selDialog.selectElements(model.getDiagram().getCycles(TrainsCycleType.DRIVER_CYCLE));
     if (selection != null)
         this.trainTimetableListByDc(selection);
 }//GEN-LAST:event_trainTimetableListByDcSelectMenuItemActionPerformed
@@ -1433,7 +1433,7 @@ private void trainTimetableListByDcSelectMenuItemActionPerformed(java.awt.event.
 private void dcListSelectMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_dcListSelectMenuItemActionPerformed
     ElementSelectionDialog<TrainsCycle> selDialog = new ElementSelectionDialog<TrainsCycle>(this, true);
     selDialog.setLocationRelativeTo(this);
-    List<TrainsCycle> selection = selDialog.selectElements(model.getDiagram().getCycles(TrainsCycleType.DRIVER_CYCLE), model.getDiagram());
+    List<TrainsCycle> selection = selDialog.selectElements(model.getDiagram().getCycles(TrainsCycleType.DRIVER_CYCLE));
     if (selection != null) {
         DriverCyclesList list = new DriverCyclesList(selection, model.getDiagram().getAttributes());
         this.driverCyclesList(list);
@@ -1444,7 +1444,7 @@ private void dcListSelectMenuItemActionPerformed(java.awt.event.ActionEvent evt)
 private void tucListSelectMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tucListSelectMenuItemActionPerformed
     ElementSelectionDialog<TrainsCycle> selDialog = new ElementSelectionDialog<TrainsCycle>(this, true);
     selDialog.setLocationRelativeTo(this);
-    List<TrainsCycle> selection = selDialog.selectElements(model.getDiagram().getCycles(TrainsCycleType.TRAIN_UNIT_CYCLE), model.getDiagram());
+    List<TrainsCycle> selection = selDialog.selectElements(model.getDiagram().getCycles(TrainsCycleType.TRAIN_UNIT_CYCLE));
     if (selection != null) {
         TrainUnitCyclesList list = new TrainUnitCyclesList(selection);
         this.trainUnitCyclesList(list);
@@ -1454,7 +1454,7 @@ private void tucListSelectMenuItemActionPerformed(java.awt.event.ActionEvent evt
 private void ecListSelectMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ecListSelectMenuItemActionPerformed
     ElementSelectionDialog<TrainsCycle> selDialog = new ElementSelectionDialog<TrainsCycle>(this, true);
     selDialog.setLocationRelativeTo(this);
-    List<TrainsCycle> selection = selDialog.selectElements(model.getDiagram().getCycles(TrainsCycleType.ENGINE_CYCLE), model.getDiagram());
+    List<TrainsCycle> selection = selDialog.selectElements(model.getDiagram().getCycles(TrainsCycleType.ENGINE_CYCLE));
     if (selection != null) {
         final EngineCyclesList list = new EngineCyclesList(selection);
         this.engineCyclesList(list);
@@ -1465,7 +1465,7 @@ private void ecListSelectMenuItemActionPerformed(java.awt.event.ActionEvent evt)
 private void nodeTimetableListSelectMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nodeTimetableListSelectMenuItemActionPerformed
     ElementSelectionDialog<Node> selDialog = new ElementSelectionDialog<Node>(this, true);
     selDialog.setLocationRelativeTo(this);
-    List<Node> selection = selDialog.selectElements(new ArrayList<Node>(model.getDiagram().getNet().getNodes()), model.getDiagram());
+    List<Node> selection = selDialog.selectElements(new ArrayList<Node>(model.getDiagram().getNet().getNodes()));
     if (selection != null) {
         final NodeTimetablesList list = new NodeTimetablesList(selection, model.getDiagram());
         this.nodeTimetablesList(list);

@@ -26,6 +26,9 @@ public class TrainWrapper extends Wrapper<Train> {
     public TrainWrapper(Train train, Type type) {
         super(train);
         this.type = type;
+        this.comparator = new TrainComparator(
+                TrainComparator.Type.ASC,
+                train.getTrainDiagram().getTrainsData().getTrainSortPattern());
     }
 
     public TrainWrapper(Train train, Type type, TrainComparator comparator) {
