@@ -194,7 +194,7 @@ public class EditLineDialog extends javax.swing.JDialog {
                 }
                 // recalculate collected trains
                 for (Train train : trains) {
-                    train.recalculate(model.getDiagram());
+                    train.recalculate();
                     // event
                     model.fireEvent(new ApplicationModelEvent(ApplicationModelEventType.MODIFIED_TRAIN, model, train));
                 }

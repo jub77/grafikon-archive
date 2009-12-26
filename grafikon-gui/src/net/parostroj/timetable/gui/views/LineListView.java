@@ -206,7 +206,7 @@ public class LineListView extends javax.swing.JPanel implements ApplicationModel
             
             Tuple<Node> selected = createLineDialog.getSelectedNodes();
             // create new line
-            Line l = new Line(IdGenerator.getInstance().getId(), 1000, selected.first, selected.second, Line.UNLIMITED_SPEED);
+            Line l = model.getDiagram().createLine(IdGenerator.getInstance().getId(), 1000, selected.first, selected.second, Line.UNLIMITED_SPEED);
             LineTrack track = new LineTrack(IdGenerator.getInstance().getId(), "1");
             l.addTrack(track);
             model.getDiagram().getNet().addLine(selected.first, selected.second, l);

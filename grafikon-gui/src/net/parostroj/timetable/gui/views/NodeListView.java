@@ -201,7 +201,7 @@ public class NodeListView extends javax.swing.JPanel implements ApplicationModel
             // do not create if empty or cancel selected
             if (result == null || result.equals(""))
                 return;
-            Node n = new Node(IdGenerator.getInstance().getId(), NodeType.STATION, result, result);
+            Node n = model.getDiagram().createNode(IdGenerator.getInstance().getId(), NodeType.STATION, result, result);
             NodeTrack track = new NodeTrack(IdGenerator.getInstance().getId(), "1");
             track.setPlatform(true);
             n.addTrack(track);

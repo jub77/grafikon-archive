@@ -12,6 +12,8 @@ import net.parostroj.timetable.model.events.NodeListener;
  */
 public class Node implements RouteSegment, AttributesHolder, ObjectWithId {
 
+    /** Train diagram. */
+    private final TrainDiagram diagram;
     /** ID. */
     private final String id;
     /** Name of the node. */
@@ -46,30 +48,20 @@ public class Node implements RouteSegment, AttributesHolder, ObjectWithId {
     }
 
     /**
-     * Default constructor.
-     * 
-     * @param id id
-     * @param type type
-     */
-    public Node(String id, NodeType type) {
-        init();
-        this.type = type;
-        this.id = id;
-    }
-
-    /**
      * creates instance with specified name.
      *
      * @param id id
+     * @param diagram train diagram
      * @param type type
      * @param name name
      * @param abbr abbreviation
      */
-    public Node(String id, NodeType type, String name, String abbr) {
+    Node(String id, TrainDiagram diagram, NodeType type, String name, String abbr) {
         this.id = id;
         this.name = name;
         this.type = type;
         this.abbr = abbr;
+        this.diagram = diagram;
         init();
     }
     
@@ -89,7 +81,11 @@ public class Node implements RouteSegment, AttributesHolder, ObjectWithId {
         return id;
     }
 
-    public TimeInterval createTimeInterval(String intervalId, Train train, int start, TrainDiagram diagram, int stop) {
+    public TrainDiagram getTrainDiagram() {
+        return diagram;
+    }
+
+    public TimeInterval createTimeInterval(String intervalId, Train train, int start, int stop) {
         int end = start + stop;
 
         NodeTrack selectedTrack = null;

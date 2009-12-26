@@ -351,4 +351,31 @@ public class TrainDiagram implements AttributesHolder, ObjectWithId {
     public Train createTrain(String id) {
         return new Train(id, this);
     }
+
+    /**
+     * create new line.
+     *
+     * @param id line's id
+     * @param length length
+     * @param from from node
+     * @param to to node
+     * @param topSpeed top speed
+     * @return a new line
+     */
+    public Line createLine(String id, int length, Node from, Node to, int topSpeed) {
+        return new Line(id, this, length, from, to, topSpeed);
+    }
+
+    /**
+     * create new node
+     *
+     * @param id ide
+     * @param type node type
+     * @param name name
+     * @param abbr abbreviation
+     * @return a new node
+     */
+    public Node createNode(String id, NodeType type, String name, String abbr) {
+        return new Node(id, this, type, name, abbr);
+    }
 }

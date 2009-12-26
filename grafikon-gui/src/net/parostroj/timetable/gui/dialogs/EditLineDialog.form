@@ -13,6 +13,7 @@
   <AuxValues>
     <AuxValue name="FormSettings_autoResourcing" type="java.lang.Integer" value="0"/>
     <AuxValue name="FormSettings_autoSetComponentName" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_generateFQN" type="java.lang.Boolean" value="true"/>
     <AuxValue name="FormSettings_generateMnemonicsCode" type="java.lang.Boolean" value="false"/>
     <AuxValue name="FormSettings_i18nAutoMode" type="java.lang.Boolean" value="false"/>
     <AuxValue name="FormSettings_layoutCodeTarget" type="java.lang.Integer" value="1"/>
@@ -44,19 +45,19 @@
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Component id="controlledCheckBox" min="-2" max="-2" attributes="0"/>
                           <Component id="unlimitedSpeedCheckBox" alignment="0" min="-2" max="-2" attributes="0"/>
-                          <Component id="lengthTextField" alignment="0" pref="178" max="32767" attributes="0"/>
-                          <Component id="speedTextField" alignment="0" pref="178" max="32767" attributes="0"/>
-                          <Component id="fromDirectTrackComboBox" alignment="0" pref="178" max="32767" attributes="0"/>
-                          <Component id="toDirectTrackComboBox" alignment="0" pref="178" max="32767" attributes="0"/>
+                          <Component id="lengthTextField" alignment="0" pref="204" max="32767" attributes="0"/>
+                          <Component id="speedTextField" alignment="0" pref="204" max="32767" attributes="0"/>
+                          <Component id="fromDirectTrackComboBox" alignment="0" pref="204" max="32767" attributes="0"/>
+                          <Component id="toDirectTrackComboBox" alignment="0" pref="204" max="32767" attributes="0"/>
                           <Group type="102" alignment="0" attributes="0">
                               <Component id="scrollPane" pref="91" max="32767" attributes="0"/>
                               <EmptySpace min="-2" max="-2" attributes="0"/>
                               <Group type="103" groupAlignment="0" attributes="0">
-                                  <Component id="deleteTrackButton" pref="81" max="32767" attributes="0"/>
+                                  <Component id="deleteTrackButton" pref="107" max="32767" attributes="0"/>
                                   <Component id="newTrackButton" alignment="0" max="32767" attributes="0"/>
                               </Group>
                           </Group>
-                          <Component id="lineClassComboBox" alignment="0" pref="178" max="32767" attributes="0"/>
+                          <Component id="lineClassComboBox" alignment="0" pref="204" max="32767" attributes="0"/>
                       </Group>
                   </Group>
                   <Group type="102" alignment="1" attributes="0">

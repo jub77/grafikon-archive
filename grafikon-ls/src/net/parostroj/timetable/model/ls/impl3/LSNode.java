@@ -9,6 +9,7 @@ import javax.xml.bind.annotation.XmlType;
 import net.parostroj.timetable.model.Node;
 import net.parostroj.timetable.model.NodeTrack;
 import net.parostroj.timetable.model.NodeType;
+import net.parostroj.timetable.model.TrainDiagram;
 
 /**
  * Class for storing nodes.
@@ -111,8 +112,8 @@ public class LSNode {
         this.y = y;
     }
 
-    public Node createNode() {
-        Node node = new Node(id, NodeType.fromString(type), name, abbr);
+    public Node createNode(TrainDiagram diagram) {
+        Node node = diagram.createNode(id, NodeType.fromString(type), name, abbr);
         node.setAttributes(attributes.createAttributes());
         node.setPositionX(x);
         node.setPositionY(y);

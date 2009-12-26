@@ -48,7 +48,7 @@ public class TrainDiagramBuilder {
         // create nodes ...
         if (lsNet.getNodes() != null)
             for (LSNode lsNode : lsNet.getNodes()) {
-                Node node = lsNode.createNode();
+                Node node = lsNode.createNode(diagram);
                 net.addNode(node);
             }
         // create lines ...
