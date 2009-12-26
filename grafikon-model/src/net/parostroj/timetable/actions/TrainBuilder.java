@@ -30,7 +30,9 @@ public class TrainBuilder {
      */
     public Train createTrain(String id, String number, int time, Train copiedTrain) {
         // create new train with the same data
-        Train train = new Train(id, number, copiedTrain.getType());
+        Train train = copiedTrain.getTrainDiagram().createTrain(id);
+        train.setNumber(number);
+        train.setType(copiedTrain.getType());
         train.setDescription(copiedTrain.getDescription());
         train.setTopSpeed(copiedTrain.getTopSpeed());
         train.setAttributes(new Attributes(copiedTrain.getAttributes()));
@@ -65,7 +67,9 @@ public class TrainBuilder {
      * @return created train
      */
     public Train createTrain(String id, String name, TrainType trainType, int topSpeed, Route route, int time, TrainDiagram diagram, int defaultStop) {
-        Train train = new Train(id, name, trainType);
+        Train train = diagram.createTrain(id);
+        train.setNumber(name);
+        train.setType(trainType);
         train.setTopSpeed(topSpeed);
 
         List<Pair<RouteSegment, Integer>> data = this.createDataForRoute(route);
