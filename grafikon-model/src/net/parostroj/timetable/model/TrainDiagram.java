@@ -220,13 +220,11 @@ public class TrainDiagram implements AttributesHolder, ObjectWithId {
 
     public void addTrainType(TrainType type, int position) {
         type.addListener(listener);
-        type.setTrainsData(trainsData);
         trainTypes.add(position, type);
         this.fireEvent(new TrainDiagramEvent(this, TrainDiagramEvent.Type.TRAIN_TYPE_ADDED, type));
     }
 
     public void setTrainType(TrainType type, int position) {
-        type.setTrainsData(trainsData);
         trainTypes.set(position, type);
     }
 
@@ -367,7 +365,7 @@ public class TrainDiagram implements AttributesHolder, ObjectWithId {
     }
 
     /**
-     * create new node
+     * create new node.
      *
      * @param id ide
      * @param type node type
@@ -377,5 +375,15 @@ public class TrainDiagram implements AttributesHolder, ObjectWithId {
      */
     public Node createNode(String id, NodeType type, String name, String abbr) {
         return new Node(id, this, type, name, abbr);
+    }
+
+    /**
+     * creates new train type.
+     *
+     * @param id id
+     * @return a new train type
+     */
+    public TrainType createTrainType(String id) {
+        return new TrainType(id, this);
     }
 }

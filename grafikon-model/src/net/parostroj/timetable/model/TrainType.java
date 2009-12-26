@@ -10,6 +10,8 @@ import net.parostroj.timetable.model.events.TrainTypeListener;
  * @author jub
  */
 public class TrainType implements ObjectWithId {
+    /** Train diagram. */
+    private final TrainDiagram diagram;
     /** Id. */
     private final String id;
     /** Abbreviation of the type. */
@@ -26,8 +28,6 @@ public class TrainType implements ObjectWithId {
     private TextTemplate trainNameTemplate;
     /** Template for complete train name. */
     private TextTemplate trainCompleteNameTemplate;
-    /** Reference to trains data. */
-    private TrainsData trainsData;
     /** Listener support. */
     private GTListenerSupport<TrainTypeListener, TrainTypeEvent> listenerSupport;
 
@@ -36,8 +36,9 @@ public class TrainType implements ObjectWithId {
      * 
      * @param id id
      */
-    public TrainType(String id) {
+    TrainType(String id, TrainDiagram diagram) {
         this.id = id;
+        this.diagram = diagram;
         listenerSupport = new GTListenerSupport<TrainTypeListener, TrainTypeEvent>(new GTEventSender<TrainTypeListener, TrainTypeEvent>() {
 
             @Override
@@ -55,12 +56,8 @@ public class TrainType implements ObjectWithId {
         return id;
     }
 
-    public TrainsData getTrainsData() {
-        return trainsData;
-    }
-
-    public void setTrainsData(TrainsData trainsData) {
-        this.trainsData = trainsData;
+    public TrainDiagram getTrainDiagram() {
+        return diagram;
     }
 
     /**
@@ -176,7 +173,7 @@ public class TrainType implements ObjectWithId {
      */
     public String formatTrainName(Train train) {
         TextTemplate template = (trainNameTemplate == null) ?
-            trainsData.getTrainNameTemplate() :
+            getTrainDiagram().getTrainsData().getTrainNameTemplate() :
             trainNameTemplate;
         return template.evaluate(train, train.createTemplateBinding());
     }
@@ -189,7 +186,7 @@ public class TrainType implements ObjectWithId {
      */
     public String formatTrainCompleteName(Train train) {
         TextTemplate template = (trainCompleteNameTemplate == null) ?
-            trainsData.getTrainCompleteNameTemplate() :
+            getTrainDiagram().getTrainsData().getTrainCompleteNameTemplate() :
             trainCompleteNameTemplate;
         return template.evaluate(train, train.createTemplateBinding());
     }

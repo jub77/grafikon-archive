@@ -34,7 +34,7 @@ public class TrainTypeImport extends Import {
         }
 
         // create new type
-        TrainType type = new TrainType(this.getId(importedType));
+        TrainType type = getDiagram().createTrainType(this.getId(importedType));
         type.setAbbr(importedType.getAbbr());
         type.setColor(importedType.getColor());
         type.setDesc(importedType.getDesc());
@@ -42,7 +42,6 @@ public class TrainTypeImport extends Import {
         type.setCategory(importedType.getCategory());
         type.setTrainCompleteNameTemplate(importedType.getTrainCompleteNameTemplate());
         type.setTrainNameTemplate(importedType.getTrainNameTemplate());
-        type.setTrainsData(importedType.getTrainsData());
 
         // add to diagram
         this.getDiagram().addTrainType(type);

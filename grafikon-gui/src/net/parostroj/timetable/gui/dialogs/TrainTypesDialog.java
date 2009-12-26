@@ -281,7 +281,7 @@ public class TrainTypesDialog extends javax.swing.JDialog {
             brakeComboBox.setSelectedItem(new TrainsTypeCategoryWrapper(selected.getCategory()));
             if (selected.getTrainNameTemplate() == null) {
                 nameTemplateCheckBox.setSelected(false);
-                nameTemplateTextField.setText(selected.getTrainsData().getTrainNameTemplate().getTemplate());
+                nameTemplateTextField.setText(selected.getTrainDiagram().getTrainsData().getTrainNameTemplate().getTemplate());
                 nameTemplateTextField.setEnabled(false);
                 nameTemplateTextField.setCaretPosition(0);
             } else {
@@ -292,7 +292,7 @@ public class TrainTypesDialog extends javax.swing.JDialog {
             }
             if (selected.getTrainCompleteNameTemplate() == null) {
                 completeNameTemplateCheckBox.setSelected(false);
-                completeNameTemplateTextField.setText(selected.getTrainsData().getTrainCompleteNameTemplate().getTemplate());
+                completeNameTemplateTextField.setText(selected.getTrainDiagram().getTrainsData().getTrainCompleteNameTemplate().getTemplate());
                 completeNameTemplateTextField.setEnabled(false);
                 completeNameTemplateTextField.setCaretPosition(0);
             } else {
@@ -403,28 +403,28 @@ public class TrainTypesDialog extends javax.swing.JDialog {
 
     private void newButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newButtonActionPerformed
         // test values
-            String abbr = abbrTextField.getText().trim();
-            String desc = descTextField.getText().trim();
-            // check values ....
-            if ("".equals(abbr) || "".equals(desc)) {
-                this.showErrorDialog("dialog.error.missingvalues");
-                return;
-            }
-            TrainType type = new TrainType(IdGenerator.getInstance().getId());
-            type.setAbbr(abbr);
-            type.setDesc(desc);
-            type.setColor(Conversions.convertTextToColor(colorLabel.getText()));
-            type.setCategory(((TrainsTypeCategoryWrapper)brakeComboBox.getSelectedItem()).getElement());
-            if (nameTemplateCheckBox.isSelected()) {
-                type.setTrainNameTemplate(TextTemplate.createTextTemplate(nameTemplateTextField.getText(), Language.MVEL));
-            }
-            if (completeNameTemplateCheckBox.isSelected()) {
-                type.setTrainCompleteNameTemplate(TextTemplate.createTextTemplate(completeNameTemplateTextField.getText(), Language.MVEL));
-            }
-            int index = typesModel.add(type);
-            trainTypesList.setSelectedIndex(index);
-            trainTypesList.ensureIndexIsVisible(index);
-            this.fireEvent();
+        String abbr = abbrTextField.getText().trim();
+        String desc = descTextField.getText().trim();
+        // check values ....
+        if ("".equals(abbr) || "".equals(desc)) {
+            this.showErrorDialog("dialog.error.missingvalues");
+            return;
+        }
+        TrainType type = model.getDiagram().createTrainType(IdGenerator.getInstance().getId());
+        type.setAbbr(abbr);
+        type.setDesc(desc);
+        type.setColor(Conversions.convertTextToColor(colorLabel.getText()));
+        type.setCategory(((TrainsTypeCategoryWrapper)brakeComboBox.getSelectedItem()).getElement());
+        if (nameTemplateCheckBox.isSelected()) {
+            type.setTrainNameTemplate(TextTemplate.createTextTemplate(nameTemplateTextField.getText(), Language.MVEL));
+        }
+        if (completeNameTemplateCheckBox.isSelected()) {
+            type.setTrainCompleteNameTemplate(TextTemplate.createTextTemplate(completeNameTemplateTextField.getText(), Language.MVEL));
+        }
+        int index = typesModel.add(type);
+        trainTypesList.setSelectedIndex(index);
+        trainTypesList.ensureIndexIsVisible(index);
+        this.fireEvent();
     }//GEN-LAST:event_newButtonActionPerformed
 
     private void nameTemplateCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nameTemplateCheckBoxActionPerformed
