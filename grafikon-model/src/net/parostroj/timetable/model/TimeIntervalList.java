@@ -174,10 +174,9 @@ public class TimeIntervalList extends ArrayList<TimeInterval> {
      * interval list.
      * 
      * @param timeShift amount of time to be shifted
-     * @param attached if the train is in attached state
      */
-    public void shift(int timeShift, boolean attached) {
-        this.shiftFrom(0, timeShift, attached);
+    public void shift(int timeShift) {
+        this.shiftFrom(0, timeShift);
     }
     
     /**
@@ -185,35 +184,32 @@ public class TimeIntervalList extends ArrayList<TimeInterval> {
      * interval list.
      * 
      * @param time new starting time
-     * @param attached if the train is in attached state
      */
-    public void move(int time, boolean attached) {
-        this.moveFrom(0, time, attached);
+    public void move(int time) {
+        this.moveFrom(0, time);
     }
 
-    public void moveFrom(int index, int time, boolean attached) {
+    public void moveFrom(int index, int time) {
         TimeInterval interval = this.get(index);
         int shift = time - interval.getStart();
-        this.shiftFrom(index, shift, attached);
+        this.shiftFrom(index, shift);
     }
 
-    public void shiftFrom(int index, int timeShift, boolean attached) {
+    public void shiftFrom(int index, int timeShift) {
         ListIterator<TimeInterval> i = this.listIterator(index);
         while (i.hasNext()) {
             TimeInterval item = i.next();
-            if (attached)
-                item.removeFromOwner();
             item.shift(timeShift);
-            if (attached)
-                item.addToOwner();
+            if (item.isAttached())
+                item.updateInOwner();
         }
     }
 
-    public void shiftFrom(TimeInterval interval, int timeShift, boolean attached) {
+    public void shiftFrom(TimeInterval interval, int timeShift) {
         int i = this.indexOf(interval);
         if (i == -1)
             throw new IllegalArgumentException("Interval is not part of the list.");
-        this.shiftFrom(i, timeShift, attached);
+        this.shiftFrom(i, timeShift);
     }
 
     public int computeFromSpeed(TimeInterval interval) {
@@ -254,43 +250,38 @@ public class TimeIntervalList extends ArrayList<TimeInterval> {
         }
     }
 
-    public void updateInterval(TimeInterval interval, boolean attached, TrainDiagram diagram) {
+    public void updateInterval(TimeInterval interval, TrainDiagram diagram) {
         int i = this.indexOf(interval);
         if (i == -1)
             throw new IllegalArgumentException("Interval is not part of the list.");
-        this.updateInterval(interval, i, attached, diagram);
+        this.updateInterval(interval, i, diagram);
     }
 
-    public void updateInterval(TimeInterval interval, int i, boolean attached, TrainDiagram diagram) {
+    public void updateInterval(TimeInterval interval, int i, TrainDiagram diagram) {
         if (interval.isNodeOwner()) {
-            this.updateNodeInterval(interval, i, attached, diagram);
+            this.updateNodeInterval(interval, i, diagram);
         } else {
-            this.updateLineInterval(interval, i, attached, diagram);
+            this.updateLineInterval(interval, i, diagram);
         }
     }
 
-    public void updateNodeInterval(TimeInterval interval, int i, boolean attached, TrainDiagram diagram) {
+    public void updateNodeInterval(TimeInterval interval, int i, TrainDiagram diagram) {
         if (!interval.isNodeOwner())
             throw new IllegalArgumentException("Node is not owner of the time interval.");
-        if (attached)
-            interval.removeFromOwner();
-        // nothing to do
-        if (attached)
-            interval.addToOwner();
+        if (interval.isAttached())
+            interval.updateInOwner();
     }
 
-    public void updateLineInterval(TimeInterval interval, int i, boolean attached, TrainDiagram diagram) {
+    public void updateLineInterval(TimeInterval interval, int i, TrainDiagram diagram) {
         if (!interval.isLineOwner())
             throw new IllegalArgumentException("Line is not owner of the interval.");
-        if (attached)
-            interval.removeFromOwner();
         // compute running time
         int runnningTime = interval.getOwnerAsLine().computeRunningTime(
                 interval.getTrain(), interval.getSpeed(), diagram,
                 this.computeFromSpeed(interval, i),
                 this.computeToSpeed(interval, i));
         interval.setLength(runnningTime);
-        if (attached)
-            interval.addToOwner();
+        if (interval.isAttached())
+            interval.updateInOwner();
     }
 }

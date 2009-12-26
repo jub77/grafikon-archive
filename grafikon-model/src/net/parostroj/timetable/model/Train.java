@@ -420,14 +420,12 @@ public class Train implements AttributesHolder, ObjectWithId {
                 timeBefore.addToOwner();
         } else if (length != 0 && timeBefore != null) {
             TimeInterval firstInterval = this.getFirstInterval();
-            if (isAttached())
-                timeBefore.removeFromOwner();
             // recalculate time
             timeBefore.setStart(firstInterval.getStart() - length);
             timeBefore.setLength(length - 1);
             timeBefore.setTrack(firstInterval.getTrack());
             if (isAttached())
-                timeBefore.addToOwner();
+                timeBefore.updateInOwner();
         } else {
             fireEvent = false;
         }
@@ -453,14 +451,12 @@ public class Train implements AttributesHolder, ObjectWithId {
                 timeAfter.addToOwner();
         } else if (length != 0 && timeAfter != null) {
             TimeInterval lastInterval = this.getLastInterval();
-            if (isAttached())
-                timeAfter.removeFromOwner();
             // recalculate time
             timeAfter.setStart(lastInterval.getEnd() + 1);
             timeAfter.setLength(length - 1);
             timeAfter.setTrack(lastInterval.getTrack());
             if (isAttached())
-                timeAfter.addToOwner();
+                timeAfter.updateInOwner();
         } else {
             fireEvent = false;
         }
@@ -519,7 +515,7 @@ public class Train implements AttributesHolder, ObjectWithId {
      * @param timeShift time
      */
     public void shift(int timeShift) {
-        timeIntervalList.shift(timeShift, isAttached());
+        timeIntervalList.shift(timeShift);
         this.updateTechnologicalTimes();
         this.listenerSupport.fireEvent(new TrainEvent(this, TrainEvent.Type.TIME_INTERVAL_LIST));
     }
@@ -530,7 +526,7 @@ public class Train implements AttributesHolder, ObjectWithId {
      * @param time starting time
      */
     public void move(int time) {
-        timeIntervalList.move(time, isAttached());
+        timeIntervalList.move(time);
         this.updateTechnologicalTimes();
         this.listenerSupport.fireEvent(new TrainEvent(this, TrainEvent.Type.TIME_INTERVAL_LIST));
     }
@@ -560,16 +556,16 @@ public class Train implements AttributesHolder, ObjectWithId {
         TimeInterval lineInterval = null;
         // compute running time of line before
         lineInterval = timeIntervalList.get(index - 1);
-        timeIntervalList.updateLineInterval(lineInterval, index - 1, isAttached(), diagram);
+        timeIntervalList.updateLineInterval(lineInterval, index - 1, diagram);
         // move time
         nodeInterval.move(lineInterval.getEnd());
-        timeIntervalList.updateNodeInterval(nodeInterval, index, isAttached(), diagram);
+        timeIntervalList.updateNodeInterval(nodeInterval, index, diagram);
         // compute running time of line after
         lineInterval = timeIntervalList.get(index + 1);
         lineInterval.move(nodeInterval.getEnd());
-        timeIntervalList.updateLineInterval(lineInterval, index + 1, isAttached(), diagram);
+        timeIntervalList.updateLineInterval(lineInterval, index + 1, diagram);
         // move rest
-        timeIntervalList.moveFrom(index + 2, lineInterval.getEnd(), isAttached());
+        timeIntervalList.moveFrom(index + 2, lineInterval.getEnd());
         this.updateTechnologicalTimeAfter();
         this.listenerSupport.fireEvent(new TrainEvent(this, TrainEvent.Type.TIME_INTERVAL_LIST));
     }
@@ -592,29 +588,29 @@ public class Train implements AttributesHolder, ObjectWithId {
         // line interval before (if there is not stop ...)
         if (index - 2 >= 0 && timeIntervalList.get(index - 1).getLength() == 0) {
             TimeInterval lti = timeIntervalList.get(index - 2);
-            timeIntervalList.updateLineInterval(lti, index - 2, isAttached(), diagram);
+            timeIntervalList.updateLineInterval(lti, index - 2, diagram);
             TimeInterval nti = timeIntervalList.get(index - 1);
             nti.move(lti.getEnd());
-            timeIntervalList.updateNodeInterval(nti, index - 1, isAttached(), diagram);
+            timeIntervalList.updateNodeInterval(nti, index - 1, diagram);
             lineInterval.move(nti.getEnd());
         }
 
         // change line interval
-        timeIntervalList.updateLineInterval(lineInterval, index, isAttached(), diagram);
+        timeIntervalList.updateLineInterval(lineInterval, index, diagram);
 
         // change intervals after (if there is no stop ...)
         if (index + 2 < timeIntervalList.size() && timeIntervalList.get(index + 1).getLength() == 0) {
             TimeInterval nti = timeIntervalList.get(index + 1);
             nti.move(lineInterval.getEnd());
-            timeIntervalList.updateNodeInterval(nti, index + 1, isAttached(), diagram);
+            timeIntervalList.updateNodeInterval(nti, index + 1, diagram);
             TimeInterval lti = timeIntervalList.get(index + 2);
             lti.move(nti.getEnd());
-            timeIntervalList.updateLineInterval(lti, index + 2, isAttached(), diagram);
+            timeIntervalList.updateLineInterval(lti, index + 2, diagram);
             // move rest
-            timeIntervalList.moveFrom(index + 3, lti.getEnd(), isAttached());
+            timeIntervalList.moveFrom(index + 3, lti.getEnd());
         } else {
             // move rest
-            timeIntervalList.moveFrom(index + 1, lineInterval.getEnd(), isAttached());
+            timeIntervalList.moveFrom(index + 1, lineInterval.getEnd());
         }
 
         this.updateTechnologicalTimeAfter();
@@ -631,11 +627,9 @@ public class Train implements AttributesHolder, ObjectWithId {
         if (!nodeInterval.isNodeOwner())
             throw new IllegalArgumentException("No node interval.");
         if (nodeInterval != null) {
-            if (isAttached())
-                nodeInterval.removeFromOwner();
             nodeInterval.setTrack(nodeTrack);
             if (isAttached())
-                nodeInterval.addToOwner();
+                nodeInterval.updateInOwner();
         }
         if (this.getTimeBefore() != 0 && nodeInterval.isFirst())
             this.updateTechnologicalTimeBefore();
@@ -654,11 +648,9 @@ public class Train implements AttributesHolder, ObjectWithId {
         if (!lineInterval.isLineOwner())
             throw new IllegalArgumentException("No line interval.");
         if (lineInterval != null) {
-            if (isAttached())
-                lineInterval.removeFromOwner();
             lineInterval.setTrack(lineTrack);
             if (isAttached())
-                lineInterval.addToOwner();
+                lineInterval.updateInOwner();
         }
         // we do not need to update technological times
         this.listenerSupport.fireEvent(new TrainEvent(this, TrainEvent.Type.TIME_INTERVAL_LIST));
@@ -680,9 +672,9 @@ public class Train implements AttributesHolder, ObjectWithId {
                 int speed = line.computeSpeed(this, interval.getSpeed());
                 interval.setSpeed(speed);
 
-                timeIntervalList.updateLineInterval(interval, i, isAttached(), diagram);
+                timeIntervalList.updateLineInterval(interval, i, diagram);
             } else {
-                timeIntervalList.updateNodeInterval(interval, i, isAttached(), diagram);
+                timeIntervalList.updateNodeInterval(interval, i, diagram);
             }
 
             nextStart = interval.getEnd();
