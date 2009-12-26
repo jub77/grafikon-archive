@@ -339,4 +339,16 @@ public class TrainDiagram implements AttributesHolder, ObjectWithId {
             listenerSupport.fireEvent(e);
         }
     }
+
+    // -------------------------- creational methods ---------------------------
+
+    /**
+     * creates new train.
+     *
+     * @param id train's id
+     * @return a new train
+     */
+    public Train createTrain(String id) {
+        return new Train(id, this);
+    }
 }

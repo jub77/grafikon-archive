@@ -114,7 +114,9 @@ public class LSVisitorBuilder implements LSVisitor {
     @Override
     public void visit(LSTrain lsTrain) {
         TrainType type = trainTypeList.getTrainType(lsTrain.getTrainType());
-        Train train = new Train(lsTrain.getUuid(), lsTrain.getName(), type);
+        Train train = diagram.createTrain(lsTrain.getUuid());
+        train.setNumber(lsTrain.getName());
+        train.setType(type);
         ids.put(lsTrain.getId(), train);
 
         train.setTopSpeed(lsTrain.getTopSpeed());

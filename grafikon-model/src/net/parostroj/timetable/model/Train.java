@@ -16,6 +16,8 @@ public class Train implements AttributesHolder, ObjectWithId {
     /** No top speed constant. */
     public static final int NO_TOP_SPEED = 0;
 
+    /** Train diagram reference. */
+    private final TrainDiagram diagram;
     /** ID. */
     private final String id;
     /** Train number. */
@@ -46,9 +48,11 @@ public class Train implements AttributesHolder, ObjectWithId {
      * Constructor.
      * 
      * @param id id
+     * @param diagram train diagram
      */
-    public Train(String id) {
+    Train(String id, TrainDiagram diagram) {
         this.id = id;
+        this.diagram = diagram;
         timeIntervalList = new TimeIntervalList();
         attributes = new Attributes();
         cycles = new EnumMap<TrainsCycleType, List<TrainsCycleItem>>(TrainsCycleType.class);
@@ -65,24 +69,18 @@ public class Train implements AttributesHolder, ObjectWithId {
     }
 
     /**
-     * creates instance with name and type.
-     *
-     * @param id  id
-     * @param number train number
-     * @param trainType train type
-     */
-    public Train(String id, String number, TrainType trainType) {
-        this(id);
-        this.number = number;
-        this.type = trainType;
-    }
-
-    /**
      * @return id of the train
      */
     @Override
     public String getId() {
         return id;
+    }
+
+    /**
+     * @return train diagram
+     */
+    public TrainDiagram getTrainDiagram() {
+        return diagram;
     }
 
     /**
