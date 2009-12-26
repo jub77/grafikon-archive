@@ -112,7 +112,7 @@ public class LSTrainType {
     }
     
     public TrainType createTrainType(TrainDiagram diagram) {
-        TrainType type = new TrainType(id);
+        TrainType type = diagram.createTrainType(id);
         type.setAbbr(abbr);
         type.setColor(Conversions.convertTextToColor(color));
         type.setDesc(desc);
@@ -122,7 +122,6 @@ public class LSTrainType {
             TextTemplate.createTextTemplate(trainCompleteNameTemplate, Language.MVEL): null);
         type.setTrainNameTemplate(trainNameTemplate != null ?
             TextTemplate.createTextTemplate(trainNameTemplate, Language.MVEL) : null);
-        type.setTrainsData(diagram.getTrainsData());
         return type;
     }
 

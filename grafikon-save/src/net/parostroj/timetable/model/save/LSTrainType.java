@@ -111,7 +111,7 @@ public class LSTrainType {
     }
 
     public TrainType convertToTrainType(TrainDiagram diagram) {
-        TrainType type = new TrainType(UUID.randomUUID().toString());
+        TrainType type =diagram.createTrainType(UUID.randomUUID().toString());
         type.setAbbr(this.abbr);
         type.setColor(Conversions.convertTextToColor(this.color));
         type.setDesc(this.desc);
