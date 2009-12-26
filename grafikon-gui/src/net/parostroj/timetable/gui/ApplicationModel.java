@@ -57,9 +57,11 @@ public class ApplicationModel {
      * @param selectedTrain train
      */
     public void setSelectedTrain(Train selectedTrain) {
-        this.selectedTrain = selectedTrain;
+        if (this.selectedTrain != selectedTrain) {
+            this.selectedTrain = selectedTrain;
 
-        this.fireEvent(new ApplicationModelEvent(ApplicationModelEventType.SELECTED_TRAIN_CHANGED,this,selectedTrain));
+            this.fireEvent(new ApplicationModelEvent(ApplicationModelEventType.SELECTED_TRAIN_CHANGED,this,selectedTrain));
+        }
     }
 
     public TrainsCycle getSelectedEngineCycle() {
