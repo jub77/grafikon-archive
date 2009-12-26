@@ -11,7 +11,7 @@ import net.parostroj.timetable.model.NodeTrack;
 public class NodeEvent extends GTEvent<Node> {
 
     public enum Type {
-        ATTRIBUTE, TRACK_ADDED, TRACK_REMOVED, TIME_INTERVAL_ADDED, TIME_INTERVAL_REMOVED, TRACK_ATTRIBUTE
+        ATTRIBUTE, TRACK_ADDED, TRACK_REMOVED, TIME_INTERVAL_ADDED, TIME_INTERVAL_REMOVED, TIME_INTERVAL_UPDATED, TRACK_ATTRIBUTE
     }
     private final Type type;
     private final String attributeName;

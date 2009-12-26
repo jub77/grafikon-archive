@@ -4,9 +4,12 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Enumeration;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Properties;
 import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * Application preferences.
@@ -109,8 +112,36 @@ public class AppPreferences {
     public void save() throws IOException {
         String homeDir = this.getSaveDirectory();
         if (homeDir != null) {
+            Properties savedProperties = new Properties() {
+                @Override
+                public Set<Object> keySet() {
+                    return new TreeSet<Object>(super.keySet());
+                }
+
+                @Override
+                public synchronized Enumeration<Object> keys() {
+                    final Iterator<Object> iterator = keySet().iterator();
+                    return new Enumeration<Object>() {
+
+                        @Override
+                        public boolean hasMoreElements() {
+                            return iterator.hasNext();
+                        }
+
+                        @Override
+                        public Object nextElement() {
+                            return iterator.next();
+                        }
+                    };
+                }
+
+
+            };
+            for (String key : preferencesProps.stringPropertyNames()) {
+                savedProperties.put(key, preferencesProps.getProperty(key));
+            }
             File propsFile = new File(homeDir, PREFERENCES_NAME);
-            preferencesProps.store(new FileWriter(propsFile), null);
+            savedProperties.store(new FileWriter(propsFile), null);
         }
     }
 

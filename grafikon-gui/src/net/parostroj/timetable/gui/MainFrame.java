@@ -20,9 +20,7 @@ import net.parostroj.timetable.gui.dialogs.*;
 import net.parostroj.timetable.gui.utils.*;
 import net.parostroj.timetable.gui.views.*;
 import net.parostroj.timetable.model.*;
-import net.parostroj.timetable.model.ls.FileLoadSave;
-import net.parostroj.timetable.model.ls.LSException;
-import net.parostroj.timetable.model.ls.LSFileFactory;
+import net.parostroj.timetable.model.ls.*;
 import net.parostroj.timetable.output.*;
 import net.parostroj.timetable.utils.ResourceLoader;
 
@@ -285,6 +283,7 @@ public class MainFrame extends javax.swing.JFrame implements ApplicationModelLis
         infoDialog.setModel(model);
 
         floatingDialogsList = FloatingDialogsFactory.createDialogs(this, model.getMediator(), model);
+        floatingDialogsList.addToMenuItem(viewsMenu);
         
         newModelDialog = new NewModelDialog(this, true);
         newModelDialog.setModel(model);
@@ -424,10 +423,10 @@ public class MainFrame extends javax.swing.JFrame implements ApplicationModelLis
         driverCyclesPane = new net.parostroj.timetable.gui.panes.TrainsCyclesPane();
         netPane = new net.parostroj.timetable.gui.panes.NetPane();
         statusBar = new net.parostroj.timetable.gui.StatusBar();
-        menuBar = new javax.swing.JMenuBar();
-        fileMenu = new javax.swing.JMenu();
-        fileNewMenuItem = new javax.swing.JMenuItem();
-        separator3 = new javax.swing.JSeparator();
+        javax.swing.JMenuBar menuBar = new javax.swing.JMenuBar();
+        javax.swing.JMenu fileMenu = new javax.swing.JMenu();
+        javax.swing.JMenuItem fileNewMenuItem = new javax.swing.JMenuItem();
+        javax.swing.JSeparator separator3 = new javax.swing.JSeparator();
         fileOpenMenuItem = new javax.swing.JMenuItem();
         fileSaveMenuItem = new javax.swing.JMenuItem();
         fileSaveAsMenuItem = new javax.swing.JMenuItem();
@@ -444,9 +443,9 @@ public class MainFrame extends javax.swing.JFrame implements ApplicationModelLis
         javax.swing.JSeparator separator2 = new javax.swing.JSeparator();
         languageMenu = new javax.swing.JMenu();
         systemLanguageRadioButtonMenuItem = new javax.swing.JRadioButtonMenuItem();
-        separator4 = new javax.swing.JSeparator();
-        exitMenuItem = new javax.swing.JMenuItem();
-        actionMenu = new javax.swing.JMenu();
+        javax.swing.JSeparator separator4 = new javax.swing.JSeparator();
+        javax.swing.JMenuItem exitMenuItem = new javax.swing.JMenuItem();
+        javax.swing.JMenu actionMenu = new javax.swing.JMenu();
         trainTimetableListMenuItem = new javax.swing.JMenuItem();
         nodeTimetableListMenuItem = new javax.swing.JMenuItem();
         ecListMenuItem = new javax.swing.JMenuItem();
@@ -469,8 +468,7 @@ public class MainFrame extends javax.swing.JFrame implements ApplicationModelLis
         oLanguageMenu = new javax.swing.JMenu();
         oSystemLRadioButtonMenuItem = new javax.swing.JRadioButtonMenuItem();
         viewsMenu = new javax.swing.JMenu();
-        trainsConflictsViewMenuItem = new javax.swing.JMenuItem();
-        specialMenu = new javax.swing.JMenu();
+        javax.swing.JMenu specialMenu = new javax.swing.JMenu();
         recalculateMenuItem = new javax.swing.JMenuItem();
         recalculateStopsMenuItem = new javax.swing.JMenuItem();
         javax.swing.JMenu settingsMenu = new javax.swing.JMenu();
@@ -779,15 +777,6 @@ public class MainFrame extends javax.swing.JFrame implements ApplicationModelLis
         menuBar.add(actionMenu);
 
         viewsMenu.setText(ResourceLoader.getString("menu.views")); // NOI18N
-
-        trainsConflictsViewMenuItem.setText(ResourceLoader.getString("menu.views.trainconflicts")); // NOI18N
-        trainsConflictsViewMenuItem.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                trainsConflictsViewMenuItemActionPerformed(evt);
-            }
-        });
-        viewsMenu.add(trainsConflictsViewMenuItem);
-
         menuBar.add(viewsMenu);
 
         specialMenu.setText(ResourceLoader.getString("menu.special")); // NOI18N
@@ -1208,16 +1197,6 @@ private void fileSaveAsMenuItemActionPerformed(java.awt.event.ActionEvent evt) {
         this.saveModel(xmlFileChooser.getSelectedFile());
     }
 }//GEN-LAST:event_fileSaveAsMenuItemActionPerformed
-
-private void trainsConflictsViewMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_trainsConflictsViewMenuItemActionPerformed
-    // show dialog
-    // TODO replace with proper handling of all floating dialogs
-    FloatingDialog dialog = floatingDialogsList.get(0);
-    if (!dialog.isVisible())
-        dialog.setVisible(true);
-    else
-        dialog.setLocationRelativeTo(this);
-}//GEN-LAST:event_trainsConflictsViewMenuItemActionPerformed
 
 private void trainTimetableListByDcMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_trainTimetableListByDcMenuItemActionPerformed
     trainTimetableListByDc(model.getDiagram().getCycles(TrainsCycleType.DRIVER_CYCLE));
@@ -1707,21 +1686,14 @@ private void penaltyTableMenuItemActionPerformed(java.awt.event.ActionEvent evt)
     @Override
     public void saveToPreferences(AppPreferences prefs) {
         boolean maximized = (this.getExtendedState() & JFrame.MAXIMIZED_BOTH) != 0;
+        prefs.removeWithPrefix("main.");
 
         prefs.setBoolean("main.maximized", maximized);
 
         if (!maximized) {
             // set position
-            prefs.setInt("main.x", this.getX());
-            prefs.setInt("main.y", this.getY());
-            prefs.setInt("main.width", this.getWidth());
-            prefs.setInt("main.height", this.getHeight());
-        } else {
-            // remove keys
-            prefs.remove("main.x");
-            prefs.remove("main.y");
-            prefs.remove("main.width");
-            prefs.remove("main.height");
+            String positionStr = GuiUtils.getPosition(this);
+            prefs.setString("main.position", positionStr);
         }
         
         // save to preferences last file chooser directories
@@ -1752,22 +1724,14 @@ private void penaltyTableMenuItemActionPerformed(java.awt.event.ActionEvent evt)
             // setting maximized state
             this.setExtendedState(JFrame.MAXIMIZED_BOTH);
         } else {
-            if ((prefs.getInt("main.x") == null) ||
-                    (prefs.getInt("main.y") == null) ||
-                    (prefs.getInt("main.width") == null) ||
-                    (prefs.getInt("main.height") == null)) {
-                return;
-            }
-            Rectangle r = new Rectangle(prefs.getInt("main.x"), prefs.getInt("main.y"), prefs.getInt("main.width"), prefs.getInt("main.height"));
-            // set position and size
-            this.setBounds(r);
+            // set position
+            GuiUtils.setPosition(prefs.getString("main.position"), this);
         }
         trainsPane.loadFromPreferences(prefs);
         floatingDialogsList.loadFromPreferences(prefs);
     }
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JMenu actionMenu;
     private javax.swing.JMenuItem allHtmlMenuItem;
     private javax.swing.JPanel applicationPanel;
     private javax.swing.JMenuItem dcListMenuItem;
@@ -1777,10 +1741,7 @@ private void penaltyTableMenuItemActionPerformed(java.awt.event.ActionEvent evt)
     private javax.swing.JMenuItem ecListSelectMenuItem;
     private net.parostroj.timetable.gui.panes.TrainsCyclesPane engineCyclesPane;
     private javax.swing.JMenuItem epListMenuItem;
-    private javax.swing.JMenuItem exitMenuItem;
     private javax.swing.JMenuItem fileImportMenuItem;
-    private javax.swing.JMenu fileMenu;
-    private javax.swing.JMenuItem fileNewMenuItem;
     private javax.swing.JMenuItem fileOpenMenuItem;
     private javax.swing.JMenuItem fileSaveAsMenuItem;
     private javax.swing.JMenuItem fileSaveMenuItem;
@@ -1789,7 +1750,6 @@ private void penaltyTableMenuItemActionPerformed(java.awt.event.ActionEvent evt)
     private javax.swing.ButtonGroup languageButtonGroup;
     private javax.swing.JMenu languageMenu;
     private javax.swing.JMenuItem lineClassesMenuItem;
-    private javax.swing.JMenuBar menuBar;
     private net.parostroj.timetable.gui.panes.NetPane netPane;
     private javax.swing.JMenuItem nodeTimetableListMenuItem;
     private javax.swing.JMenuItem nodeTimetableListSelectMenuItem;
@@ -1799,11 +1759,8 @@ private void penaltyTableMenuItemActionPerformed(java.awt.event.ActionEvent evt)
     private javax.swing.JMenuItem penaltyTableMenuItem;
     private javax.swing.JMenuItem recalculateMenuItem;
     private javax.swing.JMenuItem recalculateStopsMenuItem;
-    private javax.swing.JSeparator separator3;
-    private javax.swing.JSeparator separator4;
     private javax.swing.JMenuItem settingsMenuItem;
     private javax.swing.JMenuItem spListMenuItem;
-    private javax.swing.JMenu specialMenu;
     private net.parostroj.timetable.gui.StatusBar statusBar;
     private javax.swing.JRadioButtonMenuItem systemLanguageRadioButtonMenuItem;
     private javax.swing.JTabbedPane tabbedPane;
@@ -1813,7 +1770,6 @@ private void penaltyTableMenuItemActionPerformed(java.awt.event.ActionEvent evt)
     private javax.swing.JMenuItem trainTimetableListMenuItem;
     private javax.swing.JMenuItem trainTypesMenuItem;
     private net.parostroj.timetable.gui.panes.TrainsCyclesPane trainUnitCyclesPane;
-    private javax.swing.JMenuItem trainsConflictsViewMenuItem;
     private net.parostroj.timetable.gui.panes.TrainsPane trainsPane;
     private javax.swing.JMenuItem tucListMenuItem;
     private javax.swing.JMenuItem tucListSelectMenuItem;
