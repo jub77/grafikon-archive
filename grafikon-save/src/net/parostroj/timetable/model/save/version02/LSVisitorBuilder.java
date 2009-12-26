@@ -44,7 +44,7 @@ public class LSVisitorBuilder implements LSVisitor {
     @Override
     public void visit(LSNode lsNode) {
         NodeType type = NodeType.valueOf(lsNode.getNodeType());
-        Node node = new Node(lsNode.getUuid(), type, lsNode.getName(), lsNode.getAbbr());
+        Node node = diagram.createNode(lsNode.getUuid(), type, lsNode.getName(), lsNode.getAbbr());
         if (lsNode.getAttributes() != null) {
             node.setAttributes(lsNode.getAttributes().convertToAttributes());
         }
@@ -84,10 +84,9 @@ public class LSVisitorBuilder implements LSVisitor {
     public void visit(LSLine lsLine) {
         Node from = (Node) ids.get(lsLine.getSourceId());
         Node to = (Node) ids.get(lsLine.getTargetId());
-        Line line = new Line(lsLine.getUuid(), lsLine.getLength(), from, to);
+        Line line = diagram.createLine(lsLine.getUuid(), lsLine.getLength(), from, to, lsLine.getTopSpeed());
         ids.put(lsLine.getId(), line);
 
-        line.setTopSpeed(lsLine.getTopSpeed());
         if (lsLine.getAttributes() != null) {
             line.setAttributes(lsLine.getAttributes().convertToAttributes());        // add to net
         }

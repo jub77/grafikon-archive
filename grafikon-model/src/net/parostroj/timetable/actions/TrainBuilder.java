@@ -85,7 +85,7 @@ public class TrainBuilder {
                 Node node = (Node)pair.first;
                 interval = node.createTimeInterval(
                         IdGenerator.getInstance().getId(),
-                        train, time, diagram, pair.second);
+                        train, time, pair.second);
                 lastNode = node;
             } else {
                 // handle line
@@ -96,7 +96,7 @@ public class TrainBuilder {
                             TimeIntervalDirection.BACKWARD;
                 interval = line.createTimeInterval(
                         IdGenerator.getInstance().getId(),
-                        train, time, diagram,
+                        train, time,
                         direction, pair.second,
                         this.computeFromSpeed(pair, data, i),
                         this.computeToSpeed(pair, data, i));

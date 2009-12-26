@@ -144,7 +144,7 @@ public class NetEditView extends javax.swing.JPanel implements NetSelectionModel
             // do not create if empty or cancel selected
             if (result == null || result.equals(""))
                 return;
-            Node n = new Node(IdGenerator.getInstance().getId(), NodeType.STATION, result, result);
+            Node n = model.getDiagram().createNode(IdGenerator.getInstance().getId(), NodeType.STATION, result, result);
             NodeTrack track = new NodeTrack(IdGenerator.getInstance().getId(), "1");
             track.setPlatform(true);
             n.addTrack(track);
@@ -166,7 +166,7 @@ public class NetEditView extends javax.swing.JPanel implements NetSelectionModel
 
             Tuple<Node> selected = createLineDialog.getSelectedNodes();
             // create new line
-            Line l = new Line(IdGenerator.getInstance().getId(), 1000, selected.first, selected.second, Line.UNLIMITED_SPEED);
+            Line l = model.getDiagram().createLine(IdGenerator.getInstance().getId(), 1000, selected.first, selected.second, Line.UNLIMITED_SPEED);
             LineTrack track = new LineTrack(IdGenerator.getInstance().getId(), "1");
             l.addTrack(track);
             model.getDiagram().getNet().addLine(selected.first, selected.second, l);

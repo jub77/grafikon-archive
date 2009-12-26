@@ -6,7 +6,6 @@
 package net.parostroj.timetable.gui;
 
 import java.awt.Color;
-import java.awt.Rectangle;
 import java.awt.event.*;
 import java.io.*;
 import java.util.*;
@@ -862,7 +861,7 @@ private void recalculateMenuItemActionPerformed(java.awt.event.ActionEvent evt) 
         public void run() {
             // recalculate all trains
             for (Train train : model.getDiagram().getTrains()) {
-                train.recalculate(model.getDiagram());
+                train.recalculate();
             }
         }
 
@@ -1311,7 +1310,7 @@ private void recalculateStopsMenuItemActionPerformed(java.awt.event.ActionEvent 
                         int time = interval.getLength();
                         time = this.convertTime(time, ratio);
                         // change stop time
-                        train.changeStopTime(interval, time, model.getDiagram());
+                        train.changeStopTime(interval, time);
                     }
                 }
                 int time = 0;

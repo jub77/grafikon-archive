@@ -15,6 +15,8 @@ import net.parostroj.timetable.model.events.LineListener;
  */
 public class Line implements RouteSegment, AttributesHolder {
 
+    /** Train diagram. */
+    private final TrainDiagram diagram;
     /** ID. */
     private final String id;
     /** Length in mm. */
@@ -39,17 +41,21 @@ public class Line implements RouteSegment, AttributesHolder {
      * creates track with specified length.
      *
      * @param id id
+     * @param diagram train diagram
      * @param length length of the track in milimeters
      * @param from starting point
      * @param to end point
+     * @param topSpeed top speed
      */
-    public Line(String id, int length, Node from, Node to) {
+    Line(String id, TrainDiagram diagram, int length, Node from, Node to, int topSpeed) {
         tracks = new ArrayList<LineTrack>();
         attributes = new Attributes();
         this.length = length;
         this.from = from;
         this.to = to;
         this.id = id;
+        this.diagram = diagram;
+        this.topSpeed = topSpeed;
         this.listenerSupport = new GTListenerSupport<LineListener, LineEvent>(new GTEventSender<LineListener, LineEvent>() {
 
             @Override
@@ -57,20 +63,6 @@ public class Line implements RouteSegment, AttributesHolder {
                 listener.lineChanged(event);
             }
         });
-    }
-
-    /**
-     * creates track.
-     * 
-     * @param id id
-     * @param length length of the track in milimeters
-     * @param from starting point
-     * @param to end point
-     * @param topSpeed top speed
-     */
-    public Line(String id, int length, Node from, Node to, int topSpeed) {
-        this(id, length, from, to);
-        this.topSpeed = topSpeed;
     }
 
     public Attributes getAttributes() {
@@ -89,6 +81,10 @@ public class Line implements RouteSegment, AttributesHolder {
         return id;
     }
 
+    public TrainDiagram getTrainDiagram() {
+        return diagram;
+    }
+
     /**
      * @return track length
      */
@@ -104,8 +100,8 @@ public class Line implements RouteSegment, AttributesHolder {
         this.listenerSupport.fireEvent(new LineEvent(this, "length"));
     }
 
-    public TimeInterval createTimeInterval(String intervalId, Train train, int start, TrainDiagram diagram, TimeIntervalDirection direction, int speed, int fromSpeed, int toSpeed) {
-        int computedTime = this.computeRunningTime(train, speed, diagram, fromSpeed, toSpeed);
+    public TimeInterval createTimeInterval(String intervalId, Train train, int start, TimeIntervalDirection direction, int speed, int fromSpeed, int toSpeed) {
+        int computedTime = this.computeRunningTime(train, speed, fromSpeed, toSpeed);
         int end = start + computedTime;
 
         LineTrack selectedTrack = null;
@@ -211,7 +207,7 @@ public class Line implements RouteSegment, AttributesHolder {
      * @param toSpeed to speed
      * @return pair running time and speed
      */
-    public int computeRunningTime(final Train train, int speed, TrainDiagram diagram, int fromSpeed, int toSpeed) {
+    public int computeRunningTime(final Train train, int speed, int fromSpeed, int toSpeed) {
         Scale scale = (Scale) diagram.getAttribute("scale");
         double timeScale = (Double) diagram.getAttribute("time.scale");
         final PenaltyTable penaltyTable = diagram.getPenaltyTable();

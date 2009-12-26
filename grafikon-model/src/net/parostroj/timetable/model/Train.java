@@ -536,7 +536,7 @@ public class Train implements AttributesHolder, ObjectWithId {
      * @param length length of the stop
      * @param info model info
      */
-    public void changeStopTime(TimeInterval nodeInterval, int length, TrainDiagram diagram) {
+    public void changeStopTime(TimeInterval nodeInterval, int length) {
         // check time
         if (length < 0) {
             throw new IllegalArgumentException("Stop time cannot be negative.");
@@ -554,14 +554,14 @@ public class Train implements AttributesHolder, ObjectWithId {
         TimeInterval lineInterval = null;
         // compute running time of line before
         lineInterval = timeIntervalList.get(index - 1);
-        timeIntervalList.updateLineInterval(lineInterval, index - 1, diagram);
+        timeIntervalList.updateLineInterval(lineInterval, index - 1);
         // move time
         nodeInterval.move(lineInterval.getEnd());
-        timeIntervalList.updateNodeInterval(nodeInterval, index, diagram);
+        timeIntervalList.updateNodeInterval(nodeInterval, index);
         // compute running time of line after
         lineInterval = timeIntervalList.get(index + 1);
         lineInterval.move(nodeInterval.getEnd());
-        timeIntervalList.updateLineInterval(lineInterval, index + 1, diagram);
+        timeIntervalList.updateLineInterval(lineInterval, index + 1);
         // move rest
         timeIntervalList.moveFrom(index + 2, lineInterval.getEnd());
         this.updateTechnologicalTimeAfter();
@@ -575,7 +575,7 @@ public class Train implements AttributesHolder, ObjectWithId {
      * @param velocity velocity to be set
      * @param modelInfo model info
      */
-    public void changeVelocity(TimeInterval lineInterval, int velocity, TrainDiagram diagram) {
+    public void changeVelocity(TimeInterval lineInterval, int velocity) {
         int index = timeIntervalList.indexOf(lineInterval);
         if (index == -1 || !lineInterval.isLineOwner())
             throw new IllegalArgumentException("Cannot change interval.");
@@ -586,24 +586,24 @@ public class Train implements AttributesHolder, ObjectWithId {
         // line interval before (if there is not stop ...)
         if (index - 2 >= 0 && timeIntervalList.get(index - 1).getLength() == 0) {
             TimeInterval lti = timeIntervalList.get(index - 2);
-            timeIntervalList.updateLineInterval(lti, index - 2, diagram);
+            timeIntervalList.updateLineInterval(lti, index - 2);
             TimeInterval nti = timeIntervalList.get(index - 1);
             nti.move(lti.getEnd());
-            timeIntervalList.updateNodeInterval(nti, index - 1, diagram);
+            timeIntervalList.updateNodeInterval(nti, index - 1);
             lineInterval.move(nti.getEnd());
         }
 
         // change line interval
-        timeIntervalList.updateLineInterval(lineInterval, index, diagram);
+        timeIntervalList.updateLineInterval(lineInterval, index);
 
         // change intervals after (if there is no stop ...)
         if (index + 2 < timeIntervalList.size() && timeIntervalList.get(index + 1).getLength() == 0) {
             TimeInterval nti = timeIntervalList.get(index + 1);
             nti.move(lineInterval.getEnd());
-            timeIntervalList.updateNodeInterval(nti, index + 1, diagram);
+            timeIntervalList.updateNodeInterval(nti, index + 1);
             TimeInterval lti = timeIntervalList.get(index + 2);
             lti.move(nti.getEnd());
-            timeIntervalList.updateLineInterval(lti, index + 2, diagram);
+            timeIntervalList.updateLineInterval(lti, index + 2);
             // move rest
             timeIntervalList.moveFrom(index + 3, lti.getEnd());
         } else {
@@ -659,7 +659,7 @@ public class Train implements AttributesHolder, ObjectWithId {
      * 
      * @param info model info
      */
-    public void recalculate(TrainDiagram diagram) {
+    public void recalculate() {
         int nextStart = this.getStartTime();
         int i = 0;
         for (TimeInterval interval : timeIntervalList) {
@@ -670,9 +670,9 @@ public class Train implements AttributesHolder, ObjectWithId {
                 int speed = line.computeSpeed(this, interval.getSpeed());
                 interval.setSpeed(speed);
 
-                timeIntervalList.updateLineInterval(interval, i, diagram);
+                timeIntervalList.updateLineInterval(interval, i);
             } else {
-                timeIntervalList.updateNodeInterval(interval, i, diagram);
+                timeIntervalList.updateNodeInterval(interval, i);
             }
 
             nextStart = interval.getEnd();

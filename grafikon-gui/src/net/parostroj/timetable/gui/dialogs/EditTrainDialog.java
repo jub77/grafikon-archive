@@ -308,7 +308,7 @@ private void okButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRS
         if (maxSpeed != train.getTopSpeed()) {
             // modify top speed
             train.setTopSpeed(maxSpeed);
-            train.recalculate(model.getDiagram());
+            train.recalculate();
             // fire event
             changed = true;
         }

@@ -88,12 +88,12 @@ public class TrainIntervalsBuilder {
                 Node node = interval.getOwnerAsNode();
                 createdInterval = node.createTimeInterval(
                         interval.getId(), train, time,
-                        diagram, interval.getLength());
+                        interval.getLength());
             } else {
                 // handle line
                 Line line = interval.getOwnerAsLine();
                 createdInterval = line.createTimeInterval(
-                        interval.getId(), train, time, diagram,
+                        interval.getId(), train, time,
                         interval.getDirection(), interval.getSpeed(),
                         this.computeFromSpeed(interval, timeIntervals, i),
                         this.computeToSpeed(interval, timeIntervals, i));

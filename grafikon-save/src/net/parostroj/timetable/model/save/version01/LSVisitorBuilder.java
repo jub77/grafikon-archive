@@ -39,7 +39,7 @@ public class LSVisitorBuilder implements LSVisitor {
     @Override
     public void visit(LSNode lsNode) {
         NodeType type = NodeType.valueOf(lsNode.getNodeType());
-        Node node = new Node(this.createId(), type, lsNode.getName(), lsNode.getAbbr());
+        Node node = diagram.createNode(this.createId(), type, lsNode.getName(), lsNode.getAbbr());
         node.setAttribute("interlocking.plant", lsNode.getInterlockingPlant());
         node.setPositionX(lsNode.getX());
         node.setPositionY(lsNode.getY());
@@ -76,7 +76,7 @@ public class LSVisitorBuilder implements LSVisitor {
     public void visit(LSLine lsLine) {
         Node from = (Node) ids.get(lsLine.getSourceId());
         Node to = (Node) ids.get(lsLine.getTargetId());
-        Line line = new Line(this.createId(), lsLine.getLength(), from, to, Line.UNLIMITED_SPEED);
+        Line line = diagram.createLine(this.createId(), lsLine.getLength(), from, to, Line.UNLIMITED_SPEED);
         LineTrack lt = new LineTrack(this.createId(), "1");
         line.addTrack(lt);
         lt.setFromStraightTrack((NodeTrack) ids.get(lsLine.getSourceTrackId()));

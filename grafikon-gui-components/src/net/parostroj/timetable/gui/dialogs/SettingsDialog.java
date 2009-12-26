@@ -8,7 +8,6 @@ package net.parostroj.timetable.gui.dialogs;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
-import net.parostroj.timetable.gui.*;
 import net.parostroj.timetable.gui.utils.ResourceLoader;
 import net.parostroj.timetable.model.*;
 
@@ -432,7 +431,7 @@ public class SettingsDialog extends javax.swing.JDialog {
 
         // update model
         for (Train train : diagram.getTrains()) {
-            train.recalculate(diagram);
+            train.recalculate();
         }
         // clear cached information for train names
         for (Train train : diagram.getTrains())

@@ -250,34 +250,34 @@ public class TimeIntervalList extends ArrayList<TimeInterval> {
         }
     }
 
-    public void updateInterval(TimeInterval interval, TrainDiagram diagram) {
+    public void updateInterval(TimeInterval interval) {
         int i = this.indexOf(interval);
         if (i == -1)
             throw new IllegalArgumentException("Interval is not part of the list.");
-        this.updateInterval(interval, i, diagram);
+        this.updateInterval(interval, i);
     }
 
-    public void updateInterval(TimeInterval interval, int i, TrainDiagram diagram) {
+    public void updateInterval(TimeInterval interval, int i) {
         if (interval.isNodeOwner()) {
-            this.updateNodeInterval(interval, i, diagram);
+            this.updateNodeInterval(interval, i);
         } else {
-            this.updateLineInterval(interval, i, diagram);
+            this.updateLineInterval(interval, i);
         }
     }
 
-    public void updateNodeInterval(TimeInterval interval, int i, TrainDiagram diagram) {
+    public void updateNodeInterval(TimeInterval interval, int i) {
         if (!interval.isNodeOwner())
             throw new IllegalArgumentException("Node is not owner of the time interval.");
         if (interval.isAttached())
             interval.updateInOwner();
     }
 
-    public void updateLineInterval(TimeInterval interval, int i, TrainDiagram diagram) {
+    public void updateLineInterval(TimeInterval interval, int i) {
         if (!interval.isLineOwner())
             throw new IllegalArgumentException("Line is not owner of the interval.");
         // compute running time
         int runnningTime = interval.getOwnerAsLine().computeRunningTime(
-                interval.getTrain(), interval.getSpeed(), diagram,
+                interval.getTrain(), interval.getSpeed(),
                 this.computeFromSpeed(interval, i),
                 this.computeToSpeed(interval, i));
         interval.setLength(runnningTime);
