@@ -5,12 +5,8 @@ TODO
     - lines - adding different parts (different speed and possibly other information) ...
 
 NEW TODO
-    - added backward references to trains diagram (for example for formatting train name ...)
-        -> it would greatly simplify things (I wouldn't have to pass stupid name pattern around)
-        -> change constructors to friend (factory methods in TrainDiagram and other classes)
     - locking access to the train diagram - it would remove problems with concurrent modification (especially
         with recalculating trains)
-    - finish update interval instead of add/remove for route parts (nodes and lines)
     - finish events viewer implementation (converters)
 
 KNOWN BUGS
