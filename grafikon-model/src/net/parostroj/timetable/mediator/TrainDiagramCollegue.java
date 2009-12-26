@@ -43,6 +43,7 @@ public class TrainDiagramCollegue extends Colleague implements TrainDiagramListe
 
     @Override
     public void trainDiagramChanged(TrainDiagramEvent event) {
-        // do nothing
+        // process and distribute all events
+        this.sendMessage(event);
     }
 }
