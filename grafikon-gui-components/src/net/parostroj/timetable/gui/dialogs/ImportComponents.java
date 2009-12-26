@@ -52,15 +52,15 @@ public enum ImportComponents {
         return map;
     }
 
-    public List<Wrapper<?>> getListOfWrappers(Set<Object> objects, TrainDiagram diagram) {
+    public List<Wrapper<?>> getListOfWrappers(Set<Object> objects) {
         List<Wrapper<?>> list = new ArrayList<Wrapper<?>>(objects.size());
         for (Object oid : objects) {
-            list.add(this.getWrapper(oid, diagram));
+            list.add(this.getWrapper(oid));
         }
         return list;
     }
 
-    public Wrapper<?> getWrapper(Object oid, TrainDiagram diagram) {
-        return Wrapper.getWrapper(oid, diagram);
+    public Wrapper<?> getWrapper(Object oid) {
+        return Wrapper.getWrapper(oid);
     }
 }

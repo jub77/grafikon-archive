@@ -31,11 +31,10 @@ public class ElementSelectionDialog<T> extends javax.swing.JDialog {
      * <code>null</code> in case cancel was pressed.
      *
      * @param elements list of element from which the selection is done
-     * @param diagram diagram
      * @return list of selected elements
      */
-    public List<T> selectElements(List<T> elements, TrainDiagram diagram) {
-        elementSelectionPanel.setListForSelection(Wrapper.getWrapperList(elements, diagram));
+    public List<T> selectElements(List<T> elements) {
+        elementSelectionPanel.setListForSelection(Wrapper.getWrapperList(elements));
         setVisible(true);
         if (ok)
             return this.getElements(elementSelectionPanel.getSelectedList());

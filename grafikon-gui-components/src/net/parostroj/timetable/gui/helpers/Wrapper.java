@@ -5,7 +5,6 @@ import java.util.List;
 import net.parostroj.timetable.actions.TrainComparator;
 import net.parostroj.timetable.model.Node;
 import net.parostroj.timetable.model.Train;
-import net.parostroj.timetable.model.TrainDiagram;
 import net.parostroj.timetable.model.TrainType;
 import net.parostroj.timetable.model.TrainsCycle;
 
@@ -57,7 +56,7 @@ public class Wrapper<T> implements Comparable<Wrapper<T>> {
     }
 
     @SuppressWarnings("unchecked")
-    public static <T> Wrapper<T> getWrapper(T o, TrainDiagram diagram) {
+    public static <T> Wrapper<T> getWrapper(T o) {
         Wrapper<T> w = null;
         if (o instanceof Node) {
             w = (Wrapper)new NodeWrapper((Node)o);
@@ -65,7 +64,7 @@ public class Wrapper<T> implements Comparable<Wrapper<T>> {
             w = (Wrapper)new TrainWrapper(
                     (Train) o,
                     TrainWrapper.Type.NAME,
-                    new TrainComparator(TrainComparator.Type.ASC, diagram.getTrainsData().getTrainSortPattern()));
+                    new TrainComparator(TrainComparator.Type.ASC, ((Train)o).getTrainDiagram().getTrainsData().getTrainSortPattern()));
         } else if (o instanceof TrainType) {
             w = (Wrapper)new TrainsTypeWrapper((TrainType)o);
         } else if (o instanceof TrainsCycle) {
@@ -76,11 +75,11 @@ public class Wrapper<T> implements Comparable<Wrapper<T>> {
         return w;
     }
 
-    public static <T> List<Wrapper<T>> getWrapperList(List<T> objList, TrainDiagram diagram) {
+    public static <T> List<Wrapper<T>> getWrapperList(List<T> objList) {
         List<Wrapper<T>> list = new LinkedList<Wrapper<T>>();
         Class<?> clazz = null;
         for (T o : objList) {
-            list.add(getWrapper(o, diagram));
+            list.add(getWrapper(o));
             if (clazz != null && !clazz.equals(o.getClass())) {
                 throw new IllegalArgumentException("All element are expected to have the same class.");
             }

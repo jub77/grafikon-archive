@@ -308,7 +308,7 @@ public class ImportDialog extends javax.swing.JDialog {
 
     @SuppressWarnings("unchecked")
     private void fillList(ImportComponents comps, JList list, Set<Object> set) {
-        WrapperListModel model = new WrapperListModel(comps.getListOfWrappers(set, libraryDiagram), set);
+        WrapperListModel model = new WrapperListModel(comps.getListOfWrappers(set), set);
         list.setModel(model);
     }
 
