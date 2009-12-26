@@ -262,6 +262,24 @@ public class Line implements RouteSegment, AttributesHolder {
     }
 
     @Override
+    public void updateTimeInterval(TimeInterval interval) {
+        Track track = this.getTrackForInterval(interval);
+        if (track == null)
+            throw new IllegalStateException("Line doesn't contain interval.");
+        track.removeTimeInterval(interval);
+        interval.getTrack().addTimeInterval(interval);
+        this.listenerSupport.fireEvent(new LineEvent(this, LineEvent.Type.TIME_INTERVAL_UPDATED));
+    }
+
+    private Track getTrackForInterval(TimeInterval interval) {
+        for (Track track : getTracks()) {
+            if (track.getTimeIntervalList().contains(interval))
+                return track;
+        }
+        return null;
+    }
+
+    @Override
     public Line asLine() {
         return this;
     }

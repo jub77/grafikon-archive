@@ -8,6 +8,7 @@ import java.util.StringTokenizer;
 import javax.swing.JPanel;
 import net.parostroj.timetable.gui.AppPreferences;
 import net.parostroj.timetable.gui.StorableGuiData;
+import net.parostroj.timetable.gui.utils.GuiUtils;
 import net.parostroj.timetable.utils.ResourceLoader;
 
 /**
@@ -27,7 +28,8 @@ public class FloatingDialog extends javax.swing.JDialog implements StorableGuiDa
 
     public FloatingDialog(Frame parent, JPanel panel, String titleKey, String storageKeyPrefix) {
         this(parent, false);
-        this.setTitle(ResourceLoader.getString(titleKey));
+        if (titleKey != null)
+            this.setTitle(ResourceLoader.getString(titleKey));
         getContentPane().add(panel, java.awt.BorderLayout.CENTER);
         
         this.storageKeyPrefix = storageKeyPrefix;
@@ -48,28 +50,14 @@ public class FloatingDialog extends javax.swing.JDialog implements StorableGuiDa
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private String createStorageKey(String keySuffix) {
+    protected String createStorageKey(String keySuffix) {
         return new StringBuilder(storageKeyPrefix).append('.').append(keySuffix).toString();
-    }
-
-    private List<Integer> parsePosition(String preferences) {
-        StringTokenizer tokenizer = new StringTokenizer(preferences, "|");
-        List<Integer> positions = new LinkedList<Integer>();
-        while (tokenizer.hasMoreTokens()) {
-            String token = tokenizer.nextToken();
-            positions.add(Integer.valueOf(token));
-        }
-        return (positions.size() != 4) ? null : positions;
-    }
-
-    private String createPosition() {
-        return String.format("%d|%d|%d|%d", this.getX(), this.getY(), this.getWidth(), this.getHeight());
     }
 
     @Override
     public void saveToPreferences(AppPreferences prefs) {
         prefs.removeWithPrefix(storageKeyPrefix);
-        prefs.setString(this.createStorageKey("position"), this.createPosition());
+        prefs.setString(this.createStorageKey("position"), GuiUtils.getPosition(this));
         prefs.setBoolean(this.createStorageKey("visible"), this.isVisible());
     }
 
@@ -77,16 +65,7 @@ public class FloatingDialog extends javax.swing.JDialog implements StorableGuiDa
     public void loadFromPreferences(AppPreferences prefs) {
         // set position
         String positionStr = prefs.getString(this.createStorageKey("position"));
-        if (positionStr != null) {
-            List<Integer> positions = this.parsePosition(positionStr);
-            if (positions != null) {
-                Rectangle r = new Rectangle(positions.get(0),
-                        positions.get(1),
-                        positions.get(2),
-                        positions.get(3));
-                this.setBounds(r);
-            }
-        }
+        GuiUtils.setPosition(positionStr, this);
         // set visibility
         if (Boolean.TRUE.equals(prefs.getBoolean(this.createStorageKey("visible"))))
                 this.setVisible(true);

@@ -34,6 +34,13 @@ public class GTEvent<T> implements Iterable<GTEvent<?>>{
         return nestedEvent != null;
     }
 
+    public GTEvent<?> getLastNestedEvent() {
+        if (!isNested())
+            return this;
+        else
+            return getNestedEvent().getLastNestedEvent();
+    }
+
     @Override
     public Iterator<GTEvent<?>> iterator() {
         return new Iterator<GTEvent<?>>() {
