@@ -334,11 +334,21 @@ public class TimeInterval implements AttributesHolder, ObjectWithId {
     }
 
     public void removeFromOwner() {
+        if (!isAttached())
+            throw new IllegalStateException("Time interval is not attached.");
         owner.removeTimeInterval(this);
     }
 
     public void addToOwner() {
+        if (isAttached())
+            throw new IllegalStateException("Time interval is already attached.");
         owner.addTimeInterval(this);
+    }
+
+    public void updateInOwner() {
+        if (!isAttached())
+            throw new IllegalStateException("Time interval is not attached.");
+        owner.updateTimeInterval(this);
     }
 
     public Attributes getAttributes() {
@@ -415,5 +425,9 @@ public class TimeInterval implements AttributesHolder, ObjectWithId {
     @Override
     public String getId() {
         return id;
+    }
+
+    public boolean isAttached() {
+        return train.isAttached();
     }
 }
