@@ -92,6 +92,9 @@ public class FloatingDialogsFactory {
             public void saveToPreferences(AppPreferences prefs) {
                 super.saveToPreferences(prefs);
                 prefs.setInt(createStorageKey("divider"), panel.getDividerLocation());
+                prefs.setInt(createStorageKey("limit"), panel.getLimit());
+                prefs.setBoolean(createStorageKey("show.time"), panel.isShowTime());
+                prefs.setBoolean(createStorageKey("write.to.log"), panel.isWriteToLog());
             }
 
             @Override
@@ -100,6 +103,11 @@ public class FloatingDialogsFactory {
                 Integer divider = prefs.getInt(createStorageKey("divider"));
                 if (divider != null)
                     panel.setDividerLocation(divider);
+                Integer limit = prefs.getInt(createStorageKey("limit"));
+                if (limit != null)
+                    panel.setLimit(limit);
+                panel.setShowTime(Boolean.TRUE.equals(prefs.getBoolean(createStorageKey("show.time"))));
+                panel.setWriteToLog(Boolean.TRUE.equals(prefs.getBoolean(createStorageKey("write.to.log"))));
             }
         };
 
