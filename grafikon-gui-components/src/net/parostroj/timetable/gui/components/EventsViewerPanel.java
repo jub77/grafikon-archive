@@ -1,11 +1,11 @@
 package net.parostroj.timetable.gui.components;
 
 import java.awt.Rectangle;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.logging.Logger;
 import javax.swing.AbstractListModel;
+import net.parostroj.timetable.gui.utils.ResourceLoader;
+import net.parostroj.timetable.utils.Triplet;
 
 /**
  * Events' viewer panel.
@@ -15,15 +15,25 @@ import javax.swing.AbstractListModel;
 public class EventsViewerPanel extends javax.swing.JPanel {
 
     private Map<Class<?>, EventsViewerTypeConverter> converterMap;
+    private boolean writeToLog = false;
+    private static final Logger LOG = Logger.getLogger(EventsViewerPanel.class.getName());
 
     class EventListModel extends AbstractListModel {
 
-        private List<Object> eventList = new ArrayList<Object>();
+        private List<Triplet<Object, String, String>> eventList = new ArrayList<Triplet<Object, String, String>>();
+        private int limit = 0;
+        private boolean showTime = false;
 
         public void addEvent(Object event) {
-            eventList.add(event);
+            Calendar c = Calendar.getInstance();
+            String time = String.format("%02d:%02d:%02d", c.get(Calendar.HOUR_OF_DAY), c.get(Calendar.MINUTE), c.get(Calendar.SECOND));
+            String str = this.convertEventToStr(event);
+            eventList.add(new Triplet<Object, String, String>(event, str, time));
             int position = eventList.size() - 1;
             fireIntervalAdded(this, position, position);
+            removeOverLimit();
+            if (writeToLog)
+                LOG.fine(str);
         }
 
         @Override
@@ -31,14 +41,57 @@ public class EventsViewerPanel extends javax.swing.JPanel {
             return eventList.size();
         }
 
-        @Override
-        public Object getElementAt(int index) {
-            Object object = eventList.get(index);
-            EventsViewerTypeConverter converter = getConverterForType(object.getClass());
-            return converter != null ? converter.getListString(object) : object.toString();
+        public void clear() {
+            int size = eventList.size();
+            if (size > 0) {
+                eventList.clear();
+                this.fireIntervalRemoved(this, 0, size - 1);
+            }
         }
 
+        public void setLimit(int limit) {
+            this.limit = limit;
+            removeOverLimit();
+        }
 
+        public int getLimit() {
+            return limit;
+        }
+
+        public boolean isShowTime() {
+            return showTime;
+        }
+
+        public void setShowTime(boolean showTime) {
+            if (this.showTime != showTime) {
+                this.showTime = showTime;
+                if (eventList.size() > 0)
+                    this.fireContentsChanged(this, 0, eventList.size() - 1);
+            }
+        }
+
+        private void removeOverLimit() {
+            if (limit > 0) {
+                if (eventList.size() > limit) {
+                    int removedSize = eventList.size() - limit;
+                    eventList.subList(0, removedSize).clear();
+                    this.fireIntervalRemoved(this, 0, removedSize - 1);
+                }
+            }
+        }
+
+        @Override
+        public Object getElementAt(int index) {
+            Triplet<Object, String, String> item = eventList.get(index);
+            return !showTime ?
+                item.second :
+                item.third + " " + item.second;
+        }
+
+        private String convertEventToStr(Object event) {
+            EventsViewerTypeConverter converter = getConverterForType(event.getClass());
+            return converter != null ? converter.getListString(event) : event.toString();
+        }
     }
 
     /** Creates new form EventsViewerPanel */
@@ -61,6 +114,12 @@ public class EventsViewerPanel extends javax.swing.JPanel {
         eventsList = new javax.swing.JList();
         scrollPane2 = new javax.swing.JScrollPane();
         eventTextArea = new javax.swing.JTextArea();
+        buttonsPanel = new javax.swing.JPanel();
+        clearButton = new javax.swing.JButton();
+        limitTextField = new javax.swing.JFormattedTextField();
+        limitButton = new javax.swing.JButton();
+        timeCheckBox = new javax.swing.JCheckBox();
+        writeLogCheckBox = new javax.swing.JCheckBox();
 
         setLayout(new java.awt.BorderLayout());
 
@@ -77,15 +136,82 @@ public class EventsViewerPanel extends javax.swing.JPanel {
         splitPane.setRightComponent(scrollPane2);
 
         add(splitPane, java.awt.BorderLayout.CENTER);
+
+        buttonsPanel.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
+
+        clearButton.setText(ResourceLoader.getString("eventsviewer.button.clear")); // NOI18N
+        clearButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                clearButtonActionPerformed(evt);
+            }
+        });
+        buttonsPanel.add(clearButton);
+
+        limitTextField.setColumns(4);
+        limitTextField.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0"))));
+        limitTextField.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+        limitTextField.setText("0");
+        buttonsPanel.add(limitTextField);
+
+        limitButton.setText(ResourceLoader.getString("eventsviewer.button.limit")); // NOI18N
+        limitButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                limitButtonActionPerformed(evt);
+            }
+        });
+        buttonsPanel.add(limitButton);
+
+        timeCheckBox.setText(ResourceLoader.getString("eventsviewer.showtime")); // NOI18N
+        timeCheckBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                timeCheckBoxActionPerformed(evt);
+            }
+        });
+        buttonsPanel.add(timeCheckBox);
+
+        writeLogCheckBox.setText(ResourceLoader.getString("eventsviewer.writetolog")); // NOI18N
+        writeLogCheckBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                writeLogCheckBoxActionPerformed(evt);
+            }
+        });
+        buttonsPanel.add(writeLogCheckBox);
+
+        add(buttonsPanel, java.awt.BorderLayout.PAGE_END);
     }// </editor-fold>//GEN-END:initComponents
+
+    private void clearButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_clearButtonActionPerformed
+        clearEvents();
+    }//GEN-LAST:event_clearButtonActionPerformed
+
+    private void limitButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_limitButtonActionPerformed
+        Long value = (Long)limitTextField.getValue();
+        setModelLimit(value.intValue());
+    }//GEN-LAST:event_limitButtonActionPerformed
+
+    private void timeCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_timeCheckBoxActionPerformed
+        getEventsModel().setShowTime(timeCheckBox.isSelected());
+    }//GEN-LAST:event_timeCheckBoxActionPerformed
+
+    private void writeLogCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_writeLogCheckBoxActionPerformed
+        if (writeToLog != writeLogCheckBox.isSelected()) {
+            writeToLog = writeLogCheckBox.isSelected();
+        }
+    }//GEN-LAST:event_writeLogCheckBoxActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JPanel buttonsPanel;
+    private javax.swing.JButton clearButton;
     private javax.swing.JTextArea eventTextArea;
     private javax.swing.JList eventsList;
+    private javax.swing.JButton limitButton;
+    private javax.swing.JFormattedTextField limitTextField;
     private javax.swing.JScrollPane scrollPane1;
     private javax.swing.JScrollPane scrollPane2;
     private javax.swing.JSplitPane splitPane;
+    private javax.swing.JCheckBox timeCheckBox;
+    private javax.swing.JCheckBox writeLogCheckBox;
     // End of variables declaration//GEN-END:variables
 
     public void setDividerLocation(int value) {
@@ -107,7 +233,38 @@ public class EventsViewerPanel extends javax.swing.JPanel {
     }
 
     public void clearEvents() {
-        eventsList.setModel(new EventListModel());
+        getEventsModel().clear();
+    }
+
+    public void setLimit(int limit) {
+        limitTextField.setText(Integer.toString(limit));
+        this.setModelLimit(limit);
+    }
+
+    public int getLimit() {
+        return getEventsModel().getLimit();
+    }
+
+    public boolean isShowTime() {
+        return getEventsModel().isShowTime();
+    }
+
+    public void setShowTime(boolean showTime) {
+        timeCheckBox.setSelected(showTime);
+        getEventsModel().setShowTime(showTime);
+    }
+
+    public boolean isWriteToLog() {
+        return writeToLog;
+    }
+
+    public void setWriteToLog(boolean writeToLog) {
+        writeLogCheckBox.setSelected(writeToLog);
+        this.writeToLog = writeToLog;
+    }
+
+    private void setModelLimit(int limit) {
+        getEventsModel().setLimit(limit);
     }
 
     private EventListModel getEventsModel() {
