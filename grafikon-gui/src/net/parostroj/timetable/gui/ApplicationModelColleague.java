@@ -1,13 +1,13 @@
 package net.parostroj.timetable.gui;
 
-import net.parostroj.timetable.mediator.Colleague;
+import net.parostroj.timetable.mediator.AbstractColleague;
 
 /**
  * Colleague for application model.
  *
  * @author jub
  */
-public class ApplicationModelColleague extends Colleague implements ApplicationModelListener {
+public class ApplicationModelColleague extends AbstractColleague implements ApplicationModelListener {
 
     public ApplicationModelColleague(ApplicationModel model) {
         model.addListener(this);

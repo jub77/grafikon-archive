@@ -9,7 +9,7 @@ import net.parostroj.timetable.model.events.TrainDiagramListenerWithNested;
  *
  * @author jub
  */
-public class TrainDiagramCollegue extends Colleague implements TrainDiagramListenerWithNested {
+public class TrainDiagramCollegue extends AbstractColleague implements TrainDiagramListenerWithNested {
 
     private TrainDiagram diagram;
 
