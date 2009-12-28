@@ -862,6 +862,7 @@ private void recalculateMenuItemActionPerformed(java.awt.event.ActionEvent evt) 
 
         private Lock lock = new ReentrantLock();
         private Condition condition = lock.newCondition();
+        private boolean chunksFinished = false;
         private static final int CHUNK_SIZE = 10;
 
         @Override
@@ -872,7 +873,9 @@ private void recalculateMenuItemActionPerformed(java.awt.event.ActionEvent evt) 
             for (Train train : model.getDiagram().getTrains()) {
                 publish(train);
                 if (++cnt >= CHUNK_SIZE) {
-                    condition.await();
+                    chunksFinished = false;
+                    while(!chunksFinished)
+                        condition.await();
                     cnt = 0;
                 }
             }
@@ -894,6 +897,7 @@ private void recalculateMenuItemActionPerformed(java.awt.event.ActionEvent evt) 
             for (Train train : chunks) {
                 train.recalculate();
             }
+            chunksFinished = true;
             condition.signalAll();
             lock.unlock();
         }
