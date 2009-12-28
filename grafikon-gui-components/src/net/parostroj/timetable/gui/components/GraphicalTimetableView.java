@@ -8,16 +8,11 @@ import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import net.parostroj.timetable.gui.*;
 import net.parostroj.timetable.gui.components.GraphicalTimetableView.TrainColors;
 import net.parostroj.timetable.gui.dialogs.EditRoutesDialog;
 import net.parostroj.timetable.gui.utils.ResourceLoader;
 import net.parostroj.timetable.model.*;
-import net.parostroj.timetable.model.events.LineEvent;
-import net.parostroj.timetable.model.events.TrainDiagramEvent;
-import net.parostroj.timetable.model.events.TrainDiagramListenerWithNested;
-import net.parostroj.timetable.model.events.TrainEvent;
-import net.parostroj.timetable.model.events.TrainTypeEvent;
+import net.parostroj.timetable.model.events.*;
 
 /**
  * Graphical timetable view.

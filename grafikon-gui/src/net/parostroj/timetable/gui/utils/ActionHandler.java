@@ -1,9 +1,6 @@
 package net.parostroj.timetable.gui.utils;
 
-import java.awt.Component;
-import java.awt.Dialog;
-import java.awt.Frame;
-import java.awt.Window;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.logging.Logger;
@@ -38,13 +35,22 @@ public class ActionHandler {
     
     public void executeAction(Component component, String comment, int waitTime, ModelAction action) {
         SwingWorker<Void, Void> worker = this.createWorker(action);
+        this.executeAction(component, comment, waitTime, worker);
+    }
+
+    public void executeAction(Component component, String comment, SwingWorker<?, ?> worker) {
+        this.executeAction(component, comment, DEFAULT_WAIT_TIME, worker);
+    }
+
+    public void executeAction(Component component, String comment, int waitTime, SwingWorker<?, ?> worker) {
         Timer timer = this.createTimer(worker, waitTime, component, comment);
         timer.start();
         worker.execute();
     }
     
-    private Timer createTimer(final SwingWorker<Void, Void> worker,int waitTime, final Component component, final String message) {
+    private Timer createTimer(final SwingWorker<?, ?> worker,int waitTime, final Component component, final String message) {
         Timer timer = new Timer(waitTime, new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent e) {
                 if (worker.getState() != SwingWorker.StateValue.DONE) {
                     LOG.finest("Waiting dialog initialization.");

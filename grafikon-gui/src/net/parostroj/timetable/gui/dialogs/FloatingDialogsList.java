@@ -3,7 +3,6 @@ package net.parostroj.timetable.gui.dialogs;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 import javax.swing.AbstractAction;
-import javax.swing.JFrame;
 import javax.swing.JMenuItem;
 import net.parostroj.timetable.gui.AppPreferences;
 import net.parostroj.timetable.gui.StorableGuiData;
@@ -43,5 +42,10 @@ public class FloatingDialogsList extends ArrayList<FloatingDialog> implements St
             });
             menuItem.add(fdItem);
         }
+    }
+
+    public void setVisibleOnInit() {
+        for (FloatingDialog dialog : this)
+            dialog.setVisibleOnInit();
     }
 }

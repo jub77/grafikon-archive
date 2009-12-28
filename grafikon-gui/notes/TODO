@@ -3,14 +3,12 @@ TODO
     - add filtering in trains' list
     - adding output points to nodes (especially stations :)
     - lines - adding different parts (different speed and possibly other information) ...
+    - thread safe implementation of train diagram - the question is if it is
+      something that would solve GUI problems (at least it wouldn't solve
+      problems with events and EDT)
 
 NEW TODO
-    - locking access to the train diagram - it would remove problems with concurrent modification (especially
-        with recalculating trains)
     - finish events viewer implementation (converters)
-
-    - locking of recalculating (or any other actions that are not in the GUI thread) and locking (read lock)
-        of drawing
     - extend events with some additional values - e.g.
 
 KNOWN BUGS
