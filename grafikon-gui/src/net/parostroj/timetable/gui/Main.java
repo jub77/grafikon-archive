@@ -7,7 +7,9 @@ import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
+import javax.swing.RepaintManager;
 import javax.swing.UIManager;
+import net.parostroj.timetable.gui.utils.CheckThreadViolationRepaintManager;
 
 /**
  * Class with main method.
@@ -32,7 +34,14 @@ public class Main {
 
     public static void main(String[] args) throws Exception {
         UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+        if (Boolean.TRUE.equals(AppPreferences.getPreferences().getBoolean("debug")))
+            setDebug();
         ApplicationStarter starter = new ApplicationStarter(MainFrame.class, 296, 112, Main.class.getResource("/images/splashscreen.png"));
         starter.start();
+    }
+
+    private static void setDebug() {
+        RepaintManager.setCurrentManager(new CheckThreadViolationRepaintManager(false));
+        Logger.getLogger("net.parostroj").setLevel(Level.ALL);
     }
 }

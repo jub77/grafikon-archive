@@ -1,10 +1,6 @@
 package net.parostroj.timetable.gui.dialogs;
 
 import java.awt.Frame;
-import java.awt.Rectangle;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.StringTokenizer;
 import javax.swing.JPanel;
 import net.parostroj.timetable.gui.AppPreferences;
 import net.parostroj.timetable.gui.StorableGuiData;
@@ -19,6 +15,7 @@ import net.parostroj.timetable.utils.ResourceLoader;
 public class FloatingDialog extends javax.swing.JDialog implements StorableGuiData {
 
     private String storageKeyPrefix;
+    private boolean visibleOnInit;
 
     /** Creates new form FloatingDialog */
     public FloatingDialog(java.awt.Frame parent, boolean modal) {
@@ -68,7 +65,13 @@ public class FloatingDialog extends javax.swing.JDialog implements StorableGuiDa
         GuiUtils.setPosition(positionStr, this);
         // set visibility
         if (Boolean.TRUE.equals(prefs.getBoolean(this.createStorageKey("visible"))))
-                this.setVisible(true);
+                this.visibleOnInit = true;
+    }
+
+    public void setVisibleOnInit() {
+        if (this.visibleOnInit)
+            this.setVisible(true);
+        this.visibleOnInit = false;
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

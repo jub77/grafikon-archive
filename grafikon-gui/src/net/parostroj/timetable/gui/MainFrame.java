@@ -9,6 +9,9 @@ import java.awt.Color;
 import java.awt.event.*;
 import java.io.*;
 import java.util.*;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.*;
@@ -855,21 +858,44 @@ private void nodeTimetableListMenuItemActionPerformed(java.awt.event.ActionEvent
 }//GEN-LAST:event_nodeTimetableListMenuItemActionPerformed
 
 private void recalculateMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_recalculateMenuItemActionPerformed
-    ActionHandler.getInstance().executeAction(this, ResourceLoader.getString("wait.message.recalculate"), new ModelAction() {
+    ActionHandler.getInstance().executeAction(this, ResourceLoader.getString("wait.message.recalculate"), new SwingWorker<Void, Train>() {
+
+        private Lock lock = new ReentrantLock();
+        private Condition condition = lock.newCondition();
+        private static final int CHUNK_SIZE = 10;
 
         @Override
-        public void run() {
+        protected Void doInBackground() throws Exception {
             // recalculate all trains
+            lock.lock();
+            int cnt = 0;
             for (Train train : model.getDiagram().getTrains()) {
-                train.recalculate();
+                publish(train);
+                if (++cnt >= CHUNK_SIZE) {
+                    condition.await();
+                    cnt = 0;
+                }
             }
+            lock.unlock();
+            return null;
         }
 
         @Override
-        public void afterRun() {
+        protected void done() {
             model.fireEvent(new ApplicationModelEvent(ApplicationModelEventType.SET_DIAGRAM_CHANGED, model));
             // set back modified status (SET_DIAGRAM_CHANGED unfortunately clears the modified status)
             model.setModelChanged(true);
+        }
+
+        @Override
+        protected void process(List<Train> chunks) {
+            LOG.finest("Recalculate chunk of trains. Size: " + chunks.size());
+            lock.lock();
+            for (Train train : chunks) {
+                train.recalculate();
+            }
+            condition.signalAll();
+            lock.unlock();
         }
     });
 }//GEN-LAST:event_recalculateMenuItemActionPerformed
@@ -1728,6 +1754,14 @@ private void penaltyTableMenuItemActionPerformed(java.awt.event.ActionEvent evt)
         }
         trainsPane.loadFromPreferences(prefs);
         floatingDialogsList.loadFromPreferences(prefs);
+    }
+
+    @Override
+    public void setVisible(boolean b) {
+        super.setVisible(b);
+        floatingDialogsList.setVisibleOnInit();
+        // set focus back on the frame
+        this.requestFocus();
     }
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
