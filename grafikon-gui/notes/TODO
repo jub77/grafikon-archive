@@ -9,4 +9,8 @@ NEW TODO
         with recalculating trains)
     - finish events viewer implementation (converters)
 
+    - locking of recalculating (or any other actions that are not in the GUI thread) and locking (read lock)
+        of drawing
+    - extend events with some additional values - e.g.
+
 KNOWN BUGS

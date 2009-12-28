@@ -14,7 +14,7 @@ import net.parostroj.timetable.model.events.TrainsCycleEvent;
  *
  * @author jub
  */
-public class GTEventsReceiverColleague extends Colleague {
+public class GTEventsReceiverColleague extends AbstractColleague {
 
     private boolean theMostNested;
 

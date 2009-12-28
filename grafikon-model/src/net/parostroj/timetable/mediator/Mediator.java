@@ -1,10 +1,6 @@
 package net.parostroj.timetable.mediator;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Mediator for messages.
@@ -24,7 +20,8 @@ public class Mediator {
     public void addColleague(Colleague colleague, Class<?> clazz) {
         if (colleagues.keySet().contains(colleague))
             throw new IllegalStateException("Mediator already contains colleague.");
-        colleague.setMediator(this);
+        if (colleague instanceof ColleagueWithBackReference)
+            ((ColleagueWithBackReference)colleague).setMediator(this);
         colleagues.put(colleague, clazz);
         this.getSetForClass(clazz).add(colleague);
     }
@@ -32,7 +29,8 @@ public class Mediator {
     public void removeColleague(Colleague collegue) {
         if (!colleagues.keySet().contains(collegue))
             throw new IllegalStateException("Mediator doesn't contain colleague.");
-        collegue.setMediator(null);
+        if (collegue instanceof ColleagueWithBackReference)
+            ((ColleagueWithBackReference)collegue).setMediator(null);
         Class<?> clazz = colleagues.remove(collegue);
         this.getSetForClass(clazz).remove(collegue);
     }
