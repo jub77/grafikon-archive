@@ -2,6 +2,7 @@ package net.parostroj.timetable.model.events;
 
 import net.parostroj.timetable.model.Line;
 import net.parostroj.timetable.model.LineTrack;
+import net.parostroj.timetable.model.TimeInterval;
 
 /**
  * Line event.
@@ -16,12 +17,14 @@ public class LineEvent extends GTEvent<Line> {
     private final Type type;
     private final String attributeName;
     private final LineTrack track;
+    private final TimeInterval interval;
 
     public LineEvent(Line line, Type type) {
         super(line);
         this.type = type;
         this.attributeName = null;
         this.track = null;
+        this.interval = null;
     }
     
     public LineEvent(Line line, String attributeName) {
@@ -29,6 +32,7 @@ public class LineEvent extends GTEvent<Line> {
         this.type = Type.ATTRIBUTE;
         this.attributeName = attributeName;
         this.track = null;
+        this.interval = null;
     }
     
     public LineEvent(Line line, String attributeName, LineTrack track) {
@@ -36,6 +40,15 @@ public class LineEvent extends GTEvent<Line> {
         this.type = Type.TRACK_ATTRIBUTE;
         this.attributeName = attributeName;
         this.track = track;
+        this.interval = null;
+    }
+
+    public LineEvent(Line line, Type type, TimeInterval interval) {
+        super(line);
+        this.type = type;
+        this.interval = interval;
+        this.track = null;
+        this.attributeName = null;
     }
 
     public String getAttributeName() {
@@ -50,6 +63,10 @@ public class LineEvent extends GTEvent<Line> {
         return track;
     }
 
+    public TimeInterval getInterval() {
+        return interval;
+    }
+
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder("LineEvent[");
@@ -60,6 +77,9 @@ public class LineEvent extends GTEvent<Line> {
         }
         if (track != null) {
             builder.append(',').append(track);
+        }
+        if (interval != null) {
+            builder.append(',').append(interval);
         }
         builder.append(']');
         return builder.toString();

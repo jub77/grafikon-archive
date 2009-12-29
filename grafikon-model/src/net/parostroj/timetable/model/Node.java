@@ -225,13 +225,13 @@ public class Node implements RouteSegment, AttributesHolder, ObjectWithId {
     @Override
     public void removeTimeInterval(TimeInterval interval) {
         interval.getTrack().removeTimeInterval(interval);
-        this.listenerSupport.fireEvent(new NodeEvent(this, NodeEvent.Type.TIME_INTERVAL_REMOVED));
+        this.listenerSupport.fireEvent(new NodeEvent(this, NodeEvent.Type.TIME_INTERVAL_REMOVED, interval));
     }
 
     @Override
     public void addTimeInterval(TimeInterval interval) {
         interval.getTrack().addTimeInterval(interval);
-        this.listenerSupport.fireEvent(new NodeEvent(this, NodeEvent.Type.TIME_INTERVAL_ADDED));
+        this.listenerSupport.fireEvent(new NodeEvent(this, NodeEvent.Type.TIME_INTERVAL_ADDED, interval));
     }
 
     @Override
@@ -241,7 +241,7 @@ public class Node implements RouteSegment, AttributesHolder, ObjectWithId {
             throw new IllegalStateException("Node doesn't contain interval.");
         track.removeTimeInterval(interval);
         interval.getTrack().addTimeInterval(interval);
-        this.listenerSupport.fireEvent(new NodeEvent(this, NodeEvent.Type.TIME_INTERVAL_UPDATED));
+        this.listenerSupport.fireEvent(new NodeEvent(this, NodeEvent.Type.TIME_INTERVAL_UPDATED, interval));
     }
 
     private Track getTrackForInterval(TimeInterval interval) {

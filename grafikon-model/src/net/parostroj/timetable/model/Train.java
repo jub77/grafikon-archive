@@ -3,6 +3,7 @@ package net.parostroj.timetable.model;
 import java.util.*;
 import net.parostroj.timetable.actions.TrainsCycleHelper;
 import net.parostroj.timetable.model.events.TrainEvent;
+import net.parostroj.timetable.model.events.TrainEvent.TimeIntervalListType;
 import net.parostroj.timetable.model.events.TrainListener;
 import net.parostroj.timetable.utils.*;
 
@@ -238,7 +239,7 @@ public class Train implements AttributesHolder, ObjectWithId {
     protected void addCycleItem(TrainsCycleItem item) {
         TrainsCycleType cycleType = item.getCycle().getType();
         TrainsCycleHelper.getHelper().addCycleItem(this.getTimeIntervalList(), this.getCyclesIntern(cycleType), item, true);
-        this.listenerSupport.fireEvent(new TrainEvent(this, TrainEvent.Type.CYCLE_ITEM));
+        this.listenerSupport.fireEvent(new TrainEvent(this, TrainEvent.Type.CYCLE_ITEM_ADDED, item));
     }
 
     /**
@@ -247,7 +248,7 @@ public class Train implements AttributesHolder, ObjectWithId {
     protected void removeCycleItem(TrainsCycleItem item) {
         TrainsCycleType cycleType = item.getCycle().getType();
         this.getCyclesIntern(cycleType).remove(item);
-        this.listenerSupport.fireEvent(new TrainEvent(this, TrainEvent.Type.CYCLE_ITEM));
+        this.listenerSupport.fireEvent(new TrainEvent(this, TrainEvent.Type.CYCLE_ITEM_REMOVED, item));
     }
 
     /**
@@ -508,14 +509,16 @@ public class Train implements AttributesHolder, ObjectWithId {
 
     /**
      * shifts train with specified amount of time. The value can be
-     * positive for shifting forwards or negative for 
+     * positive for shifting forwards or negative for shifting backwards.
      * 
      * @param timeShift time
      */
     public void shift(int timeShift) {
         timeIntervalList.shift(timeShift);
         this.updateTechnologicalTimes();
-        this.listenerSupport.fireEvent(new TrainEvent(this, TrainEvent.Type.TIME_INTERVAL_LIST));
+        this.listenerSupport.fireEvent(new TrainEvent(this,
+                TimeIntervalListType.MOVED,
+                0, 0));
     }
 
     /**
@@ -526,7 +529,9 @@ public class Train implements AttributesHolder, ObjectWithId {
     public void move(int time) {
         timeIntervalList.move(time);
         this.updateTechnologicalTimes();
-        this.listenerSupport.fireEvent(new TrainEvent(this, TrainEvent.Type.TIME_INTERVAL_LIST));
+        this.listenerSupport.fireEvent(new TrainEvent(this,
+                TimeIntervalListType.MOVED,
+                0, 0));
     }
 
     /**
@@ -548,15 +553,22 @@ public class Train implements AttributesHolder, ObjectWithId {
                 || !nodeInterval.isNodeOwner())
             throw new IllegalArgumentException("Cannot change interval.");
 
+        int changeIndex = index;
+        int oldLength = nodeInterval.getLength();
+
         // change stop time
         nodeInterval.setLength(length);
 
         TimeInterval lineInterval = null;
         // compute running time of line before
         lineInterval = timeIntervalList.get(index - 1);
-        timeIntervalList.updateLineInterval(lineInterval, index - 1);
-        // move time
-        nodeInterval.move(lineInterval.getEnd());
+        if ((length == 0 && oldLength != 0) || (length != 0 && oldLength ==0)) {
+            timeIntervalList.updateLineInterval(lineInterval, index - 1);
+            // move node interval
+            nodeInterval.move(lineInterval.getEnd());
+            changeIndex = index - 1;
+        }
+        // update node interval
         timeIntervalList.updateNodeInterval(nodeInterval, index);
         // compute running time of line after
         lineInterval = timeIntervalList.get(index + 1);
@@ -565,23 +577,27 @@ public class Train implements AttributesHolder, ObjectWithId {
         // move rest
         timeIntervalList.moveFrom(index + 2, lineInterval.getEnd());
         this.updateTechnologicalTimeAfter();
-        this.listenerSupport.fireEvent(new TrainEvent(this, TrainEvent.Type.TIME_INTERVAL_LIST));
+        this.listenerSupport.fireEvent(new TrainEvent(this,
+                TimeIntervalListType.STOP_TIME,
+                index, changeIndex));
     }
 
     /**
      * changes velocity of the train on the specified line.
      * 
      * @param lineInterval line interval
-     * @param velocity velocity to be set
+     * @param speed velocity to be set
      * @param modelInfo model info
      */
-    public void changeVelocity(TimeInterval lineInterval, int velocity) {
+    public void changeSpeed(TimeInterval lineInterval, int speed) {
         int index = timeIntervalList.indexOf(lineInterval);
         if (index == -1 || !lineInterval.isLineOwner())
             throw new IllegalArgumentException("Cannot change interval.");
 
-        int speed = lineInterval.getOwnerAsLine().computeSpeed(this, velocity);
-        lineInterval.setSpeed(speed);
+        int computedSpeed = lineInterval.getOwnerAsLine().computeSpeed(this, speed);
+        lineInterval.setSpeed(computedSpeed);
+
+        int changedIndex = index;
 
         // line interval before (if there is not stop ...)
         if (index - 2 >= 0 && timeIntervalList.get(index - 1).getLength() == 0) {
@@ -591,6 +607,7 @@ public class Train implements AttributesHolder, ObjectWithId {
             nti.move(lti.getEnd());
             timeIntervalList.updateNodeInterval(nti, index - 1);
             lineInterval.move(nti.getEnd());
+            changedIndex = index - 2;
         }
 
         // change line interval
@@ -612,7 +629,7 @@ public class Train implements AttributesHolder, ObjectWithId {
         }
 
         this.updateTechnologicalTimeAfter();
-        this.listenerSupport.fireEvent(new TrainEvent(this, TrainEvent.Type.TIME_INTERVAL_LIST));
+        this.listenerSupport.fireEvent(new TrainEvent(this, TimeIntervalListType.SPEED, index, changedIndex));
     }
 
     /**
@@ -633,7 +650,7 @@ public class Train implements AttributesHolder, ObjectWithId {
             this.updateTechnologicalTimeBefore();
         if (this.getTimeAfter() != 0 && nodeInterval.isLast())
             this.updateTechnologicalTimeAfter();
-        this.listenerSupport.fireEvent(new TrainEvent(this, TrainEvent.Type.TIME_INTERVAL_LIST));
+        this.listenerSupport.fireEvent(new TrainEvent(this, TimeIntervalListType.TRACK, timeIntervalList.indexOf(nodeInterval)));
     }
 
     /**
@@ -651,7 +668,7 @@ public class Train implements AttributesHolder, ObjectWithId {
                 lineInterval.updateInOwner();
         }
         // we do not need to update technological times
-        this.listenerSupport.fireEvent(new TrainEvent(this, TrainEvent.Type.TIME_INTERVAL_LIST));
+        this.listenerSupport.fireEvent(new TrainEvent(this, TimeIntervalListType.TRACK, timeIntervalList.indexOf(lineInterval)));
     }
 
     /**
@@ -679,7 +696,7 @@ public class Train implements AttributesHolder, ObjectWithId {
             i++;
         }
         this.updateTechnologicalTimes();
-        this.listenerSupport.fireEvent(new TrainEvent(this, TrainEvent.Type.TIME_INTERVAL_LIST));
+        this.listenerSupport.fireEvent(new TrainEvent(this, TimeIntervalListType.RECALCULATE, 0, 0));
     }
 
     /**
@@ -688,8 +705,10 @@ public class Train implements AttributesHolder, ObjectWithId {
      * @param interval interval
      */
     public void addInterval(TimeInterval interval) {
+        if (isAttached())
+            throw new IllegalStateException("Cannot add interval to already attached train.");
         timeIntervalList.addIntervalLastForTrain(interval);
-        this.listenerSupport.fireEvent(new TrainEvent(this, TrainEvent.Type.TIME_INTERVAL_LIST));
+        this.listenerSupport.fireEvent(new TrainEvent(this, TimeIntervalListType.ADDED, timeIntervalList.size() - 1));
     }
 
     /**
