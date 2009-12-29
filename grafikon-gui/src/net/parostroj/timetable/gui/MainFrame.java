@@ -1075,6 +1075,8 @@ private void exitMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-
                 }
                 // dispose main window - it should close application
                 dispose();
+                // close application by force (possible problems with web start)
+                System.exit(0);
             }
             });
 }//GEN-LAST:event_exitMenuItemActionPerformed
