@@ -21,7 +21,7 @@ import net.parostroj.timetable.model.ls.LSException;
  */
 public class LSSerializer {
     
-    public static boolean FORMATTED = true;
+    public static final boolean FORMATTED = true;
 
     private static JAXBContext context_i;
     private Marshaller marshaller;

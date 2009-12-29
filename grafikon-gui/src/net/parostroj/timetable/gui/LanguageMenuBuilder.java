@@ -1,13 +1,8 @@
 package net.parostroj.timetable.gui;
 
 import java.io.IOException;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Properties;
+import java.io.InputStream;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JRadioButtonMenuItem;
@@ -44,8 +39,12 @@ public class LanguageMenuBuilder {
             
             // load propertis
             Properties langProps = new Properties();
-            langProps.load(LanguageMenuBuilder.class.getResourceAsStream("/languages.properties"));
-            
+            InputStream stream = LanguageMenuBuilder.class.getResourceAsStream("/languages.properties");
+            try {
+                langProps.load(stream);
+            } finally {
+                stream.close();
+            }
             for (Map.Entry<Object,Object> entry : langProps.entrySet()) {
                 Locale language = Templates.parseLocale((String)entry.getKey());
                 String text = (String)entry.getValue();

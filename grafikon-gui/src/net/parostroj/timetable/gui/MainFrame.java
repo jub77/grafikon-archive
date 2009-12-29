@@ -66,7 +66,7 @@ public class MainFrame extends javax.swing.JFrame implements ApplicationModelLis
                     allHtmlFileChooserInstance.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
                     // last directory
                     try {
-                        String lastDir = AppPreferences.getPreferences().getString("last.directory.html.dir");
+                        String lastDir = AppPreferences.getPreferences().getString("last.directory.html.dir", null);
                         if (lastDir != null) {
                             allHtmlFileChooserInstance.setCurrentDirectory(new File(lastDir));
                         }
@@ -98,7 +98,7 @@ public class MainFrame extends javax.swing.JFrame implements ApplicationModelLis
                     outputFileChooserInstance.setFileFilter(filter);
                     // last directory
                     try {
-                        String lastDir = AppPreferences.getPreferences().getString("last.directory.output");
+                        String lastDir = AppPreferences.getPreferences().getString("last.directory.output", null);
                         if (lastDir != null) {
                             outputFileChooserInstance.setCurrentDirectory(new File(lastDir));
                         }
@@ -130,7 +130,7 @@ public class MainFrame extends javax.swing.JFrame implements ApplicationModelLis
                     xmlFileChooserInstance.setFileFilter(filter);
                     // last directory
                     try {
-                        String lastDir = AppPreferences.getPreferences().getString("last.directory.model");
+                        String lastDir = AppPreferences.getPreferences().getString("last.directory.model", null);
                         if (lastDir != null) {
                             xmlFileChooserInstance.setCurrentDirectory(new File(lastDir));
                         }
@@ -161,8 +161,8 @@ public class MainFrame extends javax.swing.JFrame implements ApplicationModelLis
         // set local before anything else
         String loadedLocale = null;
         try {
-            loadedLocale = AppPreferences.getPreferences().getString("locale.program");
-            String templateLocale = AppPreferences.getPreferences().getString("locale.output");
+            loadedLocale = AppPreferences.getPreferences().getString("locale.program", null);
+            String templateLocale = AppPreferences.getPreferences().getString("locale.output", null);
             if (loadedLocale != null) {
                 locale = Templates.parseLocale(loadedLocale);
                 Locale.setDefault(locale);
@@ -1435,11 +1435,8 @@ private void fileImportMenuItemActionPerformed(java.awt.event.ActionEvent evt) {
         LOG.log(Level.WARNING, "Error loading model.", e);
         if (e.getCause() instanceof FileNotFoundException)
             errorMessage = ResourceLoader.getString("dialog.error.filenotfound");
-        else if (e.getCause() instanceof IOException)
+        else
             errorMessage = ResourceLoader.getString("dialog.error.loading");
-        else {
-            errorMessage = ResourceLoader.getString("dialog.error.loading");
-        }
     } catch (Exception e) {
         LOG.log(Level.WARNING, "Error loading model.", e);
         errorMessage = ResourceLoader.getString("dialog.error.loading");
@@ -1752,15 +1749,15 @@ private void penaltyTableMenuItemActionPerformed(java.awt.event.ActionEvent evt)
     
     @Override
     public void loadFromPreferences(AppPreferences prefs) {
-        if (prefs.getBoolean("main.maximized") == null) {
+        if (!prefs.contains("main.maximized")) {
             return;
         }
-        if (prefs.getBoolean("main.maximized")) {
+        if (prefs.getBoolean("main.maximized", false)) {
             // setting maximized state
             this.setExtendedState(JFrame.MAXIMIZED_BOTH);
         } else {
             // set position
-            GuiUtils.setPosition(prefs.getString("main.position"), this);
+            GuiUtils.setPosition(prefs.getString("main.position", null), this);
         }
         trainsPane.loadFromPreferences(prefs);
         floatingDialogsList.loadFromPreferences(prefs);

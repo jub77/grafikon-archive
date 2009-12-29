@@ -297,7 +297,7 @@ private void copyButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FI
     @Override
     public void loadFromPreferences(AppPreferences prefs) {
         // set displayed columns (if the prefs are empty - show all)
-        String cs = prefs.getString("train.columns");
+        String cs = prefs.getString("train.columns", null);
         List<TableColumn> shownColumns = new LinkedList<TableColumn>();
         if (cs == null || "".equals(cs)) {
             // all columns

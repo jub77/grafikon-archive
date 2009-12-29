@@ -36,13 +36,16 @@ public class ImageSaver {
     private void saveImage(File location, URL resLocation) throws IOException {
         InputStream s = resLocation.openStream();
         OutputStream os = new FileOutputStream(location);
-        byte[] buffer = new byte[5000];
-        int len = 0;
-        while ((len = s.read(buffer)) != -1) {
-            os.write(buffer, 0, len);
+        try {
+            byte[] buffer = new byte[5000];
+            int len = 0;
+            while ((len = s.read(buffer)) != -1) {
+                os.write(buffer, 0, len);
+            }
+        } finally {
+            os.close();
+            s.close();
         }
-        os.close();
-        s.close();
     }
     
     public void saveTrainTimetableImages(File directory) throws IOException {
