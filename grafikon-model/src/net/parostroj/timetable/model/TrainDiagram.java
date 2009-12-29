@@ -250,11 +250,14 @@ public class TrainDiagram implements AttributesHolder, ObjectWithId {
     @Override
     public void setAttribute(String key, Object value) {
         attributes.put(key, value);
+        this.fireEvent(new TrainDiagramEvent(this, key));
     }
 
     @Override
     public Object removeAttribute(String key) {
-        return attributes.remove(key);
+        Object o = attributes.remove(key);
+        this.fireEvent(new TrainDiagramEvent(this, key));
+        return o;
     }
 
     public Attributes getAttributes() {
