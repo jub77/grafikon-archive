@@ -37,12 +37,16 @@ public class FileLoadSaveImages {
             LOG.warning(String.format("Skipping image %s because the gtm doesn't contain a file.", image.getFilename()));
             return;
         }
-        FileChannel ic = new FileInputStream(image.getImageFile()).getChannel();
-        entry.setSize(ic.size());
-        os.putNextEntry(entry);
-        WritableByteChannel oc = Channels.newChannel(os);
-        ic.transferTo(0, ic.size(), oc);
-        ic.close();
+        FileInputStream is = new FileInputStream(image.getImageFile());
+        try {
+            FileChannel ic = is.getChannel();
+            entry.setSize(ic.size());
+            os.putNextEntry(entry);
+            WritableByteChannel oc = Channels.newChannel(os);
+            ic.transferTo(0, ic.size(), oc);
+        } finally {
+            is.close();
+        }
     }
 
     private static long CHUNK = 100000;
@@ -58,14 +62,18 @@ public class FileLoadSaveImages {
     public File loadTimetableImage(ZipInputStream is, ZipEntry entry) throws IOException {
         File tempFile = File.createTempFile("gt_", ".temp");
         ReadableByteChannel ic = Channels.newChannel(is);
-        FileChannel oc = new FileOutputStream(tempFile).getChannel();
-        long position = 0;
-        long read = 0;
-        while ((read = oc.transferFrom(ic, position, CHUNK)) != 0) {
-            position += read;
+        FileOutputStream os = new FileOutputStream(tempFile);
+        FileChannel oc = os.getChannel();
+        try {
+            long position = 0;
+            long read = 0;
+            while ((read = oc.transferFrom(ic, position, CHUNK)) != 0) {
+                position += read;
+            }
+            tempFile.deleteOnExit();
+        } finally {
+            os.close();
         }
-        oc.close();
-        tempFile.deleteOnExit();
         return tempFile;
     }
 }

@@ -64,7 +64,7 @@ public class TrainsCycleHelper {
         }
         Map<TimeInterval, Boolean> map = this.getTimeIntervalListMapCoverage(timeIntervalList, items);
         for (Boolean cover : map.values()) {
-            if (cover == Boolean.FALSE)
+            if (Boolean.FALSE.equals(cover))
                 return false;
         }
         return true;

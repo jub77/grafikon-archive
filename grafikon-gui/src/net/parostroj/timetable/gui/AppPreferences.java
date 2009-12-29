@@ -36,8 +36,9 @@ public class AppPreferences {
         return instance;
     }
 
-    public String getString(String key) {
-        return preferencesProps.getProperty(key);
+    public String getString(String key, String defaultValue) {
+        String value = preferencesProps.getProperty(key);
+        return value != null ? value : defaultValue;
     }
 
     public void setString(String key, String value) {
@@ -48,12 +49,12 @@ public class AppPreferences {
         preferencesProps.setProperty(key, value.toString());
     }
 
-    public Integer getInt(String key) {
-        String value = this.getString(key);
+    public int getInt(String key, int defaultValue) {
+        String value = this.getString(key, null);
         if (value == null) {
-            return null;
+            return defaultValue;
         } else {
-            return Integer.valueOf(value);
+            return Integer.parseInt(value);
         }
     }
 
@@ -61,17 +62,21 @@ public class AppPreferences {
         preferencesProps.setProperty(key, value.toString());
     }
 
-    public Boolean getBoolean(String key) {
-        String value = this.getString(key);
+    public boolean getBoolean(String key, boolean defaultValue) {
+        String value = this.getString(key, null);
         if (value == null) {
-            return null;
+            return defaultValue;
         } else {
-            return Boolean.valueOf(value);
+            return Boolean.parseBoolean(value);
         }
     }
 
     public void remove(String key) {
         preferencesProps.remove(key);
+    }
+
+    public boolean contains(String key) {
+        return preferencesProps.containsKey(key);
     }
 
     public void removeWithPrefix(String keyPrefix) {
@@ -99,7 +104,12 @@ public class AppPreferences {
         if (homeDir != null) {
             File propsFile = new File(homeDir, PREFERENCES_NAME);
             if (propsFile.exists()) {
-                preferencesProps.load(new FileReader(propsFile));
+                FileReader reader = new FileReader(propsFile);
+                try {
+                    preferencesProps.load(reader);
+                } finally {
+                    reader.close();
+                }
             }
         }
     }
@@ -141,7 +151,12 @@ public class AppPreferences {
                 savedProperties.put(key, preferencesProps.getProperty(key));
             }
             File propsFile = new File(homeDir, PREFERENCES_NAME);
-            savedProperties.store(new FileWriter(propsFile), null);
+            FileWriter writer = new FileWriter(propsFile);
+            try {
+                savedProperties.store(writer, null);
+            } finally {
+                writer.close();
+            }
         }
     }
 

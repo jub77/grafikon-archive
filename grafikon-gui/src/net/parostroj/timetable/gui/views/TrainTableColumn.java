@@ -132,7 +132,7 @@ public enum TrainTableColumn {
             return false;
         if (even && row % 2 == 0)
             return false;
-        if (odd && row % 2 == 1)
+        if (odd && row % 2 != 0)
             return false;
         if (first && row == 0)
             return false;

@@ -1,5 +1,7 @@
 package net.parostroj.timetable.model.templates;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -31,10 +33,19 @@ public class TemplatesLoader {
             try {
                 JAXBContext context = JAXBContext.newInstance(TemplateList.class);
                 Unmarshaller u = context.createUnmarshaller();
-                templateList = (TemplateList) u.unmarshal(TemplatesLoader.class.getResourceAsStream(TEMPLATE_LIST_FILE));
+                InputStream is = TemplatesLoader.class.getResourceAsStream(TEMPLATE_LIST_FILE);
+                try {
+                    templateList = (TemplateList) u.unmarshal(is);
+                } finally {
+                    is.close();
+                }
                 LOG.fine("Loaded list of templates.");
             } catch (JAXBException e) {
                 LOG.log(Level.SEVERE, "Cannot load list of templates.", e);
+                // empty template list
+                templateList = new TemplateList();
+            } catch (IOException e) {
+                LOG.log(Level.SEVERE, "Error reading/closing template file.", e);
                 // empty template list
                 templateList = new TemplateList();
             }
@@ -46,9 +57,20 @@ public class TemplatesLoader {
         for (Template template : getTemplates()) {
             if (template.getName().equals(name)) {
                 // create file with template location
-                ZipInputStream is = new ZipInputStream(TemplatesLoader.class.getResourceAsStream(TEMPLATES_LOCATION + template.getFilename()));
-                FileLoadSave ls = LSFileFactory.getInstance().createForLoad(is);
-                return ls.load(is);
+                InputStream iStream = TemplatesLoader.class.getResourceAsStream(TEMPLATES_LOCATION + template.getFilename());
+                TrainDiagram diagram = null;
+                try {
+                    ZipInputStream is = new ZipInputStream(iStream);
+                    FileLoadSave ls = LSFileFactory.getInstance().createForLoad(is);
+                    diagram = ls.load(is);
+                } finally {
+                    try {
+                        iStream.close();
+                    } catch (IOException e) {
+                        throw new LSException("Cannot load template.", e);
+                    }
+                }
+                return diagram;
             }
         }
         // no template found

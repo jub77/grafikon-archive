@@ -61,10 +61,10 @@ public class FloatingDialog extends javax.swing.JDialog implements StorableGuiDa
     @Override
     public void loadFromPreferences(AppPreferences prefs) {
         // set position
-        String positionStr = prefs.getString(this.createStorageKey("position"));
+        String positionStr = prefs.getString(this.createStorageKey("position"), null);
         GuiUtils.setPosition(positionStr, this);
         // set visibility
-        if (Boolean.TRUE.equals(prefs.getBoolean(this.createStorageKey("visible"))))
+        if (prefs.getBoolean(this.createStorageKey("visible"), false))
                 this.visibleOnInit = true;
     }
 

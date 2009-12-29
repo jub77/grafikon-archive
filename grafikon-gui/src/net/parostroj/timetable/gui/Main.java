@@ -17,8 +17,11 @@ import net.parostroj.timetable.gui.utils.CheckThreadViolationRepaintManager;
  * @author jub
  */
 public class Main {
+
+    private static final Logger netParostrojLogger = Logger.getLogger("net.parostroj");
+
     static {
-        Logger.getLogger("net.parostroj").setLevel(Level.FINE);
+        netParostrojLogger.setLevel(Level.FINE);
         Logger.getLogger("").getHandlers()[0].setLevel(Level.ALL);
         
         // add file output to logging
@@ -28,13 +31,13 @@ public class Main {
             handler.setFormatter(new SimpleFormatter());
             Logger.getLogger("").addHandler(handler);
         } catch (IOException e) {
-            Logger.getLogger("net.parostroj").log(Level.WARNING, "Cannot initialize logging file.", e);
+            netParostrojLogger.log(Level.WARNING, "Cannot initialize logging file.", e);
         }
     }
 
     public static void main(String[] args) throws Exception {
         UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-        if (Boolean.TRUE.equals(AppPreferences.getPreferences().getBoolean("debug")))
+        if (AppPreferences.getPreferences().getBoolean("debug", false))
             setDebug();
         ApplicationStarter starter = new ApplicationStarter(MainFrame.class, 296, 112, Main.class.getResource("/images/splashscreen.png"));
         starter.start();
@@ -42,6 +45,6 @@ public class Main {
 
     private static void setDebug() {
         RepaintManager.setCurrentManager(new CheckThreadViolationRepaintManager(false));
-        Logger.getLogger("net.parostroj").setLevel(Level.ALL);
+        netParostrojLogger.setLevel(Level.ALL);
     }
 }

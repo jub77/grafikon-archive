@@ -24,10 +24,7 @@ public class LSTrainTypeSerializer {
         return context_i;
     }
 
-    private ModelVersion version;
-    
     protected LSTrainTypeSerializer(ModelVersion version) throws LSException {
-        this.version = version;
         try {
             JAXBContext context = getContext();
             marshaller = context.createMarshaller();

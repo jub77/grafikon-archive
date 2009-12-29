@@ -641,11 +641,9 @@ public class Train implements AttributesHolder, ObjectWithId {
     public void changeNodeTrack(TimeInterval nodeInterval, NodeTrack nodeTrack) {
         if (!nodeInterval.isNodeOwner())
             throw new IllegalArgumentException("No node interval.");
-        if (nodeInterval != null) {
-            nodeInterval.setTrack(nodeTrack);
-            if (isAttached())
-                nodeInterval.updateInOwner();
-        }
+        nodeInterval.setTrack(nodeTrack);
+        if (isAttached())
+            nodeInterval.updateInOwner();
         if (this.getTimeBefore() != 0 && nodeInterval.isFirst())
             this.updateTechnologicalTimeBefore();
         if (this.getTimeAfter() != 0 && nodeInterval.isLast())
@@ -662,11 +660,9 @@ public class Train implements AttributesHolder, ObjectWithId {
     public void changeLineTrack(TimeInterval lineInterval, LineTrack lineTrack) {
         if (!lineInterval.isLineOwner())
             throw new IllegalArgumentException("No line interval.");
-        if (lineInterval != null) {
-            lineInterval.setTrack(lineTrack);
-            if (isAttached())
-                lineInterval.updateInOwner();
-        }
+        lineInterval.setTrack(lineTrack);
+        if (isAttached())
+            lineInterval.updateInOwner();
         // we do not need to update technological times
         this.listenerSupport.fireEvent(new TrainEvent(this, TimeIntervalListType.TRACK, timeIntervalList.indexOf(lineInterval)));
     }
