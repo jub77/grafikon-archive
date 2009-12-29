@@ -118,11 +118,11 @@ public class ApplicationModel {
         this.setSelectedTrainUnitCycle(null);
         
         this.diagram = diagram;
-        this.collegue.setTrainDiagram(diagram);
 
         // after set checker
         (new AfterSetChecker()).check(diagram);
 
+        this.collegue.setTrainDiagram(diagram);
         this.fireEvent(new ApplicationModelEvent(ApplicationModelEventType.SET_DIAGRAM_CHANGED,this));
     }
 
