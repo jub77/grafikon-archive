@@ -88,8 +88,8 @@ public class ActionHandler {
     
     private WaitDialog createWaitDialog(Component component, String message) {
         Window top = (component != null) ? SwingUtilities.getWindowAncestor(component) : null;
-        LOG.finest("Component: " + component);
-        LOG.finest("Top: " + top);
+        LOG.finest("Component: " + ((component == null) ? "<null>" : component.getClass().getName()));
+        LOG.finest("Top: " + ((top == null) ? "<null>" : top.getClass().getName()));
         WaitDialog waitDialog = (component instanceof Dialog) ?
                 new WaitDialog((Dialog)component, true) :
                 new WaitDialog((Frame)component, true);

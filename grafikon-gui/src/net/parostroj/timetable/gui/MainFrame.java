@@ -1073,7 +1073,8 @@ private void exitMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-
                     showError(errorMessage);
                     return;
                 }
-                System.exit(0);
+                // dispose main window - it should close application
+                dispose();
             }
             });
 }//GEN-LAST:event_exitMenuItemActionPerformed
