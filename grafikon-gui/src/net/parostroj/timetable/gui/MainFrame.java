@@ -869,17 +869,20 @@ private void recalculateMenuItemActionPerformed(java.awt.event.ActionEvent evt) 
         protected Void doInBackground() throws Exception {
             // recalculate all trains
             lock.lock();
-            int cnt = 0;
-            for (Train train : model.getDiagram().getTrains()) {
-                publish(train);
-                if (++cnt >= CHUNK_SIZE) {
-                    chunksFinished = false;
-                    while(!chunksFinished)
-                        condition.await();
-                    cnt = 0;
+            try {
+                int cnt = 0;
+                for (Train train : model.getDiagram().getTrains()) {
+                    publish(train);
+                    if (++cnt >= CHUNK_SIZE) {
+                        chunksFinished = false;
+                        while(!chunksFinished)
+                            condition.await();
+                        cnt = 0;
+                    }
                 }
+            } finally {
+                lock.unlock();
             }
-            lock.unlock();
             return null;
         }
 
@@ -894,12 +897,15 @@ private void recalculateMenuItemActionPerformed(java.awt.event.ActionEvent evt) 
         protected void process(List<Train> chunks) {
             LOG.finest("Recalculate chunk of trains. Size: " + chunks.size());
             lock.lock();
-            for (Train train : chunks) {
-                train.recalculate();
+            try {
+                for (Train train : chunks) {
+                    train.recalculate();
+                }
+                chunksFinished = true;
+                condition.signalAll();
+            } finally {
+                lock.unlock();
             }
-            chunksFinished = true;
-            condition.signalAll();
-            lock.unlock();
         }
     });
 }//GEN-LAST:event_recalculateMenuItemActionPerformed
