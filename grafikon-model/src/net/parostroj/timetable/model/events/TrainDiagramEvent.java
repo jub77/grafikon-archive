@@ -14,7 +14,7 @@ public class TrainDiagramEvent extends GTEvent<TrainDiagram> {
 
     public enum Type {
         NESTED, ROUTE_ADDED, ROUTE_REMOVED, TRAIN_ADDED, TRAIN_REMOVED,
-        TRAIN_TYPE_ADDED, TRAIN_TYPE_REMOVED;
+        TRAIN_TYPE_ADDED, TRAIN_TYPE_REMOVED, ATTRIBUTE;
     }
     private Type type;
     private String attributeName;
@@ -48,6 +48,11 @@ public class TrainDiagramEvent extends GTEvent<TrainDiagram> {
         super(diagram);
         this.type = type;
         this.trainType = trainType;
+    }
+
+    public TrainDiagramEvent(TrainDiagram diagram, String attributeName) {
+        this(diagram, Type.ATTRIBUTE);
+        this.attributeName = attributeName;
     }
 
     public String getAttributeName() {
