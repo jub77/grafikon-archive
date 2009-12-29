@@ -45,8 +45,12 @@ final public class Interval {
     }
 
     public Interval normalize() {
-        int normStart = this.getNormalizedStart();
-        return new Interval(normStart, normStart + getLength());
+        if (isNormalized())
+            return this;
+        else {
+            int normStart = this.getNormalizedStart();
+            return new Interval(normStart, normStart + getLength());
+        }
     }
 
     /**
@@ -64,7 +68,7 @@ final public class Interval {
      */
     public boolean isOverMidnight() {
         int normStart = this.getNormalizedStart();
-        int compEnd = normStart + (end - start);
+        int compEnd = normStart + getLength();
         return TimeConverter.isNormalizedTime(compEnd);
     }
 
