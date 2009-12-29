@@ -243,7 +243,7 @@ public class Line implements RouteSegment, AttributesHolder {
     @Override
     public void removeTimeInterval(TimeInterval interval) {
         interval.getTrack().removeTimeInterval(interval);
-        this.listenerSupport.fireEvent(new LineEvent(this, LineEvent.Type.TIME_INTERVAL_REMOVED));
+        this.listenerSupport.fireEvent(new LineEvent(this, LineEvent.Type.TIME_INTERVAL_REMOVED, interval));
     }
 
     @Override
@@ -254,7 +254,7 @@ public class Line implements RouteSegment, AttributesHolder {
     @Override
     public void addTimeInterval(TimeInterval interval) {
         interval.getTrack().addTimeInterval(interval);
-        this.listenerSupport.fireEvent(new LineEvent(this, LineEvent.Type.TIME_INTERVAL_ADDED));
+        this.listenerSupport.fireEvent(new LineEvent(this, LineEvent.Type.TIME_INTERVAL_ADDED, interval));
     }
 
     @Override
@@ -264,7 +264,7 @@ public class Line implements RouteSegment, AttributesHolder {
             throw new IllegalStateException("Line doesn't contain interval.");
         track.removeTimeInterval(interval);
         interval.getTrack().addTimeInterval(interval);
-        this.listenerSupport.fireEvent(new LineEvent(this, LineEvent.Type.TIME_INTERVAL_UPDATED));
+        this.listenerSupport.fireEvent(new LineEvent(this, LineEvent.Type.TIME_INTERVAL_UPDATED, interval));
     }
 
     private Track getTrackForInterval(TimeInterval interval) {

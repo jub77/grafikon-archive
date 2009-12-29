@@ -220,7 +220,7 @@ class TrainTableModel extends AbstractTableModel {
                 int velocity = ((Integer)aValue).intValue();
                 if (velocity > 0) {
                     interval = train.getTimeIntervalList().get(rowIndex);
-                    train.changeVelocity(interval, velocity);
+                    train.changeSpeed(interval, velocity);
                     this.fireTableRowsUpdated(rowIndex, lastRow);
                     model.fireEvent(new ApplicationModelEvent(ApplicationModelEventType.MODIFIED_TRAIN, model, train));
                 }
