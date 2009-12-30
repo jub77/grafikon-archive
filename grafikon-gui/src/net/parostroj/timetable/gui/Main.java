@@ -44,7 +44,8 @@ public class Main {
     }
 
     private static void setDebug() throws Exception {
-        RepaintManager.setCurrentManager(new CheckThreadViolationRepaintManager(false));
+        if (AppPreferences.getPreferences().getBoolean("debug.edt", false))
+            RepaintManager.setCurrentManager(new CheckThreadViolationRepaintManager(false));
         Level level = Level.parse(AppPreferences.getPreferences().getString("debug.level", "FINER"));
         netParostrojLogger.setLevel(level);
     }
