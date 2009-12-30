@@ -223,15 +223,12 @@ abstract public class GTDraw {
                         (preferences.get(GTDrawPreference.TRAIN_NAMES) == Boolean.TRUE);
                 boolean paintMinutes = preferences.get(GTDrawPreference.ARRIVAL_DEPARTURE_DIGITS) == Boolean.TRUE;
 
-                List<Interval> inters  = interval.getInterval().computeNormalizedIntervals();
-                if (inters == null) {
-                    g.setColor(this.getIntervalColor(interval));
-                    this.paintTrainOnLineWithInterval(g, paintTrainName, paintMinutes, interval, interval.getInterval(), timeStep);
-                } else {
-                    for (Interval i : inters) {
-                    g.setColor(this.getIntervalColor(interval));
-                    this.paintTrainOnLineWithInterval(g, paintTrainName, paintMinutes, interval, i, timeStep);
-                    }
+                Interval normalized = interval.getInterval().normalize();
+                g.setColor(this.getIntervalColor(interval));
+                this.paintTrainOnLineWithInterval(g, paintTrainName, paintMinutes, interval, normalized, timeStep);
+                Interval overMidnight = normalized.getNonNormalizedIntervalOverMidnight();
+                if (overMidnight != null) {
+                    this.paintTrainOnLineWithInterval(g, paintTrainName, paintMinutes, interval, overMidnight, timeStep);
                 }
             }
         }
