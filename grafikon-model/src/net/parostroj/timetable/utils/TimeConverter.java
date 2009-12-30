@@ -9,21 +9,6 @@ import net.parostroj.timetable.model.TimeInterval;
  * @author jub
  */
 public class TimeConverter {
-    /**
-     * adjusts time to show sensible output.
-     * 
-     * @param time time
-     * @return adjusted time
-     */
-    private static int adjustTimeForOutput(int time) {
-        while (time < 0 || time >= TimeInterval.DAY) {
-            if (time < 0)
-                time += TimeInterval.DAY;
-            else if (time >= TimeInterval.DAY)
-                time -= TimeInterval.DAY;
-        }
-        return time;
-    }
 
     /**
      * adjusts time between 0:00 and 23:59.
@@ -32,7 +17,13 @@ public class TimeConverter {
      * @return normalized time
      */
     public static int normalizeTime(int time) {
-        return adjustTimeForOutput(time);
+        while (time < 0 || time >= TimeInterval.DAY) {
+            if (time < 0)
+                time += TimeInterval.DAY;
+            else if (time >= TimeInterval.DAY)
+                time -= TimeInterval.DAY;
+        }
+        return time;
     }
 
     /**
@@ -63,7 +54,7 @@ public class TimeConverter {
      * @return textual representation
      */
     public static String convertFromIntToTextWS(int time) {
-        time = adjustTimeForOutput(time);
+        time = normalizeTime(time);
         int hours = getHours(time);
         int minutes = getMinutes(time);
         Formatter formatter = new Formatter();
@@ -80,7 +71,7 @@ public class TimeConverter {
      * @return textual representation
      */
     public static String convertFromIntToTextWS(int time,String delimiter) {
-        time = adjustTimeForOutput(time);
+        time = normalizeTime(time);
         int hours = getHours(time);
         int minutes = getMinutes(time);
         Formatter formatter = new Formatter();
@@ -96,7 +87,7 @@ public class TimeConverter {
      * @return textual representation
      */
     public static String convertFromIntToText(int time) {
-        time = adjustTimeForOutput(time);
+        time = normalizeTime(time);
         int hours = getHours(time);
         int minutes = getMinutes(time);
         Formatter formatter = new Formatter();
@@ -112,7 +103,7 @@ public class TimeConverter {
      * @return textual representation
      */
     public static String convertFromIntToText(int time, String delimiter) {
-        time = adjustTimeForOutput(time);
+        time = normalizeTime(time);
         int hours = getHours(time);
         int minutes = getMinutes(time);
         Formatter formatter = new Formatter();
@@ -160,7 +151,7 @@ public class TimeConverter {
      * @return string
      */
     public static String convertMinutesToText(int time) {
-        adjustTimeForOutput(time);
+        normalizeTime(time);
         Formatter formatter = new Formatter();
         formatter.format("%1$02d", getMinutes(time));
         return formatter.toString();
@@ -186,7 +177,7 @@ public class TimeConverter {
      * @return textual representation
      */
     public static String convertHoursAndMinutesToText(int time, String delimiter1, String delimiter2) {
-        adjustTimeForOutput(time);
+        normalizeTime(time);
         int hours = getHours(time);
         int minutes = getMinutes(time);
         Formatter formatter = new Formatter();
@@ -204,7 +195,7 @@ public class TimeConverter {
      * @return last digit of minutes
      */
     public static String getLastDigitOfMinutes(int time) {
-        adjustTimeForOutput(time);
+        normalizeTime(time);
         int minutes = getMinutes(time);
         String minutesStr = Integer.toString(minutes);
         int lastDigitIndex = minutesStr.length() - 1;

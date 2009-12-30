@@ -1,9 +1,7 @@
 package net.parostroj.timetable.model;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import net.parostroj.timetable.utils.TimeConverter;
+import net.parostroj.timetable.utils.Tuple;
 
 /**
  * Time interval. It holds two values - start and end. Immutable object.
@@ -13,15 +11,35 @@ import net.parostroj.timetable.utils.TimeConverter;
 final public class Interval {
     private final int start;
     private final int end;
+    private final Tuple<Integer> normalized;
+    private final Tuple<Integer> overMidnight;
 
     public Interval(TimeInterval timeInterval) {
-        this.start = timeInterval.getStart();
-        this.end = timeInterval.getEnd();
+        this(timeInterval.getStart(), timeInterval.getEnd());
     }
 
     public Interval(int start, int end) {
         this.start = start;
         this.end = end;
+        int length = end - start;
+        if (length >= TimeInterval.DAY)
+            throw new IllegalArgumentException("Interval cannot be longer or equal than a day.");
+        int normalizedStart = start;
+        int computedEnd = end;
+        // compute normalized
+        if (!TimeConverter.isNormalizedTime(start)) {
+            normalizedStart = TimeConverter.normalizeTime(start);
+            computedEnd = normalizedStart + length;
+            normalized = new Tuple<Integer>(normalizedStart, computedEnd);
+        } else {
+            normalized = null;
+        }
+        // over midnight
+        if (TimeConverter.isNormalizedTime(normalizedStart) && !TimeConverter.isNormalizedTime(computedEnd)) {
+            overMidnight = new Tuple<Integer>(normalizedStart - TimeInterval.DAY, computedEnd - TimeInterval.DAY);
+        } else {
+            overMidnight = null;
+        }
     }
 
     public int getEnd() {
@@ -33,11 +51,11 @@ final public class Interval {
     }
 
     public int getNormalizedStart() {
-        return TimeConverter.normalizeTime(start);
+        return normalized != null ? normalized.first : start;
     }
 
     public int getNormalizedEnd() {
-        return TimeConverter.normalizeTime(end);
+        return normalized != null ? normalized.second : end;
     }
 
     public int getLength() {
@@ -45,11 +63,10 @@ final public class Interval {
     }
 
     public Interval normalize() {
-        if (isNormalized())
+        if (normalized == null)
             return this;
         else {
-            int normStart = this.getNormalizedStart();
-            return new Interval(normStart, normStart + getLength());
+            return new Interval(normalized.first, normalized.second);
         }
     }
 
@@ -60,16 +77,21 @@ final public class Interval {
      * @return if the interval is normalized
      */
     public boolean isNormalized() {
-        return TimeConverter.isNormalizedTime(start);
+        return normalized == null;
     }
 
     /**
-     * @return if the interval is over midnight
+     * @return if the interval is normalized and over midnight
      */
-    public boolean isOverMidnight() {
-        int normStart = this.getNormalizedStart();
-        int compEnd = normStart + getLength();
-        return TimeConverter.isNormalizedTime(compEnd);
+    public boolean isNormalizedOverMidnight() {
+        return normalized == null && overMidnight != null;
+    }
+
+    /**
+     * @return if the interval is normalized and not over midnight
+     */
+    public boolean isNormalizedNotOverMidnight() {
+        return normalized == null && overMidnight == null;
     }
 
     @Override
@@ -108,6 +130,29 @@ final public class Interval {
         return 0;
     }
 
+    public int compareOpenNormalized(Interval o) {
+        Interval tNormalized = normalize();
+        Interval oNormalized = o.normalize();
+        Interval tMidnight = tNormalized.getNonNormalizedIntervalOverMidnight();
+        Interval oMidnight = oNormalized.getNonNormalizedIntervalOverMidnight();
+
+        if (tMidnight != null) {
+            if (tMidnight.compareOpen(oNormalized) == 0)
+                return 0;
+            if (oMidnight != null && tMidnight.compareOpen(oMidnight) == 0)
+                return 0;
+        }
+
+        if (oMidnight != null) {
+            if (tNormalized.compareOpen(oMidnight) == 0)
+                return 0;
+        }
+
+        // if not overlapped then compare the ones with normalized start time
+        // (always the first ones)
+        return tNormalized.compareOpen(oNormalized);
+    }
+
     public int compareClosed(Interval o) {
         if (o.getEnd() <= this.getStart()) {
             return -1;
@@ -118,47 +163,32 @@ final public class Interval {
         return 0;
     }
 
-    /**
-     * computes normalized intervals (for intervals over midnight it
-     * returns two). The first one is always with start time normalized.
-     *
-     * @return list of normalized intervals
-     */
-    public List<Interval> computeNormalizedIntervalsAll() {
-        List<Interval> list = this.computeNormalizedIntervals();
-        if (list == null)
-            return Collections.singletonList(this);
-        else
-            return list;
+    public int compareClosedNormalized(Interval o) {
+        Interval tNormalized = normalize();
+        Interval oNormalized = o.normalize();
+        Interval tMidnight = tNormalized.getNonNormalizedIntervalOverMidnight();
+        Interval oMidnight = oNormalized.getNonNormalizedIntervalOverMidnight();
+
+        if (tMidnight != null) {
+            if (tMidnight.compareClosed(oNormalized) == 0)
+                return 0;
+            if (oMidnight != null && tMidnight.compareClosed(oMidnight) == 0)
+                return 0;
+        }
+
+        if (oMidnight != null) {
+            if (tNormalized.compareClosed(oMidnight) == 0)
+                return 0;
+        }
+
+        // if not overlapped then compare the ones with normalized start time
+        // (always the first ones)
+        return tNormalized.compareClosed(oNormalized);
     }
 
-    /**
-     * computes list of normalized intervals (for intervals over midnight
-     * it return two intervals). The first one is always with start time
-     * normalized. In case the interval is already normalized it returns
-     * <code>null</code>.
-     *
-     * @return list of normalized intervals or <code>null</code> if there
-     * is no change
-     */
-    public List<Interval> computeNormalizedIntervals() {
-        // compute
-        if (TimeConverter.isNormalizedTime(this.getStart()) &&
-                TimeConverter.isNormalizedTime(this.getEnd()))
-            // no adjustment needed
-            return null;
-        else {
-            Interval normalized = this.normalize();
-            if (TimeConverter.isNormalizedTime(normalized.getEnd())) {
-                // interval is not over midnight - only move ...
-                return Collections.singletonList(normalized);
-            } else {
-                // interval over midnight - the result is two intervals ...
-                List<Interval> intervals = new ArrayList<Interval>(2);
-                intervals.add(normalized);
-                intervals.add(new Interval(normalized.getStart() - TimeInterval.DAY, normalized.getEnd() - TimeInterval.DAY));
-                return intervals;
-            }
-        }
+    public Interval getNonNormalizedIntervalOverMidnight() {
+        return overMidnight != null ?
+            new Interval(overMidnight.first, overMidnight.second) :
+            null;
     }
 }

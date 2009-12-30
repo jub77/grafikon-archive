@@ -1,7 +1,6 @@
 package net.parostroj.timetable.model;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -139,17 +138,7 @@ public class TimeInterval implements AttributesHolder, ObjectWithId {
      * @return comparison
      */
     public int compareOpenNormalized(TimeInterval o) {
-        List<Interval> ints = this.getInterval().computeNormalizedIntervalsAll();
-        List<Interval> oInts = o.getInterval().computeNormalizedIntervalsAll();
-        for (Interval i : ints) {
-            for (Interval j: oInts) {
-                if (i.compareOpen(j) == 0)
-                    return 0;
-            }
-        }
-        // if not overlapped then compare the ones with normalized start time
-        // (always the first ones)
-        return ints.get(0).compareOpen(oInts.get(0));
+        return this.getInterval().compareOpenNormalized(o.getInterval());
     }
 
     /**
@@ -160,17 +149,7 @@ public class TimeInterval implements AttributesHolder, ObjectWithId {
      * @return comparison
      */
     public int compareClosedNormalized(TimeInterval o) {
-        List<Interval> ints = this.getInterval().computeNormalizedIntervalsAll();
-        List<Interval> oInts = o.getInterval().computeNormalizedIntervalsAll();
-        for (Interval i : ints) {
-            for (Interval j: oInts) {
-                if (i.compareClosed(j) == 0)
-                    return 0;
-            }
-        }
-        // if not overlapped then compare the ones with normalized start time
-        // (always the first ones)
-        return ints.get(0).compareClosed(oInts.get(0));
+        return this.getInterval().compareClosedNormalized(o.getInterval());
     }
 
     @Override

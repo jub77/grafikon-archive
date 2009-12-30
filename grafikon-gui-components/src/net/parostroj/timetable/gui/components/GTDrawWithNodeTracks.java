@@ -139,15 +139,13 @@ public class GTDrawWithNodeTracks extends GTDraw {
                 }
                 g.setColor(this.getIntervalColor(interval));
 
-                List<Interval> inters  = interval.getInterval().computeNormalizedIntervals();
-                if (inters == null) {
-                    Line2D line = this.createTrainLineInStation(interval, interval.getInterval(), timeStep);
+                Interval normalized = interval.getInterval().normalize();
+                Line2D line = this.createTrainLineInStation(interval, normalized, timeStep);
+                g.draw(line);
+                Interval overMidnight = normalized.getNonNormalizedIntervalOverMidnight();
+                if (overMidnight != null) {
+                    line = this.createTrainLineInStation(interval, overMidnight, timeStep);
                     g.draw(line);
-                } else {
-                    for (Interval i : inters) {
-                        Line2D line = this.createTrainLineInStation(interval, i, timeStep);
-                        g.draw(line);
-                    }
                 }
             }
         }
