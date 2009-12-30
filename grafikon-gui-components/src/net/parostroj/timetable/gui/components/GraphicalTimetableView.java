@@ -479,6 +479,7 @@ private void preferencesCheckBoxMenuItemActionPerformed(java.awt.event.ActionEve
     @Override
     public void paint(Graphics g) {
         LOG.finest("Starting paint.");
+        long time = System.currentTimeMillis();
         super.paint(g);
 
         if (draw != null)
@@ -487,7 +488,7 @@ private void preferencesCheckBoxMenuItemActionPerformed(java.awt.event.ActionEve
             // draw information about context menu
             g.drawString(ResourceLoader.getString("gt.contextmenu.info"), 20, 20);
         }
-        LOG.finest("Finished paint.");
+        LOG.finest(String.format("Finished paint in %dms", System.currentTimeMillis() - time));
     }
 
     private void createMenuForRoutes(List<Route> routes) {
