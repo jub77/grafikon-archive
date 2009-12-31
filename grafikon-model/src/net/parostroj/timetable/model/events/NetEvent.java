@@ -1,6 +1,7 @@
 package net.parostroj.timetable.model.events;
 
 import net.parostroj.timetable.model.Net;
+import net.parostroj.timetable.visitors.EventVisitor;
 
 /**
  * Net event.
@@ -38,5 +39,10 @@ public class NetEvent extends GTEvent<Net> {
         }
         builder.append(']');
         return builder.toString();
+    }
+
+    @Override
+    public void accept(EventVisitor visitor) {
+        visitor.visit(this);
     }
 }

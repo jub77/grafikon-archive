@@ -1,6 +1,7 @@
 package net.parostroj.timetable.model;
 
 import java.util.*;
+import net.parostroj.timetable.visitors.TrainDiagramVisitor;
 
 /**
  * Engine class. It contains table with weight information for each
@@ -111,5 +112,14 @@ public class EngineClass implements ObjectWithId {
     @Override
     public String toString() {
         return name;
+    }
+
+    /**
+     * accepts visitor.
+     *
+     * @param visitor visitor
+     */
+    public void accept(TrainDiagramVisitor visitor) {
+        visitor.visit(this);
     }
 }

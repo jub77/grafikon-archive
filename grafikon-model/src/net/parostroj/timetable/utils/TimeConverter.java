@@ -47,40 +47,6 @@ public class TimeConverter {
     }
 
     /**
-     * converts from seconds to textual representation. The string contains
-     * two positions for hours.
-     *
-     * @param time time in seconds
-     * @return textual representation
-     */
-    public static String convertFromIntToTextWS(int time) {
-        time = normalizeTime(time);
-        int hours = getHours(time);
-        int minutes = getMinutes(time);
-        Formatter formatter = new Formatter();
-        formatter.format("%1$2d:%2$02d", hours, minutes);
-        return formatter.toString();
-    }
-    
-    /**
-     * converts from seconds to textual representation. The string contains
-     * two positions for hours.
-     *
-     * @param time time in seconds
-     * @param delimiter delimiter
-     * @return textual representation
-     */
-    public static String convertFromIntToTextWS(int time,String delimiter) {
-        time = normalizeTime(time);
-        int hours = getHours(time);
-        int minutes = getMinutes(time);
-        Formatter formatter = new Formatter();
-        String format = "%1$2d" + delimiter + "%2$02d";
-        formatter.format(format, hours, minutes);
-        return formatter.toString();
-    }
-
-    /**
      * converts from seconds to textual representation.
      *
      * @param time time in seconds
@@ -93,6 +59,20 @@ public class TimeConverter {
         Formatter formatter = new Formatter();
         formatter.format("%1$d:%2$02d", hours, minutes);
         return formatter.toString();
+    }
+
+    /**
+     * converts from seconds to textual representation.
+     *
+     * @param time time in seconds
+     * @param format format
+     * @return textual representation
+     */
+    public static String formatIntToText(int time, String format) {
+        time = normalizeTime(time);
+        int hours = getHours(time);
+        int minutes = getMinutes(time);
+        return String.format(format, hours, minutes);
     }
 
     /**

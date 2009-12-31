@@ -3,6 +3,7 @@ package net.parostroj.timetable.model;
 import java.awt.Color;
 import net.parostroj.timetable.model.events.TrainTypeEvent;
 import net.parostroj.timetable.model.events.TrainTypeListener;
+import net.parostroj.timetable.visitors.TrainDiagramVisitor;
 
 /**
  * Train type.
@@ -210,5 +211,14 @@ public class TrainType implements ObjectWithId {
     @Override
     public String toString() {
         return abbr + " - " + desc;
+    }
+
+    /**
+     * accepts visitor.
+     *
+     * @param visitor visitor
+     */
+    public void accept(TrainDiagramVisitor visitor) {
+        visitor.visit(this);
     }
 }

@@ -2,6 +2,7 @@ package net.parostroj.timetable.model.events;
 
 import net.parostroj.timetable.model.Train;
 import net.parostroj.timetable.model.TrainType;
+import net.parostroj.timetable.visitors.EventVisitor;
 
 /**
  * Train type event.
@@ -45,5 +46,10 @@ public class TrainTypeEvent extends GTEvent<TrainType> {
         }
         builder.append(']');
         return builder.toString();
+    }
+
+    @Override
+    public void accept(EventVisitor visitor) {
+        visitor.visit(this);
     }
 }

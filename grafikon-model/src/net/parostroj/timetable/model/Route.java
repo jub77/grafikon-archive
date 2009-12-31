@@ -1,6 +1,7 @@
 package net.parostroj.timetable.model;
 
 import java.util.*;
+import net.parostroj.timetable.visitors.TrainDiagramVisitor;
 
 /**
  * Route (consists of route parts - tracks, stations, ...).
@@ -170,5 +171,14 @@ public class Route implements ObjectWithId {
         }
         builder.append(']');
         return builder.toString();
+    }
+
+    /**
+     * accepts visitor.
+     *
+     * @param visitor visitor
+     */
+    public void accept(TrainDiagramVisitor visitor) {
+        visitor.visit(this);
     }
 }

@@ -4,6 +4,7 @@ import net.parostroj.timetable.model.Route;
 import net.parostroj.timetable.model.Train;
 import net.parostroj.timetable.model.TrainDiagram;
 import net.parostroj.timetable.model.TrainType;
+import net.parostroj.timetable.visitors.EventVisitor;
 
 /**
  * Train diagram event.
@@ -82,5 +83,10 @@ public class TrainDiagramEvent extends GTEvent<TrainDiagram> {
         builder.append(type);
         builder.append(']');
         return builder.toString();
+    }
+
+    @Override
+    public void accept(EventVisitor visitor) {
+        visitor.visit(this);
     }
 }

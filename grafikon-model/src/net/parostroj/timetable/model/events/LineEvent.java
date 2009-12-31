@@ -3,6 +3,7 @@ package net.parostroj.timetable.model.events;
 import net.parostroj.timetable.model.Line;
 import net.parostroj.timetable.model.LineTrack;
 import net.parostroj.timetable.model.TimeInterval;
+import net.parostroj.timetable.visitors.EventVisitor;
 
 /**
  * Line event.
@@ -83,5 +84,10 @@ public class LineEvent extends GTEvent<Line> {
         }
         builder.append(']');
         return builder.toString();
+    }
+
+    @Override
+    public void accept(EventVisitor visitor) {
+        visitor.visit(this);
     }
 }

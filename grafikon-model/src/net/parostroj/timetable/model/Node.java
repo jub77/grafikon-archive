@@ -3,6 +3,8 @@ package net.parostroj.timetable.model;
 import java.util.*;
 import net.parostroj.timetable.model.events.NodeEvent;
 import net.parostroj.timetable.model.events.NodeListener;
+import net.parostroj.timetable.visitors.TrainDiagramTraversalVisitor;
+import net.parostroj.timetable.visitors.TrainDiagramVisitor;
 
 /**
  * Node that can consist of several tracks. Each tracks provides its own list
@@ -325,5 +327,27 @@ public class Node implements RouteSegment, AttributesHolder, ObjectWithId {
 
     void fireTrackAttributeChanged(String attributeName, NodeTrack track) {
         this.listenerSupport.fireEvent(new NodeEvent(this, attributeName, track));
+    }
+
+    /**
+     * accepts visitor.
+     *
+     * @param visitor visitor
+     */
+    public void accept(TrainDiagramVisitor visitor) {
+        visitor.visit(this);
+    }
+
+    /**
+     * accepts traversal visitor.
+     *
+     * @param visitor traversal visitor
+     */
+    public void accept(TrainDiagramTraversalVisitor visitor) {
+        visitor.visit(this);
+        for (NodeTrack track : tracks) {
+            track.accept(visitor);
+        }
+        visitor.visitAfter(this);
     }
 }

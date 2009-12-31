@@ -1,5 +1,7 @@
 package net.parostroj.timetable.model;
 
+import net.parostroj.timetable.visitors.TrainDiagramVisitor;
+
 /**
  * Line track.
  * 
@@ -62,5 +64,14 @@ public class LineTrack extends Track {
     void fireAttributeChanged(String attributeName) {
         if (line != null)
             line.fireTrackAttributeChanged(attributeName, this);
+    }
+
+    /**
+     * accepts visitor.
+     *
+     * @param visitor visitor
+     */
+    void accept(TrainDiagramVisitor visitor) {
+        visitor.visit(this);
     }
 }

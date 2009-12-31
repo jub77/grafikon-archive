@@ -19,6 +19,7 @@ public class TrainTreeNodeSort {
     
     public TrainTreeNodeSort(final TrainComparator trainComparator) {
         comparator = new Comparator<TrainTreeNodeTrain>() {
+            @Override
             public int compare(TrainTreeNodeTrain o1, TrainTreeNodeTrain o2) {
                 return trainComparator.compare(o1.getTrain(), o2.getTrain());
             }

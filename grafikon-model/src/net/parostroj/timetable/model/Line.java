@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map;
 import net.parostroj.timetable.model.events.LineEvent;
 import net.parostroj.timetable.model.events.LineListener;
+import net.parostroj.timetable.visitors.TrainDiagramTraversalVisitor;
+import net.parostroj.timetable.visitors.TrainDiagramVisitor;
 
 /**
  * Track between two route points.
@@ -364,5 +366,27 @@ public class Line implements RouteSegment, AttributesHolder {
     
     void fireTrackAttributeChanged(String attributeName, LineTrack track) {
         this.listenerSupport.fireEvent(new LineEvent(this, attributeName, track));
+    }
+
+    /**
+     * accepts visitor.
+     *
+     * @param visitor visitor
+     */
+    public void accept(TrainDiagramVisitor visitor) {
+        visitor.visit(this);
+    }
+
+    /**
+     * accepts visitor.
+     *
+     * @param visitor visitor
+     */
+    public void accept(TrainDiagramTraversalVisitor visitor) {
+        visitor.visit(this);
+        for (LineTrack track : tracks) {
+            track.accept(visitor);
+        }
+        visitor.visitAfter(this);
     }
 }

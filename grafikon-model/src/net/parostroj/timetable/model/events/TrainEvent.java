@@ -2,6 +2,7 @@ package net.parostroj.timetable.model.events;
 
 import net.parostroj.timetable.model.Train;
 import net.parostroj.timetable.model.TrainsCycleItem;
+import net.parostroj.timetable.visitors.EventVisitor;
 
 /**
  * Train event.
@@ -89,5 +90,10 @@ public class TrainEvent extends GTEvent<Train> {
         builder.append(',').append(changedInterval).append(',').append(intervalChangeStart);
         builder.append(']');
         return builder.toString();
+    }
+
+    @Override
+    public void accept(EventVisitor visitor) {
+        visitor.visit(this);
     }
 }
