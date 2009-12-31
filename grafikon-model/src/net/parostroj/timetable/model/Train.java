@@ -6,6 +6,7 @@ import net.parostroj.timetable.model.events.TrainEvent;
 import net.parostroj.timetable.model.events.TrainEvent.TimeIntervalListType;
 import net.parostroj.timetable.model.events.TrainListener;
 import net.parostroj.timetable.utils.*;
+import net.parostroj.timetable.visitors.TrainDiagramVisitor;
 
 /**
  * Train.
@@ -1011,5 +1012,14 @@ public class Train implements AttributesHolder, ObjectWithId {
         variables.put("train", this);
         variables.put("type", this.getType());
         return variables;
+    }
+
+    /**
+     * accepts visitor.
+     *
+     * @param visitor visitor
+     */
+    void accept(TrainDiagramVisitor visitor) {
+        visitor.visit(this);
     }
 }

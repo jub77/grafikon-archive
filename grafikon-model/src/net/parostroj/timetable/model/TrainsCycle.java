@@ -9,6 +9,7 @@ import java.util.*;
 import net.parostroj.timetable.model.events.TrainsCycleEvent;
 import net.parostroj.timetable.model.events.TrainsCycleListener;
 import net.parostroj.timetable.utils.Tuple;
+import net.parostroj.timetable.visitors.TrainDiagramVisitor;
 
 /**
  * Trains cycle.
@@ -234,5 +235,14 @@ public class TrainsCycle implements AttributesHolder, ObjectWithId, Iterable<Tra
 
     public void removeListener(TrainsCycleListener listener) {
         listenerSupport.removeListener(listener);
+    }
+
+    /**
+     * accepts visitor
+     *
+     * @param visitor visitor
+     */
+    void accept(TrainDiagramVisitor visitor) {
+        visitor.visit(this);
     }
 }

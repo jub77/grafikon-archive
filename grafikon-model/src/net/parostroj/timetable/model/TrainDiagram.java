@@ -6,6 +6,8 @@ import net.parostroj.timetable.model.events.TrainDiagramEvent;
 import net.parostroj.timetable.model.events.TrainDiagramListener;
 import net.parostroj.timetable.model.events.TrainDiagramListenerWithNested;
 import net.parostroj.timetable.utils.IdGenerator;
+import net.parostroj.timetable.visitors.TrainDiagramTraversalVisitor;
+import net.parostroj.timetable.visitors.TrainDiagramVisitor;
 
 /**
  * Collection of all parts of graphical timetable.
@@ -388,5 +390,42 @@ public class TrainDiagram implements AttributesHolder, ObjectWithId {
      */
     public TrainType createTrainType(String id) {
         return new TrainType(id, this);
+    }
+
+    /**
+     * accepts visitor.
+     *
+     * @param visitor visitor
+     */
+    public void accept(TrainDiagramVisitor visitor) {
+        visitor.visit(this);
+    }
+
+    /**
+     * accepts traversal visitor.
+     *
+     * @param visitor visitor
+     */
+    public void accept(TrainDiagramTraversalVisitor visitor) {
+        visitor.visit(this);
+        net.accept(visitor);
+        for (Route route : routes) {
+            route.accept(visitor);
+        }
+        for (TrainType type : trainTypes) {
+            type.accept(visitor);
+        }
+        for (EngineClass clazz : engineClasses) {
+            clazz.accept(visitor);
+        }
+        for(Train train : trains) {
+            train.accept(visitor);
+        }
+        for (List<TrainsCycle> list : cycles.values()) {
+            for (TrainsCycle cycle : list) {
+                cycle.accept(visitor);
+            }
+        }
+        visitor.visitAfter(this);
     }
 }

@@ -1,13 +1,14 @@
 package net.parostroj.timetable.model.events;
 
 import java.util.Iterator;
+import net.parostroj.timetable.visitors.EventVisitor;
 
 /**
  * Common predecessor for events.
  * 
  * @author jub
  */
-public class GTEvent<T> implements Iterable<GTEvent<?>>{
+public abstract class GTEvent<T> implements Iterable<GTEvent<?>>{
 
     private final T source;
     private final GTEvent<?> nestedEvent;
@@ -65,4 +66,11 @@ public class GTEvent<T> implements Iterable<GTEvent<?>>{
             }
         };
     }
+
+    /**
+     * accepts visitor.
+     *
+     * @param visitor visitor
+     */
+    public abstract void accept(EventVisitor visitor);
 }

@@ -8,6 +8,8 @@ import net.parostroj.timetable.model.events.GTEvent;
 import net.parostroj.timetable.model.events.NetEvent;
 import net.parostroj.timetable.model.events.NetListener;
 import net.parostroj.timetable.utils.Tuple;
+import net.parostroj.timetable.visitors.TrainDiagramTraversalVisitor;
+import net.parostroj.timetable.visitors.TrainDiagramVisitor;
 import org.jgrapht.Graph;
 import org.jgrapht.alg.DijkstraShortestPath;
 import org.jgrapht.graph.ListenableUndirectedGraph;
@@ -150,5 +152,30 @@ public class Net {
     @Override
     public String toString() {
         return "Net";
+    }
+
+    /**
+     * accepts visitor.
+     *
+     * @param visitor visitor
+     */
+    public void accept(TrainDiagramVisitor visitor) {
+        visitor.visit(this);
+    }
+
+    /**
+     * accepts traversal visitor.
+     *
+     * @param visitor traversal visitor
+     */
+    public void accept(TrainDiagramTraversalVisitor visitor) {
+        visitor.visit(this);
+        for (Line line : getLines()) {
+            line.accept(visitor);
+        }
+        for (Node node : getNodes()) {
+            node.accept(visitor);
+        }
+        visitor.visitAfter(this);
     }
 }
