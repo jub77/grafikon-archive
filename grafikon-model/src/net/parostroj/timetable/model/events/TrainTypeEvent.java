@@ -1,6 +1,5 @@
 package net.parostroj.timetable.model.events;
 
-import net.parostroj.timetable.model.Train;
 import net.parostroj.timetable.model.TrainType;
 import net.parostroj.timetable.visitors.EventVisitor;
 

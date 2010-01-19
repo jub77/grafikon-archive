@@ -1,6 +1,7 @@
 package net.parostroj.timetable.model.events;
 
 import net.parostroj.timetable.model.TrainsCycle;
+import net.parostroj.timetable.model.TrainsCycleItem;
 import net.parostroj.timetable.visitors.EventVisitor;
 
 /**
@@ -12,14 +13,21 @@ public class TrainsCycleEvent extends GTEvent<TrainsCycle> {
 
     public enum Type {
 
-        ATTRIBUTE, CYCLE_ITEM;
+        ATTRIBUTE, CYCLE_ITEM_ADDED, CYCLE_ITEM_REMOVED, CYCLE_ITEM_UPDATED, CYCLE_ITEM_COMMENT;
     }
     private Type type;
     private String attributeName;
+    private TrainsCycleItem cycleItem;
 
     public TrainsCycleEvent(TrainsCycle cycle, Type type) {
         super(cycle);
         this.type = type;
+    }
+
+    public TrainsCycleEvent(TrainsCycle cycle, Type type, TrainsCycleItem cycleItem) {
+        super(cycle);
+        this.type = type;
+        this.cycleItem = cycleItem;
     }
 
     public TrainsCycleEvent(TrainsCycle cycle, String attributeName) {
@@ -33,6 +41,10 @@ public class TrainsCycleEvent extends GTEvent<TrainsCycle> {
 
     public Type getType() {
         return type;
+    }
+
+    public TrainsCycleItem getCycleItem() {
+        return cycleItem;
     }
 
     @Override
