@@ -52,13 +52,13 @@ public class Net {
     
     public void addNode(Node node) {
         netDelegate.addVertex(node);
-        this.listenerSupport.fireEvent(new NetEvent(this, NetEvent.Type.NODE_ADDED));
+        this.listenerSupport.fireEvent(new NetEvent(this, NetEvent.Type.NODE_ADDED, node));
         node.addListener(listener);
     }
     
     public void removeNode(Node node) {
         netDelegate.removeVertex(node);
-        this.listenerSupport.fireEvent(new NetEvent(this, NetEvent.Type.NODE_REMOVED));
+        this.listenerSupport.fireEvent(new NetEvent(this, NetEvent.Type.NODE_REMOVED, node));
         node.removeListener(listener);
     }
     
@@ -76,13 +76,13 @@ public class Net {
     
     public void addLine(Node from, Node to, Line line) {
         netDelegate.addEdge(from, to, line);
-        this.listenerSupport.fireEvent(new NetEvent(this, NetEvent.Type.LINE_ADDED));
+        this.listenerSupport.fireEvent(new NetEvent(this, NetEvent.Type.LINE_ADDED, line));
         line.addListener(listener);
     }
     
     public void removeLine(Line line) {
         netDelegate.removeEdge(line);
-        this.listenerSupport.fireEvent(new NetEvent(this, NetEvent.Type.LINE_REMOVED));
+        this.listenerSupport.fireEvent(new NetEvent(this, NetEvent.Type.LINE_REMOVED, line));
         line.removeListener(listener);
     }
     
@@ -96,17 +96,17 @@ public class Net {
     
     public void addLineClass(LineClass lineClass) {
         lineClasses.add(lineClass);
-        this.listenerSupport.fireEvent(new NetEvent(this, NetEvent.Type.LINE_CLASS_ADDED));
+        this.listenerSupport.fireEvent(new NetEvent(this, NetEvent.Type.LINE_CLASS_ADDED, lineClass));
     }
     
     public void addLineClass(LineClass lineClass, int position) {
         lineClasses.add(position, lineClass);
-        this.listenerSupport.fireEvent(new NetEvent(this, NetEvent.Type.LINE_CLASS_ADDED));
+        this.listenerSupport.fireEvent(new NetEvent(this, NetEvent.Type.LINE_CLASS_ADDED, lineClass));
     }
     
     public void removeLineClass(LineClass lineClass) {
         lineClasses.remove(lineClass);
-        this.listenerSupport.fireEvent(new NetEvent(this, NetEvent.Type.LINE_CLASS_REMOVED));
+        this.listenerSupport.fireEvent(new NetEvent(this, NetEvent.Type.LINE_CLASS_REMOVED, lineClass));
     }
     
     public Node getNodeById(String id) {
