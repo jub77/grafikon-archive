@@ -143,25 +143,25 @@ public class TrainsCycle implements AttributesHolder, ObjectWithId, Iterable<Tra
     public void addItem(TrainsCycleItem item) {
         item.getTrain().addCycleItem(item);
         items.add(item);
-        this.listenerSupport.fireEvent(new TrainsCycleEvent(this, TrainsCycleEvent.Type.CYCLE_ITEM));
+        this.listenerSupport.fireEvent(new TrainsCycleEvent(this, TrainsCycleEvent.Type.CYCLE_ITEM_ADDED, item));
     }
     
     public void removeItem(TrainsCycleItem item) {
         item.getTrain().removeCycleItem(item);
         items.remove(item);
-        this.listenerSupport.fireEvent(new TrainsCycleEvent(this, TrainsCycleEvent.Type.CYCLE_ITEM));
+        this.listenerSupport.fireEvent(new TrainsCycleEvent(this, TrainsCycleEvent.Type.CYCLE_ITEM_REMOVED, item));
     }
     
     public void addItem(TrainsCycleItem item, int index) {
         item.getTrain().addCycleItem(item);
         items.add(index, item);
-        this.listenerSupport.fireEvent(new TrainsCycleEvent(this, TrainsCycleEvent.Type.CYCLE_ITEM));
+        this.listenerSupport.fireEvent(new TrainsCycleEvent(this, TrainsCycleEvent.Type.CYCLE_ITEM_ADDED, item));
     }
     
     public TrainsCycleItem removeItem(int index) {
         TrainsCycleItem item = items.remove(index);
         item.getTrain().removeCycleItem(item);
-        this.listenerSupport.fireEvent(new TrainsCycleEvent(this, TrainsCycleEvent.Type.CYCLE_ITEM));
+        this.listenerSupport.fireEvent(new TrainsCycleEvent(this, TrainsCycleEvent.Type.CYCLE_ITEM_REMOVED, item));
         return item;
     }
     
@@ -172,7 +172,7 @@ public class TrainsCycle implements AttributesHolder, ObjectWithId, Iterable<Tra
         t.removeCycleItem(oldItem);
         t.addCycleItem(newItem);
         this.items.set(this.items.indexOf(oldItem), newItem);
-        this.listenerSupport.fireEvent(new TrainsCycleEvent(this, TrainsCycleEvent.Type.CYCLE_ITEM));
+        this.listenerSupport.fireEvent(new TrainsCycleEvent(this, TrainsCycleEvent.Type.CYCLE_ITEM_UPDATED, newItem));
     }
     
     public List<TrainsCycleItem> getItems() {
@@ -235,6 +235,10 @@ public class TrainsCycle implements AttributesHolder, ObjectWithId, Iterable<Tra
 
     public void removeListener(TrainsCycleListener listener) {
         listenerSupport.removeListener(listener);
+    }
+
+    void fireEvent(TrainsCycleEvent event) {
+        this.listenerSupport.fireEvent(event);
     }
 
     /**

@@ -851,12 +851,11 @@ public class Train implements AttributesHolder, ObjectWithId {
     }
     
     /**
-     * fires given train event for this train (Useful for TrainsCycleItem and
-     * TimeIntervalList).
+     * fires given train event for this train.
      * 
      * @param event train event
      */
-    protected void fireTrainEvent(TrainEvent event) {
+    void fireEvent(TrainEvent event) {
         listenerSupport.fireEvent(event);
     }
     
