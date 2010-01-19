@@ -11,12 +11,18 @@ public class GTEventTypeConverter implements EventsViewerTypeConverter {
 
     @Override
     public String getListString(Object event) {
-        return event.toString();
+        StringBuilder str = new StringBuilder();
+        GTEventOutputVisitor visitor = new GTEventOutputVisitor(str, false);
+        ((GTEvent)event).accept(visitor);
+        return str.toString();
     }
 
     @Override
     public String getViewString(Object event) {
-        return event.toString();
+        StringBuilder str = new StringBuilder();
+        GTEventOutputVisitor visitor = new GTEventOutputVisitor(str, true);
+        ((GTEvent)event).accept(visitor);
+        return str.toString();
     }
 
     @Override

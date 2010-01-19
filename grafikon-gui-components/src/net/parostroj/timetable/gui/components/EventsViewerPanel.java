@@ -88,6 +88,10 @@ public class EventsViewerPanel extends javax.swing.JPanel {
                 item.third + " " + item.second;
         }
 
+        public Triplet<Object, String, String> getEventTriplet(int index) {
+            return eventList.get(index);
+        }
+
         private String convertEventToStr(Object event) {
             EventsViewerTypeConverter converter = getConverterForType(event.getClass());
             return converter != null ? converter.getListString(event) : event.toString();
@@ -125,11 +129,18 @@ public class EventsViewerPanel extends javax.swing.JPanel {
 
         eventsList.setModel(new EventListModel());
         eventsList.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        eventsList.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
+            public void valueChanged(javax.swing.event.ListSelectionEvent evt) {
+                eventsListValueChanged(evt);
+            }
+        });
         scrollPane1.setViewportView(eventsList);
 
         splitPane.setLeftComponent(scrollPane1);
 
         eventTextArea.setColumns(20);
+        eventTextArea.setFont(eventTextArea.getFont().deriveFont((float)11));
+        eventTextArea.setLineWrap(true);
         eventTextArea.setRows(5);
         scrollPane2.setViewportView(eventTextArea);
 
@@ -198,6 +209,21 @@ public class EventsViewerPanel extends javax.swing.JPanel {
             writeToLog = writeLogCheckBox.isSelected();
         }
     }//GEN-LAST:event_writeLogCheckBoxActionPerformed
+
+    private void eventsListValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_eventsListValueChanged
+        // show selected
+        if (evt.getValueIsAdjusting())
+            return;
+        int index = eventsList.getSelectedIndex();
+        if (index != -1) {
+            Triplet<Object, String, String> event = this.getEventsModel().getEventTriplet(index);
+            EventsViewerTypeConverter converter = this.getConverterForType(event.first.getClass());
+            String viewString = converter.getViewString(event.first);
+            eventTextArea.setText(viewString);
+        } else
+            eventTextArea.setText("");
+        
+    }//GEN-LAST:event_eventsListValueChanged
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
