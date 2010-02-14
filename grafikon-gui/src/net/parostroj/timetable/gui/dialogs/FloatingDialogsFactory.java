@@ -6,6 +6,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import net.parostroj.timetable.actions.TrainComparator;
 import net.parostroj.timetable.gui.*;
+import net.parostroj.timetable.gui.components.ChangesTrackerPanel;
 import net.parostroj.timetable.gui.components.EventsViewerPanel;
 import net.parostroj.timetable.gui.components.GTEventTypeConverter;
 import net.parostroj.timetable.gui.components.TrainsWithConflictsPanel;
@@ -13,6 +14,7 @@ import net.parostroj.timetable.gui.helpers.TrainWrapper;
 import net.parostroj.timetable.mediator.Mediator;
 import net.parostroj.timetable.model.Train;
 import net.parostroj.timetable.model.events.*;
+import net.parostroj.timetable.net.ChangesTracker;
 
 /**
  * Factory for creation of floating dialogs.
@@ -132,10 +134,19 @@ public class FloatingDialogsFactory {
         return dialog;
     }
 
+    public static FloatingDialog createChangesTrackedDialog(Frame frame, Mediator mediator, ApplicationModel model) {
+        ChangesTrackerPanel panel = new ChangesTrackerPanel();
+        ChangesTracker tracker = new ChangesTracker();
+        mediator.addColleague(tracker, GTEvent.class);
+        FloatingDialog dialog = new FloatingDialog(frame, panel, "dialog.changestracker.title", "changes.tracker");
+        return dialog;
+    }
+
     public static FloatingDialogsList createDialogs(Frame frame, Mediator mediator, ApplicationModel model) {
         FloatingDialogsList list = new FloatingDialogsList();
         list.add(createTrainsWithConflictsDialog(frame, mediator, model));
         list.add(createEventsViewerDialog(frame, mediator, model));
+        list.add(createChangesTrackedDialog(frame, mediator, model));
         return list;
     }
 }
