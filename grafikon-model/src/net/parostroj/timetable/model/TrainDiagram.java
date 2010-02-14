@@ -1,7 +1,9 @@
 package net.parostroj.timetable.model;
 
 import java.util.*;
+import net.parostroj.timetable.model.events.AttributeChange;
 import net.parostroj.timetable.model.events.GTEvent;
+import net.parostroj.timetable.model.events.GTEventType;
 import net.parostroj.timetable.model.events.TrainDiagramEvent;
 import net.parostroj.timetable.model.events.TrainDiagramListener;
 import net.parostroj.timetable.model.events.TrainDiagramListenerWithNested;
@@ -95,12 +97,12 @@ public class TrainDiagram implements AttributesHolder, ObjectWithId {
 
     public void addRoute(Route route) {
         this.routes.add(route);
-        this.fireEvent(new TrainDiagramEvent(this, TrainDiagramEvent.Type.ROUTE_ADDED, route));
+        this.fireEvent(new TrainDiagramEvent(this, GTEventType.ROUTE_ADDED, route));
     }
 
     public void removeRoute(Route route) {
         this.routes.remove(route);
-        this.fireEvent(new TrainDiagramEvent(this, TrainDiagramEvent.Type.ROUTE_REMOVED, route));
+        this.fireEvent(new TrainDiagramEvent(this, GTEventType.ROUTE_REMOVED, route));
     }
 
     public Route getRouteById(String id) {
@@ -123,14 +125,14 @@ public class TrainDiagram implements AttributesHolder, ObjectWithId {
         train.addListener(listener);
         train.attach();
         this.trains.add(train);
-        this.fireEvent(new TrainDiagramEvent(this, TrainDiagramEvent.Type.TRAIN_ADDED, train));
+        this.fireEvent(new TrainDiagramEvent(this, GTEventType.TRAIN_ADDED, train));
     }
 
     public void removeTrain(Train train) {
         train.detach();
         this.trains.remove(train);
         train.removeListener(listener);
-        this.fireEvent(new TrainDiagramEvent(this, TrainDiagramEvent.Type.TRAIN_REMOVED, train));
+        this.fireEvent(new TrainDiagramEvent(this, GTEventType.TRAIN_REMOVED, train));
     }
 
     public Train getTrainById(String id) {
@@ -213,7 +215,7 @@ public class TrainDiagram implements AttributesHolder, ObjectWithId {
     public void removeTrainType(TrainType type) {
         trainTypes.remove(type);
         type.removeListener(listener);
-        this.fireEvent(new TrainDiagramEvent(this, TrainDiagramEvent.Type.TRAIN_TYPE_REMOVED, type));
+        this.fireEvent(new TrainDiagramEvent(this, GTEventType.TRAIN_TYPE_REMOVED, type));
     }
 
     public void addTrainType(TrainType type) {
@@ -223,7 +225,7 @@ public class TrainDiagram implements AttributesHolder, ObjectWithId {
     public void addTrainType(TrainType type, int position) {
         type.addListener(listener);
         trainTypes.add(position, type);
-        this.fireEvent(new TrainDiagramEvent(this, TrainDiagramEvent.Type.TRAIN_TYPE_ADDED, type));
+        this.fireEvent(new TrainDiagramEvent(this, GTEventType.TRAIN_TYPE_ADDED, type));
     }
 
     public void setTrainType(TrainType type, int position) {
@@ -251,14 +253,15 @@ public class TrainDiagram implements AttributesHolder, ObjectWithId {
 
     @Override
     public void setAttribute(String key, Object value) {
+        Object oldValue = attributes.get(key);
         attributes.put(key, value);
-        this.fireEvent(new TrainDiagramEvent(this, key));
+        this.fireEvent(new TrainDiagramEvent(this, new AttributeChange(key, oldValue, value)));
     }
 
     @Override
     public Object removeAttribute(String key) {
         Object o = attributes.remove(key);
-        this.fireEvent(new TrainDiagramEvent(this, key));
+        this.fireEvent(new TrainDiagramEvent(this, new AttributeChange(key, o, null)));
         return o;
     }
 

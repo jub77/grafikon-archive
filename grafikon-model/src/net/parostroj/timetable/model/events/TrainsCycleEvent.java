@@ -11,49 +11,47 @@ import net.parostroj.timetable.visitors.EventVisitor;
  */
 public class TrainsCycleEvent extends GTEvent<TrainsCycle> {
 
-    public enum Type {
+    private TrainsCycleItem oldCycleItem;
+    private TrainsCycleItem newCycleItem;
 
-        ATTRIBUTE, CYCLE_ITEM_ADDED, CYCLE_ITEM_REMOVED, CYCLE_ITEM_UPDATED, CYCLE_ITEM_COMMENT;
-    }
-    private Type type;
-    private String attributeName;
-    private TrainsCycleItem cycleItem;
-
-    public TrainsCycleEvent(TrainsCycle cycle, Type type) {
-        super(cycle);
-        this.type = type;
+    public TrainsCycleEvent(TrainsCycle cycle, GTEventType type) {
+        super(cycle, type);
     }
 
-    public TrainsCycleEvent(TrainsCycle cycle, Type type, TrainsCycleItem cycleItem) {
-        super(cycle);
-        this.type = type;
-        this.cycleItem = cycleItem;
+    public TrainsCycleEvent(TrainsCycle cycle, GTEventType type, TrainsCycleItem oldCycleItem, TrainsCycleItem newCycleItem) {
+        super(cycle, type);
+        this.oldCycleItem = oldCycleItem;
+        this.newCycleItem = newCycleItem;
     }
 
-    public TrainsCycleEvent(TrainsCycle cycle, String attributeName) {
-        this(cycle, Type.ATTRIBUTE);
-        this.attributeName = attributeName;
+    public TrainsCycleEvent(TrainsCycle cycle, AttributeChange attributeChange) {
+        super(cycle, GTEventType.ATTRIBUTE);
+        this.setAttributeChange(attributeChange);
     }
 
-    public String getAttributeName() {
-        return attributeName;
+    public TrainsCycleItem getNewCycleItem() {
+        return newCycleItem;
     }
 
-    public Type getType() {
-        return type;
+    public TrainsCycleItem getOldCycleItem() {
+        return oldCycleItem;
     }
 
-    public TrainsCycleItem getCycleItem() {
-        return cycleItem;
+    public void setNewCycleItem(TrainsCycleItem newCycleItem) {
+        this.newCycleItem = newCycleItem;
+    }
+
+    public void setOldCycleItem(TrainsCycleItem oldCycleItem) {
+        this.oldCycleItem = oldCycleItem;
     }
 
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder("TrainsCycleEvent[");
         builder.append(getSource()).append(',');
-        builder.append(type);
-        if (type == Type.ATTRIBUTE) {
-            builder.append(',').append(attributeName);
+        builder.append(getType());
+        if (getType() == GTEventType.ATTRIBUTE) {
+            builder.append(',').append(getAttributeChange());
         }
         builder.append(']');
         return builder.toString();

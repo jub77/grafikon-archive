@@ -115,7 +115,7 @@ public class GraphicalTimetableView extends javax.swing.JPanel implements Change
                 @Override
                 public void trainDiagramChangedNested(TrainDiagramEvent event) {
                     // other events
-                    if (event.getType() == TrainDiagramEvent.Type.NESTED) {
+                    if (event.getType() == GTEventType.NESTED) {
                         if (event.getNestedEvent() instanceof TrainEvent) {
                             TrainEvent tEvent = (TrainEvent) event.getNestedEvent();
                             trainChanged(tEvent);
@@ -141,13 +141,13 @@ public class GraphicalTimetableView extends javax.swing.JPanel implements Change
         // changed list of routes
         this.createMenuForRoutes(diagram.getRoutes());
         // check current route
-        if (event.getType() == TrainDiagramEvent.Type.ROUTE_REMOVED && event.getRoute().equals(this.getRoute())) {
+        if (event.getType() == GTEventType.ROUTE_REMOVED && event.getRoute().equals(this.getRoute())) {
             if (diagram.getRoutes().size() != 0)
                 this.setRoute(diagram.getRoutes().get(0));
             else
                 this.setRoute(null);
         }
-        if (event.getType() == TrainDiagramEvent.Type.ROUTE_ADDED && this.getRoute() == null) {
+        if (event.getType() == GTEventType.ROUTE_ADDED && this.getRoute() == null) {
             this.setRoute(event.getRoute());
         }
     }
@@ -160,7 +160,7 @@ public class GraphicalTimetableView extends javax.swing.JPanel implements Change
                 this.repaint();
                 break;
             case ATTRIBUTE:
-                if (event.getAttributeName().equals("number") || event.getAttributeName().equals("type")) {
+                if (event.getAttributeChange().getName().equals("number") || event.getAttributeChange().getName().equals("type")) {
                     this.repaint();
                 }
                 break;
@@ -181,7 +181,7 @@ public class GraphicalTimetableView extends javax.swing.JPanel implements Change
     private void trainTypeChanged(TrainTypeEvent event) {
         switch (event.getType()) {
             case ATTRIBUTE:
-                if (event.getAttributeName().equals("color") || event.getAttributeName().equals("trainNameTemplate"))
+                if (event.getAttributeChange().getName().equals("color") || event.getAttributeChange().getName().equals("trainNameTemplate"))
                     // repait
                     this.repaint();
                 break;

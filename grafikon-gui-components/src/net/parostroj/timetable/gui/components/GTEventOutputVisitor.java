@@ -33,8 +33,8 @@ public class GTEventOutputVisitor implements EventVisitor {
             if (full) {
                 str.append('\n');
                 str.append("  Type: ").append(event.getType().toString()).append('\n');
-                if (event.getAttributeName() != null)
-                    str.append("    Attribute: ").append(event.getAttributeName());
+                if (event.getAttributeChange() != null)
+                    str.append("    Attribute: ").append(event.getAttributeChange().getName());
                 if (event.getTrain() != null)
                     str.append("    Train: ").append(event.getTrain().getName()).append('\n');
                 if (event.getRoute() != null)
@@ -89,8 +89,8 @@ public class GTEventOutputVisitor implements EventVisitor {
                 }
                 if (event.getTrack() != null)
                     str.append("    Track: ").append(event.getTrack().getNumber()).append('\n');
-                if (event.getAttributeName() != null)
-                    str.append("    Attribute: ").append(event.getAttributeName());
+                if (event.getAttributeChange() != null)
+                    str.append("    Attribute: ").append(event.getAttributeChange().getName());
             }
         } catch (IOException e) {
             LOG.log(Level.WARNING, e.getMessage(), e);
@@ -122,8 +122,8 @@ public class GTEventOutputVisitor implements EventVisitor {
                 }
                 if (event.getTrack() != null)
                     str.append("    Track: ").append(event.getTrack().getNumber()).append('\n');
-                if (event.getAttributeName() != null)
-                    str.append("    Attribute: ").append(event.getAttributeName());
+                if (event.getAttributeChange() != null)
+                    str.append("    Attribute: ").append(event.getAttributeChange().getName());
             }
         } catch (IOException e) {
             LOG.log(Level.WARNING, e.getMessage(), e);
@@ -140,8 +140,8 @@ public class GTEventOutputVisitor implements EventVisitor {
                 str.append('\n');
                 str.append("  Name: ").append(event.getSource().getCompleteName()).append('\n');
                 str.append("  Type: ").append(event.getType().toString()).append('\n');
-                if (event.getAttributeName() != null)
-                    str.append("    Attribute: ").append(event.getAttributeName());
+                if (event.getAttributeChange() != null)
+                    str.append("    Attribute: ").append(event.getAttributeChange().getName());
                 if (event.getCycleItem() != null) {
                     str.append("    Cycle item: ").append(event.getCycleItem().getFromInterval().getOwnerAsNode().getAbbr());
                     str.append('-').append(event.getCycleItem().getToInterval().getOwnerAsNode().getAbbr()).append('\n');
@@ -166,8 +166,8 @@ public class GTEventOutputVisitor implements EventVisitor {
             if (full) {
                 str.append('\n');
                 str.append("  Type: ").append(event.getType().toString()).append('\n');
-                if (event.getAttributeName() != null)
-                    str.append("    Attribute: ").append(event.getAttributeName());
+                if (event.getAttributeChange() != null)
+                    str.append("    Attribute: ").append(event.getAttributeChange().getName());
             }
         } catch (IOException e) {
             LOG.log(Level.WARNING, e.getMessage(), e);
@@ -184,11 +184,11 @@ public class GTEventOutputVisitor implements EventVisitor {
                 str.append('\n');
                 str.append("  Cycle type: ").append(event.getSource().getType().toString()).append('\n');
                 str.append("  Type: ").append(event.getType().toString()).append('\n');
-                if (event.getAttributeName() != null)
-                    str.append("    Attribute: ").append(event.getAttributeName());
-                if (event.getCycleItem() != null) {
-                    str.append("    Cycle item: ").append(event.getCycleItem().getFromInterval().getOwnerAsNode().getAbbr());
-                    str.append('-').append(event.getCycleItem().getToInterval().getOwnerAsNode().getAbbr()).append('\n');
+                if (event.getAttributeChange() != null)
+                    str.append("    Attribute: ").append(event.getAttributeChange().getName());
+                if (event.getNewCycleItem() != null) {
+                    str.append("    Cycle item: ").append(event.getNewCycleItem().getFromInterval().getOwnerAsNode().getAbbr());
+                    str.append('-').append(event.getNewCycleItem().getToInterval().getOwnerAsNode().getAbbr()).append('\n');
                 }
             }
         } catch (IOException e) {

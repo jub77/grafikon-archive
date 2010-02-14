@@ -50,14 +50,15 @@ public class NodeTrack extends Track {
      * @param platform the platform to set
      */
     public void setPlatform(boolean platform) {
+        boolean oldPlatform = this.platform;
         this.platform = platform;
-        this.fireAttributeChanged("platform");
+        this.fireAttributeChanged("platform", oldPlatform, platform);
     }
 
     @Override
-    void fireAttributeChanged(String attributeName) {
+    void fireAttributeChanged(String attributeName, Object oldValue, Object newValue) {
         if (node != null)
-            node.fireTrackAttributeChanged(attributeName, this);
+            node.fireTrackAttributeChanged(attributeName, this, oldValue, newValue);
     }
 
     /**

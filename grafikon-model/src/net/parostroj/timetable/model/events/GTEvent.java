@@ -12,15 +12,20 @@ public abstract class GTEvent<T> implements Iterable<GTEvent<?>>{
 
     private final T source;
     private final GTEvent<?> nestedEvent;
+    private final GTEventType type;
+
+    private AttributeChange attributeChange;
     
-    public GTEvent(T source) {
+    public GTEvent(T source, GTEventType type) {
         this.source = source;
         this.nestedEvent = null;
+        this.type = type;
     }
     
     public GTEvent(T source, GTEvent<?> nestedEvent) {
         this.source = source;
         this.nestedEvent = nestedEvent;
+        this.type = GTEventType.NESTED;
     }
 
     public T getSource() {
@@ -29,6 +34,10 @@ public abstract class GTEvent<T> implements Iterable<GTEvent<?>>{
 
     public GTEvent<?> getNestedEvent() {
         return nestedEvent;
+    }
+
+    public GTEventType getType() {
+        return type;
     }
 
     public boolean isNested() {
@@ -65,6 +74,14 @@ public abstract class GTEvent<T> implements Iterable<GTEvent<?>>{
                 throw new UnsupportedOperationException("Not supported.");
             }
         };
+    }
+
+    public AttributeChange getAttributeChange() {
+        return attributeChange;
+    }
+
+    public void setAttributeChange(AttributeChange attributeChange) {
+        this.attributeChange = attributeChange;
     }
 
     /**

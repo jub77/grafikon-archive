@@ -58,8 +58,9 @@ public abstract class Track implements AttributesHolder, ObjectWithId {
      * @param number track number to be set
      */
     public void setNumber(String number) {
+        String oldNumber = this.number;
         this.number = number;
-        this.fireAttributeChanged("number");
+        this.fireAttributeChanged("number", oldNumber, number);
     }
 
     /**
@@ -133,15 +134,16 @@ public abstract class Track implements AttributesHolder, ObjectWithId {
     @Override
     public Object removeAttribute(String key) {
         Object returnValue = attributes.remove(key);
-        this.fireAttributeChanged(key);
+        this.fireAttributeChanged(key, returnValue, null);
         return returnValue;
     }
 
     @Override
     public void setAttribute(String key, Object value) {
+        Object oldValue = attributes.get(key);
         attributes.put(key, value);
-        this.fireAttributeChanged(key);
+        this.fireAttributeChanged(key, oldValue, value);
     }
     
-    abstract void fireAttributeChanged(String attributeName);
+    abstract void fireAttributeChanged(String attributeName, Object oldValue, Object newValue);
 }

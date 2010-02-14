@@ -10,77 +10,41 @@ import net.parostroj.timetable.visitors.EventVisitor;
  * 
  * @author jub
  */
-public class NodeEvent extends GTEvent<Node> {
+public class NodeEvent extends RouteSegmentEvent<Node, NodeTrack> {
 
-    public enum Type {
-        ATTRIBUTE, TRACK_ADDED, TRACK_REMOVED, TIME_INTERVAL_ADDED, TIME_INTERVAL_REMOVED, TIME_INTERVAL_UPDATED, TRACK_ATTRIBUTE
-    }
-    private final Type type;
-    private final String attributeName;
-    private final NodeTrack track;
-    private final TimeInterval interval;
-
-    public NodeEvent(Node node, Type type) {
-        super(node);
-        this.type = type;
-        this.attributeName = null;
-        this.track = null;
-        this.interval = null;
+    public NodeEvent(Node node, GTEventType type) {
+        super(node, type);
     }
     
-    public NodeEvent(Node node, String attributeName) {
-        super(node);
-        this.type = Type.ATTRIBUTE;
-        this.attributeName = attributeName;
-        this.track = null;
-        this.interval = null;
+    public NodeEvent(Node node, AttributeChange change) {
+        super(node, change);
     }
     
-    public NodeEvent(Node node, String attributeName, NodeTrack track) {
-        super(node);
-        this.type = Type.TRACK_ATTRIBUTE;
-        this.attributeName = attributeName;
-        this.track = track;
-        this.interval = null;
+    public NodeEvent(Node node, AttributeChange change, NodeTrack track) {
+        super(node, change, track);
     }
 
-    public NodeEvent(Node node, Type type, TimeInterval interval) {
-        super(node);
-        this.type = type;
-        this.attributeName = null;
-        this.track = null;
-        this.interval = interval;
+    public NodeEvent(Node node, GTEventType type, NodeTrack track) {
+        super(node, type, track);
     }
 
-    public String getAttributeName() {
-        return attributeName;
-    }
-
-    public Type getType() {
-        return type;
-    }
-
-    public NodeTrack getTrack() {
-        return track;
-    }
-
-    public TimeInterval getInterval() {
-        return interval;
+    public NodeEvent(Node node, GTEventType type, TimeInterval interval) {
+        super(node, type, interval);
     }
 
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder("NodeEvent[");
         builder.append(getSource()).append(',');
-        builder.append(type);
-        if (type == Type.ATTRIBUTE || type == Type.TRACK_ATTRIBUTE) {
-            builder.append(',').append(attributeName);
+        builder.append(getType());
+        if (getType() == GTEventType.ATTRIBUTE || getType() == GTEventType.TRACK_ATTRIBUTE) {
+            builder.append(',').append(getAttributeChange());
         }
-        if (track != null) {
-            builder.append(',').append(track);
+        if (getTrack() != null) {
+            builder.append(',').append(getTrack());
         }
-        if (interval != null) {
-            builder.append(',').append(interval);
+        if (getInterval() != null) {
+            builder.append(',').append(getInterval());
         }
         builder.append(']');
         return builder.toString();
