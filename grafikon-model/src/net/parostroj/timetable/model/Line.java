@@ -5,6 +5,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import net.parostroj.timetable.model.events.AttributeChange;
+import net.parostroj.timetable.model.events.GTEventType;
 import net.parostroj.timetable.model.events.LineEvent;
 import net.parostroj.timetable.model.events.LineListener;
 import net.parostroj.timetable.visitors.TrainDiagramTraversalVisitor;
@@ -98,8 +100,9 @@ public class Line implements RouteSegment, AttributesHolder {
      * @param length length to be set
      */
     public void setLength(int length) {
+        int oldLength = this.length;
         this.length = length;
-        this.listenerSupport.fireEvent(new LineEvent(this, "length"));
+        this.listenerSupport.fireEvent(new LineEvent(this, new AttributeChange("length", oldLength, length)));
     }
 
     public TimeInterval createTimeInterval(String intervalId, Train train, int start, TimeIntervalDirection direction, int speed, int fromSpeed, int toSpeed) {
@@ -137,19 +140,19 @@ public class Line implements RouteSegment, AttributesHolder {
     public void addTrack(LineTrack track) {
         track.line = this;
         tracks.add(track);
-        this.listenerSupport.fireEvent(new LineEvent(this, LineEvent.Type.TRACK_ADDED));
+        this.listenerSupport.fireEvent(new LineEvent(this, GTEventType.TRACK_ADDED, track));
     }
 
     public void addTrack(LineTrack track, int position) {
         track.line = this;
         tracks.add(position, track);
-        this.listenerSupport.fireEvent(new LineEvent(this, LineEvent.Type.TRACK_ADDED));
+        this.listenerSupport.fireEvent(new LineEvent(this, GTEventType.TRACK_ADDED, track));
     }
 
     public void removeTrack(LineTrack track) {
         track.line = null;
         tracks.remove(track);
-        this.listenerSupport.fireEvent(new LineEvent(this, LineEvent.Type.TRACK_REMOVED));
+        this.listenerSupport.fireEvent(new LineEvent(this, GTEventType.TRACK_REMOVED, track));
     }
 
     public void removeAllTracks() {
@@ -157,7 +160,7 @@ public class Line implements RouteSegment, AttributesHolder {
             track.line = null;
         }
         tracks.clear();
-        this.listenerSupport.fireEvent(new LineEvent(this, LineEvent.Type.TRACK_REMOVED));
+        this.listenerSupport.fireEvent(new LineEvent(this, GTEventType.TRACK_REMOVED));
     }
 
     /**
@@ -174,8 +177,9 @@ public class Line implements RouteSegment, AttributesHolder {
         if (topSpeed == 0 || topSpeed < -1) {
             throw new IllegalArgumentException("Top speed should be positive number.");
         }
+        int oldTopSpeed = this.topSpeed;
         this.topSpeed = topSpeed;
-        this.listenerSupport.fireEvent(new LineEvent(this, "topSpeed"));
+        this.listenerSupport.fireEvent(new LineEvent(this, new AttributeChange("topSpeed", oldTopSpeed, topSpeed)));
     }
 
     public int computeSpeed(Train train, int prefferedSpeed) {
@@ -245,7 +249,7 @@ public class Line implements RouteSegment, AttributesHolder {
     @Override
     public void removeTimeInterval(TimeInterval interval) {
         interval.getTrack().removeTimeInterval(interval);
-        this.listenerSupport.fireEvent(new LineEvent(this, LineEvent.Type.TIME_INTERVAL_REMOVED, interval));
+        this.listenerSupport.fireEvent(new LineEvent(this, GTEventType.TIME_INTERVAL_REMOVED, interval));
     }
 
     @Override
@@ -256,7 +260,7 @@ public class Line implements RouteSegment, AttributesHolder {
     @Override
     public void addTimeInterval(TimeInterval interval) {
         interval.getTrack().addTimeInterval(interval);
-        this.listenerSupport.fireEvent(new LineEvent(this, LineEvent.Type.TIME_INTERVAL_ADDED, interval));
+        this.listenerSupport.fireEvent(new LineEvent(this, GTEventType.TIME_INTERVAL_ADDED, interval));
     }
 
     @Override
@@ -266,7 +270,7 @@ public class Line implements RouteSegment, AttributesHolder {
             throw new IllegalStateException("Line doesn't contain interval.");
         track.removeTimeInterval(interval);
         interval.getTrack().addTimeInterval(interval);
-        this.listenerSupport.fireEvent(new LineEvent(this, LineEvent.Type.TIME_INTERVAL_UPDATED, interval));
+        this.listenerSupport.fireEvent(new LineEvent(this, GTEventType.TIME_INTERVAL_UPDATED, interval));
     }
 
     private Track getTrackForInterval(TimeInterval interval) {
@@ -335,14 +339,15 @@ public class Line implements RouteSegment, AttributesHolder {
 
     @Override
     public void setAttribute(String key, Object value) {
+        Object oldValue = attributes.get(key);
         attributes.put(key, value);
-        this.listenerSupport.fireEvent(new LineEvent(this, key));
+        this.listenerSupport.fireEvent(new LineEvent(this, new AttributeChange(key, oldValue, value)));
     }
 
     @Override
     public Object removeAttribute(String key) {
         Object returnValue = attributes.remove(key);
-        this.listenerSupport.fireEvent(new LineEvent(this, key));
+        this.listenerSupport.fireEvent(new LineEvent(this, new AttributeChange(key, returnValue, null)));
         return returnValue;
     }
 
@@ -364,8 +369,8 @@ public class Line implements RouteSegment, AttributesHolder {
         this.listenerSupport.removeListener(listener);
     }
     
-    void fireTrackAttributeChanged(String attributeName, LineTrack track) {
-        this.listenerSupport.fireEvent(new LineEvent(this, attributeName, track));
+    void fireTrackAttributeChanged(String attributeName, LineTrack track, Object oldValue, Object newValue) {
+        this.listenerSupport.fireEvent(new LineEvent(this, new AttributeChange(attributeName, oldValue, newValue), track));
     }
 
     /**

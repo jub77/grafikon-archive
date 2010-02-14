@@ -1,6 +1,7 @@
 package net.parostroj.timetable.model;
 
 import java.awt.Color;
+import net.parostroj.timetable.model.events.AttributeChange;
 import net.parostroj.timetable.model.events.TrainTypeEvent;
 import net.parostroj.timetable.model.events.TrainTypeListener;
 import net.parostroj.timetable.visitors.TrainDiagramVisitor;
@@ -72,8 +73,9 @@ public class TrainType implements ObjectWithId {
      * @param abbr the abbreviation to set
      */
     public void setAbbr(String abbr) {
+        String oldAbbr = this.abbr;
         this.abbr = abbr;
-        this.listenerSupport.fireEvent(new TrainTypeEvent(this, "abbr"));
+        this.listenerSupport.fireEvent(new TrainTypeEvent(this, new AttributeChange("abbr", oldAbbr, abbr)));
     }
 
     /**
@@ -87,8 +89,9 @@ public class TrainType implements ObjectWithId {
      * @param color the color to be set
      */
     public void setColor(Color color) {
+        Color oldColor = this.color;
         this.color = color;
-        this.listenerSupport.fireEvent(new TrainTypeEvent(this, "color"));
+        this.listenerSupport.fireEvent(new TrainTypeEvent(this, new AttributeChange("color", oldColor, color)));
     }
 
     /**
@@ -102,8 +105,9 @@ public class TrainType implements ObjectWithId {
      * @param desc description to set
      */
     public void setDesc(String desc) {
+        String oldDesc = this.desc;
         this.desc = desc;
-        this.listenerSupport.fireEvent(new TrainTypeEvent(this, "desc"));
+        this.listenerSupport.fireEvent(new TrainTypeEvent(this, new AttributeChange("desc", oldDesc, desc)));
     }
 
     /**
@@ -117,8 +121,9 @@ public class TrainType implements ObjectWithId {
      * @param platform sets if the type needs the platform in the station
      */
     public void setPlatform(boolean platform) {
+        boolean oldPlatform = this.platform;
         this.platform = platform;
-        this.listenerSupport.fireEvent(new TrainTypeEvent(this, "platform"));
+        this.listenerSupport.fireEvent(new TrainTypeEvent(this, new AttributeChange("platform", oldPlatform, platform)));
     }
 
     /**
@@ -132,8 +137,9 @@ public class TrainType implements ObjectWithId {
      * @param category sets category of train type
      */
     public void setCategory(TrainTypeCategory category) {
+        TrainTypeCategory oldCategory = this.category;
         this.category = category;
-        this.listenerSupport.fireEvent(new TrainTypeEvent(this, "category"));
+        this.listenerSupport.fireEvent(new TrainTypeEvent(this, new AttributeChange("category", oldCategory, category)));
     }
 
     /**
@@ -147,8 +153,9 @@ public class TrainType implements ObjectWithId {
      * @param trainNameTemplate sets train's name template
      */
     public void setTrainNameTemplate(TextTemplate trainNameTemplate) {
+        TextTemplate oldTemplate = this.trainNameTemplate;
         this.trainNameTemplate = trainNameTemplate;
-        this.listenerSupport.fireEvent(new TrainTypeEvent(this, "trainNameTemplate"));
+        this.listenerSupport.fireEvent(new TrainTypeEvent(this, new AttributeChange("trainNameTemplate",oldTemplate, trainNameTemplate)));
     }
 
     /**
@@ -162,8 +169,9 @@ public class TrainType implements ObjectWithId {
      * @param trainCompleteNameTemplate sets template with complete train's name
      */
     public void setTrainCompleteNameTemplate(TextTemplate trainCompleteNameTemplate) {
+        TextTemplate oldTemplate = this.trainCompleteNameTemplate;
         this.trainCompleteNameTemplate = trainCompleteNameTemplate;
-        this.listenerSupport.fireEvent(new TrainTypeEvent(this, "trainCompleteNameTemplate"));
+        this.listenerSupport.fireEvent(new TrainTypeEvent(this, new AttributeChange("trainCompleteNameTemplate", oldTemplate, trainCompleteNameTemplate)));
     }
 
     /**

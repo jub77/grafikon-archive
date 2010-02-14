@@ -2,6 +2,8 @@ package net.parostroj.timetable.model;
 
 import java.util.*;
 import net.parostroj.timetable.actions.TrainsCycleHelper;
+import net.parostroj.timetable.model.events.AttributeChange;
+import net.parostroj.timetable.model.events.GTEventType;
 import net.parostroj.timetable.model.events.TrainEvent;
 import net.parostroj.timetable.model.events.TrainEvent.TimeIntervalListType;
 import net.parostroj.timetable.model.events.TrainListener;
@@ -113,8 +115,9 @@ public class Train implements AttributesHolder, ObjectWithId {
      */
     public void setNumber(String number) {
         this.clearCachedData();
+        String oldNumber = this.number;
         this.number = number;
-        this.listenerSupport.fireEvent(new TrainEvent(this, "number"));
+        this.listenerSupport.fireEvent(new TrainEvent(this, new AttributeChange("number", oldNumber, number)));
     }
 
     /**
@@ -157,8 +160,9 @@ public class Train implements AttributesHolder, ObjectWithId {
      */
     public void setDescription(String description) {
         this.clearCachedData();
+        String oldDesc = this.description;
         this.description = description;
-        this.listenerSupport.fireEvent(new TrainEvent(this, "description"));
+        this.listenerSupport.fireEvent(new TrainEvent(this, new AttributeChange("description", oldDesc, description)));
     }
 
     /**
@@ -172,8 +176,9 @@ public class Train implements AttributesHolder, ObjectWithId {
      * @param topSpeed top speed to be set
      */
     public void setTopSpeed(int topSpeed) {
+        int oldSpeed = this.topSpeed;
         this.topSpeed = topSpeed;
-        this.listenerSupport.fireEvent(new TrainEvent(this, "topSpeed"));
+        this.listenerSupport.fireEvent(new TrainEvent(this, new AttributeChange("topSpeed", oldSpeed, topSpeed)));
     }
 
     @Override
@@ -193,8 +198,9 @@ public class Train implements AttributesHolder, ObjectWithId {
      */
     public void setType(TrainType type) {
         this.clearCachedData();
+        TrainType oldType = this.type;
         this.type = type;
-        this.listenerSupport.fireEvent(new TrainEvent(this, "type"));
+        this.listenerSupport.fireEvent(new TrainEvent(this, new AttributeChange("type", oldType, type)));
     }
 
     /**
@@ -240,7 +246,7 @@ public class Train implements AttributesHolder, ObjectWithId {
     protected void addCycleItem(TrainsCycleItem item) {
         TrainsCycleType cycleType = item.getCycle().getType();
         TrainsCycleHelper.getHelper().addCycleItem(this.getTimeIntervalList(), this.getCyclesIntern(cycleType), item, true);
-        this.listenerSupport.fireEvent(new TrainEvent(this, TrainEvent.Type.CYCLE_ITEM_ADDED, item));
+        this.listenerSupport.fireEvent(new TrainEvent(this, GTEventType.CYCLE_ITEM_ADDED, item));
     }
 
     /**
@@ -249,7 +255,7 @@ public class Train implements AttributesHolder, ObjectWithId {
     protected void removeCycleItem(TrainsCycleItem item) {
         TrainsCycleType cycleType = item.getCycle().getType();
         this.getCyclesIntern(cycleType).remove(item);
-        this.listenerSupport.fireEvent(new TrainEvent(this, TrainEvent.Type.CYCLE_ITEM_REMOVED, item));
+        this.listenerSupport.fireEvent(new TrainEvent(this, GTEventType.CYCLE_ITEM_REMOVED, item));
     }
 
     /**
@@ -290,15 +296,16 @@ public class Train implements AttributesHolder, ObjectWithId {
     @Override
     public Object removeAttribute(String key) {
         Object o = attributes.remove(key);
-        this.listenerSupport.fireEvent(new TrainEvent(this, key));
+        this.listenerSupport.fireEvent(new TrainEvent(this, new AttributeChange(key, o, null)));
         return o;
     }
 
     @Override
     public void setAttribute(String key, Object value) {
         this.clearCachedData();
+        Object oldValue = attributes.get(key);
         attributes.put(key, value);
-        this.listenerSupport.fireEvent(new TrainEvent(this, key));
+        this.listenerSupport.fireEvent(new TrainEvent(this, new AttributeChange(key, oldValue, value)));
     }
 
     // methods for testing/attaching/detaching trains in/to/from net
@@ -430,7 +437,7 @@ public class Train implements AttributesHolder, ObjectWithId {
             fireEvent = false;
         }
         if (fireEvent)
-            listenerSupport.fireEvent(new TrainEvent(this, TrainEvent.Type.TECHNOLOGICAL));
+            listenerSupport.fireEvent(new TrainEvent(this, GTEventType.TECHNOLOGICAL));
     }
 
     /**
@@ -461,7 +468,7 @@ public class Train implements AttributesHolder, ObjectWithId {
             fireEvent = false;
         }
         if (fireEvent)
-            listenerSupport.fireEvent(new TrainEvent(this, TrainEvent.Type.TECHNOLOGICAL));
+            listenerSupport.fireEvent(new TrainEvent(this, GTEventType.TECHNOLOGICAL));
     }
 
     /**

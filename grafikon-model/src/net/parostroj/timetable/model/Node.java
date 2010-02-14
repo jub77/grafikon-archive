@@ -1,6 +1,8 @@
 package net.parostroj.timetable.model;
 
 import java.util.*;
+import net.parostroj.timetable.model.events.AttributeChange;
+import net.parostroj.timetable.model.events.GTEventType;
 import net.parostroj.timetable.model.events.NodeEvent;
 import net.parostroj.timetable.model.events.NodeListener;
 import net.parostroj.timetable.visitors.TrainDiagramTraversalVisitor;
@@ -125,19 +127,19 @@ public class Node implements RouteSegment, AttributesHolder, ObjectWithId {
     public void addTrack(NodeTrack track) {
         track.node = this;
         tracks.add(track);
-        this.listenerSupport.fireEvent(new NodeEvent(this, NodeEvent.Type.TRACK_ADDED));
+        this.listenerSupport.fireEvent(new NodeEvent(this, GTEventType.TRACK_ADDED, track));
     }
 
     public void addTrack(NodeTrack track, int position) {
         track.node = this;
         tracks.add(position, track);
-        this.listenerSupport.fireEvent(new NodeEvent(this, NodeEvent.Type.TRACK_ADDED));
+        this.listenerSupport.fireEvent(new NodeEvent(this, GTEventType.TRACK_ADDED, track));
     }
 
     public void removeTrack(NodeTrack track) {
         track.node = null;
         tracks.remove(track);
-        this.listenerSupport.fireEvent(new NodeEvent(this, NodeEvent.Type.TRACK_REMOVED));
+        this.listenerSupport.fireEvent(new NodeEvent(this, GTEventType.TRACK_REMOVED, track));
     }
 
     public void removeAllTracks() {
@@ -145,7 +147,7 @@ public class Node implements RouteSegment, AttributesHolder, ObjectWithId {
             track.node = null;
         }
         tracks.clear();
-        this.listenerSupport.fireEvent(new NodeEvent(this, NodeEvent.Type.TRACK_REMOVED));
+        this.listenerSupport.fireEvent(new NodeEvent(this, GTEventType.TRACK_REMOVED));
     }
 
     public String getName() {
@@ -153,8 +155,9 @@ public class Node implements RouteSegment, AttributesHolder, ObjectWithId {
     }
 
     public void setName(String name) {
+        String oldName = this.name;
         this.name = name;
-        this.listenerSupport.fireEvent(new NodeEvent(this, "name"));
+        this.listenerSupport.fireEvent(new NodeEvent(this, new AttributeChange("name", oldName, name)));
     }
 
     public String getAbbr() {
@@ -162,8 +165,9 @@ public class Node implements RouteSegment, AttributesHolder, ObjectWithId {
     }
 
     public void setAbbr(String abbr) {
+        String oldAbbr = this.abbr;
         this.abbr = abbr;
-        this.listenerSupport.fireEvent(new NodeEvent(this, "abbr"));
+        this.listenerSupport.fireEvent(new NodeEvent(this, new AttributeChange("abbr", oldAbbr, abbr)));
     }
 
     public NodeType getType() {
@@ -171,8 +175,9 @@ public class Node implements RouteSegment, AttributesHolder, ObjectWithId {
     }
 
     public void setType(NodeType type) {
+        NodeType oldType = this.type;
         this.type = type;
-        this.listenerSupport.fireEvent(new NodeEvent(this, "type"));
+        this.listenerSupport.fireEvent(new NodeEvent(this, new AttributeChange("type", oldType, type)));
     }
 
     public int getPositionX() {
@@ -180,8 +185,9 @@ public class Node implements RouteSegment, AttributesHolder, ObjectWithId {
     }
 
     public void setPositionX(int positionX) {
+        int oldPos = this.positionX;
         this.positionX = positionX;
-        this.listenerSupport.fireEvent(new NodeEvent(this, "positionX"));
+        this.listenerSupport.fireEvent(new NodeEvent(this, new AttributeChange("positionX", oldPos, positionX)));
     }
 
     public int getPositionY() {
@@ -189,8 +195,9 @@ public class Node implements RouteSegment, AttributesHolder, ObjectWithId {
     }
 
     public void setPositionY(int positionY) {
+        int oldPos = this.positionY;
         this.positionY = positionY;
-        this.listenerSupport.fireEvent(new NodeEvent(this, "positionY"));
+        this.listenerSupport.fireEvent(new NodeEvent(this, new AttributeChange("positionY", oldPos, positionY)));
     }
 
     public Attributes getAttributes() {
@@ -204,7 +211,7 @@ public class Node implements RouteSegment, AttributesHolder, ObjectWithId {
     @Override
     public Object removeAttribute(String key) {
         Object returnValue = this.attributes.remove(key);
-        this.listenerSupport.fireEvent(new NodeEvent(this, key));
+        this.listenerSupport.fireEvent(new NodeEvent(this, new AttributeChange(key, returnValue, null)));
         return returnValue;
     }
 
@@ -215,8 +222,9 @@ public class Node implements RouteSegment, AttributesHolder, ObjectWithId {
 
     @Override
     public void setAttribute(String key, Object value) {
+        Object oldValue = attributes.get(key);
         attributes.put(key, value);
-        this.listenerSupport.fireEvent(new NodeEvent(this, key));
+        this.listenerSupport.fireEvent(new NodeEvent(this, new AttributeChange(key, oldValue, value)));
     }
 
     @Override
@@ -227,13 +235,13 @@ public class Node implements RouteSegment, AttributesHolder, ObjectWithId {
     @Override
     public void removeTimeInterval(TimeInterval interval) {
         interval.getTrack().removeTimeInterval(interval);
-        this.listenerSupport.fireEvent(new NodeEvent(this, NodeEvent.Type.TIME_INTERVAL_REMOVED, interval));
+        this.listenerSupport.fireEvent(new NodeEvent(this, GTEventType.TIME_INTERVAL_REMOVED, interval));
     }
 
     @Override
     public void addTimeInterval(TimeInterval interval) {
         interval.getTrack().addTimeInterval(interval);
-        this.listenerSupport.fireEvent(new NodeEvent(this, NodeEvent.Type.TIME_INTERVAL_ADDED, interval));
+        this.listenerSupport.fireEvent(new NodeEvent(this, GTEventType.TIME_INTERVAL_ADDED, interval));
     }
 
     @Override
@@ -243,7 +251,7 @@ public class Node implements RouteSegment, AttributesHolder, ObjectWithId {
             throw new IllegalStateException("Node doesn't contain interval.");
         track.removeTimeInterval(interval);
         interval.getTrack().addTimeInterval(interval);
-        this.listenerSupport.fireEvent(new NodeEvent(this, NodeEvent.Type.TIME_INTERVAL_UPDATED, interval));
+        this.listenerSupport.fireEvent(new NodeEvent(this, GTEventType.TIME_INTERVAL_UPDATED, interval));
     }
 
     private Track getTrackForInterval(TimeInterval interval) {
@@ -325,8 +333,8 @@ public class Node implements RouteSegment, AttributesHolder, ObjectWithId {
         return null;
     }
 
-    void fireTrackAttributeChanged(String attributeName, NodeTrack track) {
-        this.listenerSupport.fireEvent(new NodeEvent(this, attributeName, track));
+    void fireTrackAttributeChanged(String attributeName, NodeTrack track, Object oldValue, Object newValue) {
+        this.listenerSupport.fireEvent(new NodeEvent(this, new AttributeChange(attributeName, oldValue, newValue), track));
     }
 
     /**

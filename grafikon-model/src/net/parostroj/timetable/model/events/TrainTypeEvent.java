@@ -10,38 +10,22 @@ import net.parostroj.timetable.visitors.EventVisitor;
  */
 public class TrainTypeEvent extends GTEvent<TrainType> {
 
-    public enum Type {
-
-        ATTRIBUTE;
-    }
-    private Type type;
-    private String attributeName;
-
-    public TrainTypeEvent(TrainType trainType, Type type) {
-        super(trainType);
-        this.type = type;
+    public TrainTypeEvent(TrainType trainType, GTEventType type) {
+        super(trainType, type);
     }
 
-    public TrainTypeEvent(TrainType trainType, String attributeName) {
-        this(trainType, Type.ATTRIBUTE);
-        this.attributeName = attributeName;
-    }
-
-    public String getAttributeName() {
-        return attributeName;
-    }
-
-    public Type getType() {
-        return type;
+    public TrainTypeEvent(TrainType trainType, AttributeChange change) {
+        super(trainType, GTEventType.ATTRIBUTE);
+        this.setAttributeChange(change);
     }
 
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder("TrainTypeEvent[");
         builder.append(getSource()).append(',');
-        builder.append(type);
-        if (type == Type.ATTRIBUTE) {
-            builder.append(',').append(attributeName);
+        builder.append(getType());
+        if (getType() == GTEventType.ATTRIBUTE) {
+            builder.append(',').append(getAttributeChange());
         }
         builder.append(']');
         return builder.toString();

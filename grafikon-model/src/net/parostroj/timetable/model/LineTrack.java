@@ -39,8 +39,9 @@ public class LineTrack extends Track {
     }
 
     public void setFromStraightTrack(NodeTrack fromStraightTrack) {
+        NodeTrack oldTrack = this.fromStraightTrack;
         this.fromStraightTrack = fromStraightTrack;
-        this.fireAttributeChanged("fromStraightTrack");
+        this.fireAttributeChanged("fromStraightTrack", oldTrack, fromStraightTrack);
     }
 
     public NodeTrack getToStraightTrack() {
@@ -48,8 +49,9 @@ public class LineTrack extends Track {
     }
 
     public void setToStraightTrack(NodeTrack toStraightTrack) {
+        NodeTrack oldTrack = this.toStraightTrack;
         this.toStraightTrack = toStraightTrack;
-        this.fireAttributeChanged("toStraightTrack");
+        this.fireAttributeChanged("toStraightTrack", oldTrack, toStraightTrack);
     }
 
     public NodeTrack getFromStraightTrack(TimeIntervalDirection direction) {
@@ -61,9 +63,9 @@ public class LineTrack extends Track {
     }
 
     @Override
-    void fireAttributeChanged(String attributeName) {
+    void fireAttributeChanged(String attributeName, Object oldValue, Object newValue) {
         if (line != null)
-            line.fireTrackAttributeChanged(attributeName, this);
+            line.fireTrackAttributeChanged(attributeName, this, oldValue, newValue);
     }
 
     /**

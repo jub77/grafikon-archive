@@ -13,40 +13,26 @@ import net.parostroj.timetable.visitors.EventVisitor;
  */
 public class NetEvent extends GTEvent<Net> {
 
-    public enum Type {
-        NODE_ADDED, NODE_REMOVED, LINE_ADDED, LINE_REMOVED, LINE_CLASS_ADDED, LINE_CLASS_REMOVED, NESTED
-    }
-
-    private final Type type;
     private Node node;
     private Line line;
     private LineClass lineClass;
 
-    public NetEvent(Net net, Type type, Node node) {
-        super(net);
-        this.type = type;
-        this.node = node;
+    public NetEvent(Net net, GTEventType type, Node node) {
+        super(net, type);
     }
 
-    public NetEvent(Net net, Type type, Line line) {
-        super(net);
-        this.type = type;
+    public NetEvent(Net net, GTEventType type, Line line) {
+        super(net, type);
         this.line = line;
     }
 
-    public NetEvent(Net net, Type type, LineClass lineClass) {
-        super(net);
-        this.type = type;
+    public NetEvent(Net net, GTEventType type, LineClass lineClass) {
+        super(net, type);
         this.lineClass = lineClass;
     }
 
     public NetEvent(Net net, GTEvent<?> event) {
         super(net, event);
-        this.type = Type.NESTED;
-    }
-
-    public Type getType() {
-        return type;
     }
 
     public Line getLine() {
@@ -65,8 +51,8 @@ public class NetEvent extends GTEvent<Net> {
     public String toString() {
         StringBuilder builder = new StringBuilder("NetEvent[");
         builder.append(getSource()).append(',');
-        builder.append(type);
-        if (type == Type.NESTED) {
+        builder.append(getType());
+        if (getType() == GTEventType.NESTED) {
             builder.append(',').append(getNestedEvent());
         }
         builder.append(']');
