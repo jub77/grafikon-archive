@@ -224,6 +224,7 @@ public class GraphicalTimetableView extends javax.swing.JPanel implements Change
             return;
         if (route == null) {
             draw = null;
+            this.repaint();
         } else {
             recreateDraw(route);
         }
