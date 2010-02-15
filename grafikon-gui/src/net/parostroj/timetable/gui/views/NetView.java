@@ -85,8 +85,10 @@ public class NetView extends javax.swing.JPanel implements ApplicationModelListe
                 continue;
             Map attr = cell.getAttributes();
             Rectangle2D b = GraphConstants.getBounds(attr);
-            node.setPositionX(b.getBounds().x);
-            node.setPositionY(b.getBounds().y);
+            if (!callChange) {
+                node.setPositionX(b.getBounds().x);
+                node.setPositionY(b.getBounds().y);
+            }
         }
     }
     
@@ -147,11 +149,17 @@ public class NetView extends javax.swing.JPanel implements ApplicationModelListe
         netAdapter.edit(cellAttr, null, null, null);
     }
 
+    private boolean callChange = false;
+
     private void updateNode(Node node) {
+        callChange = true;
         netAdapter.cellsChanged(new Object[]{netAdapter.getVertexCell(node)});
+        callChange = false;
     }
 
     private void updateLine(Line line) {
+        callChange = true;
         netAdapter.cellsChanged(new Object[]{netAdapter.getEdgeCell(line)});
+        callChange = false;
     }
 }
