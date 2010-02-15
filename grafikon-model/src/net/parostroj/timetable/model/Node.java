@@ -142,6 +142,17 @@ public class Node implements RouteSegment, AttributesHolder, ObjectWithId {
         this.listenerSupport.fireEvent(new NodeEvent(this, GTEventType.TRACK_REMOVED, track));
     }
 
+    public void moveTrack(NodeTrack track, int position) {
+        int oldIndex = tracks.indexOf(track);
+        this.moveTrack(oldIndex, position);
+    }
+
+    public void moveTrack(int fromIndex, int toIndex) {
+        NodeTrack track = tracks.remove(fromIndex);
+        tracks.add(toIndex, track);
+        this.listenerSupport.fireEvent(new NodeEvent(this, GTEventType.TRACK_MOVED, track, fromIndex, toIndex));
+    }
+
     public void removeAllTracks() {
         for (NodeTrack track : tracks) {
             track.node = null;

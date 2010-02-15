@@ -20,6 +20,10 @@ public class LineEvent extends RouteSegmentEvent<Line, LineTrack> {
         super(line, type, track);
     }
 
+    public LineEvent(Line line, GTEventType type, LineTrack track, int fromIndex, int toIndex) {
+        super(line, type, track, fromIndex, toIndex);
+    }
+
     public LineEvent(Line line, AttributeChange attributeChange) {
         super(line, attributeChange);
     }
