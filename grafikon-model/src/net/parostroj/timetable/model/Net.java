@@ -20,8 +20,9 @@ import org.jgrapht.graph.ListenableUndirectedGraph;
  *
  * @author jub
  */
-public class Net {
+public class Net implements ObjectWithId {
     
+    private final String id;
     private List<LineClass> lineClasses;
     private ListenableUndirectedGraph<Node, Line> netDelegate;
     private GTListenerNetImpl listener;
@@ -30,7 +31,7 @@ public class Net {
     /**
      * Constructor.
      */
-    public Net() {
+    public Net(String id) {
         netDelegate = new ListenableUndirectedGraph<Node, Line>(Line.class);
         lineClasses = new LinkedList<LineClass>();
         listenerSupport = new GTListenerSupport<NetListener, NetEvent>(new GTEventSender<NetListener, NetEvent>() {
@@ -41,6 +42,12 @@ public class Net {
             }
         });
         listener = new GTListenerNetImpl(this);
+        this.id = id;
+    }
+
+    @Override
+    public String getId() {
+        return id;
     }
     
     public Tuple<Node> getNodes(Line track) {
@@ -109,7 +116,20 @@ public class Net {
         lineClasses.remove(lineClass);
         this.listenerSupport.fireEvent(new NetEvent(this, GTEventType.LINE_CLASS_REMOVED, lineClass));
     }
-    
+
+    public void moveLineClass(LineClass lineClass, int position) {
+        int oldIndex = lineClasses.indexOf(lineClass);
+        if (oldIndex == -1)
+            throw new IllegalArgumentException("Line class not in list.");
+        this.moveLineClass(oldIndex, position);
+    }
+
+    public void moveLineClass(int oldIndex, int newIndex) {
+        LineClass lineClass = lineClasses.remove(oldIndex);
+        lineClasses.add(newIndex, lineClass);
+        this.listenerSupport.fireEvent(new NetEvent(this, GTEventType.LINE_CLASS_MOVED, lineClass, oldIndex, newIndex));
+    }
+
     public Node getNodeById(String id) {
         for (Node node : netDelegate.vertexSet()) {
             if (node.getId().equals(id))

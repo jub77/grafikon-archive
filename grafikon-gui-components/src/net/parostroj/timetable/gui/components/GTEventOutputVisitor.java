@@ -64,6 +64,10 @@ public class GTEventOutputVisitor implements EventVisitor {
                     str.append("    Line: ").append(event.getLine().getFrom().getName()).append('-');
                     str.append(event.getLine().getTo().getName()).append('\n');
                 }
+                if (event.getFromIndex() != 0 || event.getToIndex() != 0) {
+                    str.append("    From index: ").append(Integer.toString(event.getFromIndex())).append('\n');
+                    str.append("    To index  : ").append(Integer.toString(event.getToIndex())).append('\n');
+                }
             }
         } catch (IOException e) {
             LOG.log(Level.WARNING, e.getMessage(), e);

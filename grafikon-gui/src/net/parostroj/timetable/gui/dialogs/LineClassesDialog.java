@@ -60,9 +60,7 @@ public class LineClassesDialog extends javax.swing.JDialog {
         }
         
         public void moveLineClass(int index1, int index2) {
-            LineClass clazz = model.getDiagram().getNet().getLineClasses().get(index1);
-            model.getDiagram().getNet().removeLineClass(clazz);
-            model.getDiagram().getNet().addLineClass(clazz, index2);
+            model.getDiagram().getNet().moveLineClass(index1, index2);
             this.fireContentsChanged(this, index1, index1);
             this.fireContentsChanged(this, index2, index2);
         }

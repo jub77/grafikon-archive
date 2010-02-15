@@ -16,6 +16,8 @@ public class NetEvent extends GTEvent<Net> {
     private Node node;
     private Line line;
     private LineClass lineClass;
+    private int fromIndex;
+    private int toIndex;
 
     public NetEvent(Net net, GTEventType type, Node node) {
         super(net, type);
@@ -29,6 +31,13 @@ public class NetEvent extends GTEvent<Net> {
     public NetEvent(Net net, GTEventType type, LineClass lineClass) {
         super(net, type);
         this.lineClass = lineClass;
+    }
+
+    public NetEvent(Net net, GTEventType type, LineClass lineClass, int fromIndex, int toIndex) {
+        super(net, type);
+        this.lineClass = lineClass;
+        this.fromIndex = fromIndex;
+        this.toIndex = toIndex;
     }
 
     public NetEvent(Net net, GTEvent<?> event) {
@@ -45,6 +54,14 @@ public class NetEvent extends GTEvent<Net> {
 
     public Node getNode() {
         return node;
+    }
+
+    public int getFromIndex() {
+        return fromIndex;
+    }
+
+    public int getToIndex() {
+        return toIndex;
     }
 
     @Override
