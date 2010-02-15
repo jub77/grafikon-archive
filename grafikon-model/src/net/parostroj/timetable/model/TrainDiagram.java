@@ -56,7 +56,7 @@ public class TrainDiagram implements AttributesHolder, ObjectWithId {
         this.images = new LinkedList<TimetableImage>();
         this.engineClasses = new LinkedList<EngineClass>();
         this.penaltyTable = new PenaltyTable(IdGenerator.getInstance().getId());
-        this.net = new Net();
+        this.net = new Net(IdGenerator.getInstance().getId());
         this.trainTypes = new LinkedList<TrainType>();
         this.attributes = new Attributes();
         this.trainsData = data;
@@ -86,6 +86,10 @@ public class TrainDiagram implements AttributesHolder, ObjectWithId {
      */
     public Net getNet() {
         return net;
+    }
+
+    public void setNet(Net net) {
+        this.net = net;
     }
 
     /**

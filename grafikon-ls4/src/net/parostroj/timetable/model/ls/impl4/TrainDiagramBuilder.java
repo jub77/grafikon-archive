@@ -39,7 +39,8 @@ public class TrainDiagramBuilder {
     }
     
     public void setNet(LSNet lsNet) {
-        Net net = this.diagram.getNet();
+        Net net = lsNet.createNet();
+        this.diagram.setNet(net);
         // add line classes
         if (lsNet.getLineClasses() != null)
             for (LSLineClass lsLineClass : lsNet.getLineClasses()) {

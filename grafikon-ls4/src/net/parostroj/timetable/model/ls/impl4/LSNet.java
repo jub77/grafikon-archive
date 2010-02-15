@@ -17,14 +17,16 @@ import net.parostroj.timetable.model.Node;
  * @author jub
  */
 @XmlRootElement(name = "net")
-@XmlType(propOrder = {"nodes", "lines", "lineClasses"})
+@XmlType(propOrder = {"id", "nodes", "lines", "lineClasses"})
 public class LSNet {
 
+    private String id;
     private List<LSNode> nodes;
     private List<LSLine> lines;
     private List<LSLineClass> lineClasses;
 
     public LSNet(Net net) {
+        this.id = net.getId();
         this.nodes = new LinkedList<LSNode>();
         for (Node node : net.getNodes()) {
             this.nodes.add(new LSNode(node));
@@ -68,7 +70,20 @@ public class LSNet {
         return lineClasses;
     }
 
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
     public void setLineClasses(List<LSLineClass> lineClasses) {
         this.lineClasses = lineClasses;
+    }
+
+    public Net createNet() {
+        Net net = new Net(getId());
+        return net;
     }
 }
