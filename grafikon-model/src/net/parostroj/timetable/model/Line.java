@@ -17,7 +17,7 @@ import net.parostroj.timetable.visitors.TrainDiagramVisitor;
  *
  * @author jub
  */
-public class Line implements RouteSegment, AttributesHolder {
+public class Line implements RouteSegment, AttributesHolder, ObjectWithId {
 
     /** Train diagram. */
     private final TrainDiagram diagram;
