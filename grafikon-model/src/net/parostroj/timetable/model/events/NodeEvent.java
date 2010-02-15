@@ -28,6 +28,10 @@ public class NodeEvent extends RouteSegmentEvent<Node, NodeTrack> {
         super(node, type, track);
     }
 
+    public NodeEvent(Node node, GTEventType type, NodeTrack track, int fromIndex, int toIndex) {
+        super(node, type, track, fromIndex, toIndex);
+    }
+
     public NodeEvent(Node node, GTEventType type, TimeInterval interval) {
         super(node, type, interval);
     }

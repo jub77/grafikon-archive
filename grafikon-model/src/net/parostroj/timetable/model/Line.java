@@ -155,6 +155,17 @@ public class Line implements RouteSegment, AttributesHolder {
         this.listenerSupport.fireEvent(new LineEvent(this, GTEventType.TRACK_REMOVED, track));
     }
 
+    public void moveTrack(LineTrack track, int position) {
+        int oldIndex = tracks.indexOf(track);
+        this.moveTrack(oldIndex, position);
+    }
+
+    public void moveTrack(int fromIndex, int toIndex) {
+        LineTrack track = tracks.remove(fromIndex);
+        tracks.add(toIndex, track);
+        this.listenerSupport.fireEvent(new LineEvent(this, GTEventType.TRACK_MOVED, track, fromIndex, toIndex));
+    }
+
     public void removeAllTracks() {
         for (LineTrack track : tracks) {
             track.line = null;
