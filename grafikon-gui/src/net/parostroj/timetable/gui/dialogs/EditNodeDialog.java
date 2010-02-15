@@ -26,9 +26,41 @@ import net.parostroj.timetable.utils.ResourceLoader;
  */
 public class EditNodeDialog extends javax.swing.JDialog {
 
+    class EditTrack {
+        public NodeTrack track;
+        public String number;
+        public Boolean platform;
+        public Boolean lineEnd;
+
+        public EditTrack(NodeTrack track) {
+            this.track = track;
+            this.number = track.getNumber();
+            this.platform = track.isPlatform();
+            this.lineEnd = Boolean.TRUE.equals(track.getAttribute("line.end"));
+        }
+
+        @Override
+        public String toString() {
+            return number;
+        }
+
+        /**
+         * writes changed values back to track.
+         */
+        private void writeValuesBack() {
+            if (!number.equals(track.getNumber()))
+                track.setNumber(number);
+            if (platform != track.isPlatform())
+                track.setPlatform(platform);
+            Boolean bool = Boolean.TRUE.equals(track.getAttribute("line.end"));
+            if (!Boolean.valueOf(lineEnd).equals(bool))
+                track.setAttribute("line.end", lineEnd);
+        }
+    }
+
     private static final Logger LOG = Logger.getLogger(EditNodeDialog.class.getName());
     private Node node;
-    private List<NodeTrack> removed;
+    private List<EditTrack> removed;
     private boolean modified;
 
     /** Creates new form EditNodeDialog */
@@ -56,18 +88,18 @@ public class EditNodeDialog extends javax.swing.JDialog {
         this.updateValues();
     }
 
-    private void updateSelectedTrack(NodeTrack track) {
+    private void updateSelectedTrack(EditTrack track) {
         boolean enabled = track != null;
         lineEndCheckBox.setEnabled(enabled);
         platformCheckBox.setEnabled(enabled);
         if (enabled) {
-            platformCheckBox.setSelected(track.isPlatform());
-            lineEndCheckBox.setSelected(Boolean.TRUE.equals(track.getAttribute("line.end")));
+            platformCheckBox.setSelected(track.platform);
+            lineEndCheckBox.setSelected(track.lineEnd);
         }
     }
 
     private void updateValues() {
-        removed = new LinkedList<NodeTrack>();
+        removed = new LinkedList<EditTrack>();
         nameTextField.setText(node.getName());
         abbrTextField.setText(node.getAbbr());
         typeComboBox.setSelectedItem(NodeTypeWrapper.getWrapper(node.getType()));
@@ -86,48 +118,67 @@ public class EditNodeDialog extends javax.swing.JDialog {
         // get node tracks
         DefaultListModel listModel = new DefaultListModel();
         for (NodeTrack track : node.getTracks()) {
-            listModel.addElement(track);
+            listModel.addElement(new EditTrack(track));
         }
-        nodeTrackList.setModel(listModel);
+        trackList.setModel(listModel);
     }
 
     private void writeValuesBack() {
         this.modified = true;
-        if (!"".equals(nameTextField.getText())) {
+        String newName = nameTextField.getText();
+        if (!"".equals(newName) && !newName.equals(node.getName())) {
             node.setName(nameTextField.getText());
         }
-        if (!"".equals(abbrTextField.getText())) {
+        String newAbbr = abbrTextField.getText();
+        if (!"".equals(newAbbr) && !newAbbr.equals(node.getAbbr())) {
             node.setAbbr(abbrTextField.getText());
         }
-        if (signalsCheckBox.isSelected()) {
-            node.setAttribute("interlocking.plant", "new.signals");
-        } else {
-            node.removeAttribute("interlocking.plant");
-        }
-        node.setType(((NodeTypeWrapper) typeComboBox.getSelectedItem()).getType());
-        node.setAttribute("control.station", controlCheckBox.isSelected());
-        node.setAttribute("trapezoid.sign", trapezoidCheckBox.isSelected());
+        boolean signalChanged = "new.signals".equals(node.getAttribute("interlocking.plant"));
+        if (signalChanged != signalsCheckBox.isSelected())
+            if (signalsCheckBox.isSelected()) {
+                node.setAttribute("interlocking.plant", "new.signals");
+            } else {
+                node.removeAttribute("interlocking.plant");
+            }
+        NodeType newType = ((NodeTypeWrapper) typeComboBox.getSelectedItem()).getType();
+        if (node.getType() != newType)
+            node.setType(newType);
+        Boolean bool = (Boolean) node.getAttribute("control.station");
+        if (bool == null || controlCheckBox.isSelected() != bool.booleanValue())
+            node.setAttribute("control.station", controlCheckBox.isSelected());
+        bool = (Boolean) node.getAttribute("trapezoid.sign");
+        if (bool == null || trapezoidCheckBox.isSelected() != bool.booleanValue())
+            node.setAttribute("trapezoid.sign", trapezoidCheckBox.isSelected());
 
         // length
         String lengthStr = lengthTextField.getText().trim();
-        node.removeAttribute("length");
         if (!"".equals(lengthStr)) {
             try {
                 Integer length = Integer.valueOf(lengthStr);
-                node.setAttribute("length", length);
+                Integer oldLength = (Integer) node.getAttribute("length");
+                if (!length.equals(oldLength))
+                    node.setAttribute("length", length);
             } catch (NumberFormatException e) {
                 LOG.warning("Cannot convert length to integer: " + lengthStr);
             }
+        } else {
+            node.removeAttribute("length");
         }
 
-        // wipe out all previous tracks
-        node.removeAllTracks();
-
-        // write node tracks back
-        ListModel m = nodeTrackList.getModel();
+        // remove removed tracks
+        for (EditTrack ret : removed) {
+            if (node.getTracks().contains(ret.track))
+                node.removeTrack(ret.track);
+        }
+        // add/modify new/existing
+        ListModel m = trackList.getModel();
         for (int i = 0; i < m.getSize(); i++) {
-            NodeTrack t = (NodeTrack) m.getElementAt(i);
-            node.addTrack(t);
+            EditTrack t = (EditTrack) m.getElementAt(i);
+            // modify value
+            t.writeValuesBack();
+            // add new track
+            if (!node.getTracks().contains(t.track))
+                node.addTrack(t.track);
         }
     }
 
@@ -148,10 +199,10 @@ public class EditNodeDialog extends javax.swing.JDialog {
         signalsCheckBox = new javax.swing.JCheckBox();
         controlCheckBox = new javax.swing.JCheckBox();
         scrollPane = new javax.swing.JScrollPane();
-        nodeTrackList = new javax.swing.JList();
-        newNodeTrackButton = new javax.swing.JButton();
-        renameNodeTrackButton = new javax.swing.JButton();
-        deleteNodeTrackButton = new javax.swing.JButton();
+        trackList = new javax.swing.JList();
+        newTrackButton = new javax.swing.JButton();
+        renameTrackButton = new javax.swing.JButton();
+        deleteTrackButton = new javax.swing.JButton();
         okButton = new javax.swing.JButton();
         cancelButton = new javax.swing.JButton();
         trapezoidCheckBox = new javax.swing.JCheckBox();
@@ -180,32 +231,32 @@ public class EditNodeDialog extends javax.swing.JDialog {
 
         controlCheckBox.setText(ResourceLoader.getString("ne.control.station")); // NOI18N
 
-        nodeTrackList.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
-        nodeTrackList.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
+        trackList.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        trackList.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
             public void valueChanged(javax.swing.event.ListSelectionEvent evt) {
-                nodeTrackListValueChanged(evt);
+                trackListValueChanged(evt);
             }
         });
-        scrollPane.setViewportView(nodeTrackList);
+        scrollPane.setViewportView(trackList);
 
-        newNodeTrackButton.setText(ResourceLoader.getString("button.new")); // NOI18N
-        newNodeTrackButton.addActionListener(new java.awt.event.ActionListener() {
+        newTrackButton.setText(ResourceLoader.getString("button.new")); // NOI18N
+        newTrackButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                newNodeTrackButtonActionPerformed(evt);
-            }
-        });
-
-        renameNodeTrackButton.setText(ResourceLoader.getString("button.rename")); // NOI18N
-        renameNodeTrackButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                renameNodeTrackButtonActionPerformed(evt);
+                newTrackButtonActionPerformed(evt);
             }
         });
 
-        deleteNodeTrackButton.setText(ResourceLoader.getString("button.delete")); // NOI18N
-        deleteNodeTrackButton.addActionListener(new java.awt.event.ActionListener() {
+        renameTrackButton.setText(ResourceLoader.getString("button.rename")); // NOI18N
+        renameTrackButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                deleteNodeTrackButtonActionPerformed(evt);
+                renameTrackButtonActionPerformed(evt);
+            }
+        });
+
+        deleteTrackButton.setText(ResourceLoader.getString("button.delete")); // NOI18N
+        deleteTrackButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                deleteTrackButtonActionPerformed(evt);
             }
         });
 
@@ -257,11 +308,11 @@ public class EditNodeDialog extends javax.swing.JDialog {
                     .addComponent(scrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 305, Short.MAX_VALUE)
                     .addComponent(trapezoidCheckBox)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(newNodeTrackButton, javax.swing.GroupLayout.DEFAULT_SIZE, 94, Short.MAX_VALUE)
+                        .addComponent(newTrackButton, javax.swing.GroupLayout.PREFERRED_SIZE, 94, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(renameNodeTrackButton, javax.swing.GroupLayout.DEFAULT_SIZE, 112, Short.MAX_VALUE)
+                        .addComponent(renameTrackButton, javax.swing.GroupLayout.PREFERRED_SIZE, 112, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(deleteNodeTrackButton, javax.swing.GroupLayout.DEFAULT_SIZE, 87, Short.MAX_VALUE))
+                        .addComponent(deleteTrackButton, javax.swing.GroupLayout.PREFERRED_SIZE, 87, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addComponent(okButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -317,9 +368,9 @@ public class EditNodeDialog extends javax.swing.JDialog {
                     .addComponent(lineEndCheckBox))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(newNodeTrackButton)
-                    .addComponent(renameNodeTrackButton)
-                    .addComponent(deleteNodeTrackButton))
+                    .addComponent(newTrackButton)
+                    .addComponent(renameTrackButton)
+                    .addComponent(deleteTrackButton))
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(cancelButton)
@@ -339,96 +390,96 @@ public class EditNodeDialog extends javax.swing.JDialog {
         this.setVisible(false);
     }//GEN-LAST:event_cancelButtonActionPerformed
 
-    private void newNodeTrackButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newNodeTrackButtonActionPerformed
+    private void newTrackButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newTrackButtonActionPerformed
         String name = JOptionPane.showInputDialog(this, "");
         if (name != null && !name.equals("")) {
             NodeTrack track = new NodeTrack(IdGenerator.getInstance().getId(), name);
             track.setPlatform(true);
-            ((DefaultListModel) nodeTrackList.getModel()).addElement(track);
+            ((DefaultListModel) trackList.getModel()).addElement(new EditTrack(track));
         }
-    }//GEN-LAST:event_newNodeTrackButtonActionPerformed
+    }//GEN-LAST:event_newTrackButtonActionPerformed
 
-    private void renameNodeTrackButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_renameNodeTrackButtonActionPerformed
-        if (!nodeTrackList.isSelectionEmpty()) {
-            NodeTrack track = (NodeTrack) nodeTrackList.getSelectedValue();
-            String name = JOptionPane.showInputDialog(this, "", track.getNumber());
+    private void renameTrackButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_renameTrackButtonActionPerformed
+        if (!trackList.isSelectionEmpty()) {
+            EditTrack track = (EditTrack) trackList.getSelectedValue();
+            String name = JOptionPane.showInputDialog(this, "", track.number);
             if (name != null && !name.equals("")) {
-                track.setNumber(name);
+                track.number = name;
             }
-            nodeTrackList.repaint();
+            trackList.repaint();
         }
-    }//GEN-LAST:event_renameNodeTrackButtonActionPerformed
+    }//GEN-LAST:event_renameTrackButtonActionPerformed
 
-    private void deleteNodeTrackButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteNodeTrackButtonActionPerformed
+    private void deleteTrackButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteTrackButtonActionPerformed
         // removing
-        if (!nodeTrackList.isSelectionEmpty()) {
-            NodeTrack track = (NodeTrack) nodeTrackList.getSelectedValue();
+        if (!trackList.isSelectionEmpty()) {
+            EditTrack track = (EditTrack) trackList.getSelectedValue();
             // test node track
-            if (!track.isEmpty() || nodeTrackList.getModel().getSize() == 1) {
+            if (!track.track.isEmpty() || trackList.getModel().getSize() == 1) {
                 JOptionPane.showMessageDialog(this, ResourceLoader.getString("nl.error.notempty"), null, JOptionPane.ERROR_MESSAGE);
             } else {
-                ((DefaultListModel) nodeTrackList.getModel()).removeElement(track);
+                ((DefaultListModel) trackList.getModel()).removeElement(track);
                 // add to removed
                 removed.add(track);
             }
         }
-    }//GEN-LAST:event_deleteNodeTrackButtonActionPerformed
+    }//GEN-LAST:event_deleteTrackButtonActionPerformed
     private NodeTypeWrapper lastSelectedType;
 
     private void typeComboBoxItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_typeComboBoxItemStateChanged
         if (evt.getStateChange() == ItemEvent.SELECTED) {
             // selected ... (SIGNAL is allowed only if there is only one track)
             if (((NodeTypeWrapper) typeComboBox.getSelectedItem()).getType() == NodeType.SIGNAL) {
-                if (nodeTrackList.getModel().getSize() != 1) {
+                if (trackList.getModel().getSize() != 1) {
                     typeComboBox.setSelectedItem(lastSelectedType);
                 }
             }
 
             boolean signal = (((NodeTypeWrapper) typeComboBox.getSelectedItem()).getType() == NodeType.SIGNAL);
-            newNodeTrackButton.setEnabled(!signal);
-            renameNodeTrackButton.setEnabled(!signal);
-            deleteNodeTrackButton.setEnabled(!signal);
+            newTrackButton.setEnabled(!signal);
+            renameTrackButton.setEnabled(!signal);
+            deleteTrackButton.setEnabled(!signal);
         } else if (evt.getStateChange() == ItemEvent.DESELECTED) {
             lastSelectedType = (NodeTypeWrapper) evt.getItem();
         }
     }//GEN-LAST:event_typeComboBoxItemStateChanged
 
-    private void nodeTrackListValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_nodeTrackListValueChanged
+    private void trackListValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_trackListValueChanged
         if (!evt.getValueIsAdjusting()) {
-            NodeTrack selected = (NodeTrack) nodeTrackList.getSelectedValue();
+            EditTrack selected = (EditTrack) trackList.getSelectedValue();
             this.updateSelectedTrack(selected);
         }
-    }//GEN-LAST:event_nodeTrackListValueChanged
+    }//GEN-LAST:event_trackListValueChanged
 
     private void platformCheckBoxItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_platformCheckBoxItemStateChanged
-        NodeTrack selected = (NodeTrack)nodeTrackList.getSelectedValue();
+        EditTrack selected = (EditTrack)trackList.getSelectedValue();
         if ((evt.getStateChange() == ItemEvent.SELECTED || evt.getStateChange() == ItemEvent.DESELECTED) && selected != null) {
-            selected.setPlatform(platformCheckBox.isSelected());
+            selected.platform = platformCheckBox.isSelected();
         }
     }//GEN-LAST:event_platformCheckBoxItemStateChanged
 
     private void lineEndCheckBoxItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_lineEndCheckBoxItemStateChanged
-        NodeTrack selected = (NodeTrack) nodeTrackList.getSelectedValue();
+        EditTrack selected = (EditTrack) trackList.getSelectedValue();
         if ((evt.getStateChange() == ItemEvent.SELECTED || evt.getStateChange() == ItemEvent.DESELECTED) && selected != null) {
-            selected.setAttribute("line.end", lineEndCheckBox.isSelected());
+            selected.lineEnd = lineEndCheckBox.isSelected();
         }
     }//GEN-LAST:event_lineEndCheckBoxItemStateChanged
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTextField abbrTextField;
     private javax.swing.JButton cancelButton;
     private javax.swing.JCheckBox controlCheckBox;
-    private javax.swing.JButton deleteNodeTrackButton;
+    private javax.swing.JButton deleteTrackButton;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JTextField lengthTextField;
     private javax.swing.JCheckBox lineEndCheckBox;
     private javax.swing.JTextField nameTextField;
-    private javax.swing.JButton newNodeTrackButton;
-    private javax.swing.JList nodeTrackList;
+    private javax.swing.JButton newTrackButton;
     private javax.swing.JButton okButton;
     private javax.swing.JCheckBox platformCheckBox;
-    private javax.swing.JButton renameNodeTrackButton;
+    private javax.swing.JButton renameTrackButton;
     private javax.swing.JScrollPane scrollPane;
     private javax.swing.JCheckBox signalsCheckBox;
+    private javax.swing.JList trackList;
     private javax.swing.JCheckBox trapezoidCheckBox;
     private javax.swing.JComboBox typeComboBox;
     // End of variables declaration//GEN-END:variables
