@@ -11,7 +11,7 @@ import net.parostroj.timetable.utils.Pair;
 
 /**
  * Helper actions for trains.
- * 
+ *
  * @author jub
  */
 public class TrainsHelper {
@@ -76,12 +76,12 @@ public class TrainsHelper {
     }
 
     /**
-     * returns weight and train's cycle item for specified time interval based
+     * returns weight and train cycle item for specified time interval based
      * on line and engine class. It returns <code>null</code> if the weight is
      * not specified.
      *
      * @param interval time interval
-     * @return weight and train's cycle item
+     * @return weight and train cycle item
      */
     public static final Pair<Integer, TrainsCycleItem> getWeightAndCycle(TimeInterval interval) {
         if (!interval.isLineOwner()) {
@@ -100,7 +100,7 @@ public class TrainsHelper {
      * converts weight to length based on conversion ratio and state of the train empty/loaded.
      *
      * @param train train
-     * @param diagram trains' diagram
+     * @param diagram trains diagram
      * @param weight weight
      * @return length
      */
@@ -119,11 +119,11 @@ public class TrainsHelper {
     }
 
     /**
-     * returns engine class and train's cycle item for time interval. It returns
+     * returns engine class and train cycle item for time interval. It returns
      * <code>null</code> if the engine cycle is not specified.
      *
      * @param interval time interval
-     * @return engine class and train's cycle item
+     * @return engine class and train cycle item
      */
     public static final Pair<EngineClass, TrainsCycleItem> getEngineClassAndCycle(TimeInterval interval) {
         Train train = interval.getTrain();
@@ -152,7 +152,7 @@ public class TrainsHelper {
     /**
      * return list with weights for the train. It returns <code>null</code> if
      * the weight is not specified for all parts.
-     * 
+     *
      * @param train train
      * @return list with weights
      */
@@ -173,7 +173,7 @@ public class TrainsHelper {
                 }
             }
         }
-        
+
         return result;
     }
 
@@ -182,7 +182,7 @@ public class TrainsHelper {
      * specified for all parts of the route of the train.
      *
      * @param train train
-     * @param diagram trains' diagram
+     * @param diagram trains diagram
      * @return list of lengths
      */
     public static final List<Pair<TimeInterval, Pair<Integer, TrainsCycleItem>>> getLengthList(Train train, TrainDiagram diagram) {
@@ -195,7 +195,7 @@ public class TrainsHelper {
      * converts weights to lengths in the list.
      *
      * @param list list of weights
-     * @param diagram trains' diagram
+     * @param diagram trains diagram
      */
     public static final void convertWeightToLength(List<Pair<TimeInterval, Pair<Integer, TrainsCycleItem>>> list, TrainDiagram diagram) {
         for (Pair<TimeInterval, Pair<Integer, TrainsCycleItem>> pair : list) {

@@ -1,7 +1,7 @@
 package net.parostroj.timetable.model.events;
 
 /**
- * The information about attribute's value change.
+ * The information about attribute value change.
  *
  * @author jub
  */

@@ -30,14 +30,14 @@ public class TimeIntervalList extends ArrayList<TimeInterval> {
         }
         return null;
     }
-    
+
     public TimeInterval getIntervalBefore(TimeInterval i) {
         int ind = this.indexOf(i);
         if (ind < 1)
             return null;
         return this.get(ind - 1);
     }
-    
+
     public TimeInterval getIntervalAfter(TimeInterval i) {
         int ind = this.indexOf(i);
         if (ind == -1 || ind > (this.size() - 2))
@@ -53,12 +53,12 @@ public class TimeIntervalList extends ArrayList<TimeInterval> {
     public void addIntervalForRouteSegment(TimeInterval interval) {
         // update overlapping intervals
         interval.setOverlappingIntervals(this.testIntervalForRouteSegmentOI(interval).getOverlappingIntervals());
-        
+
         // update overlapping intervals in corresponding time intervals
         for (TimeInterval item : interval.getOverlappingIntervals()) {
             item.getOverlappingIntervals().add(interval);
         }
-        
+
         int i = 0;
         for (TimeInterval item : this) {
             if (item.compareOpenNormalized(interval) == -1) {
@@ -87,7 +87,7 @@ public class TimeIntervalList extends ArrayList<TimeInterval> {
         }
         this.add(interval);
     }
-    
+
     public void addIntervalByNormalizedStartTime(TimeInterval interval) {
         int i = 0;
         for (TimeInterval item : this) {
@@ -124,7 +124,7 @@ public class TimeIntervalList extends ArrayList<TimeInterval> {
                 break;
             }
         }
-        
+
         // remove itself from other time intervals (overlapping)
         for (TimeInterval item : interval.getOverlappingIntervals()) {
             item.getOverlappingIntervals().remove(interval);
@@ -168,21 +168,21 @@ public class TimeIntervalList extends ArrayList<TimeInterval> {
 
         return new TimeIntervalResult(status, overlaps);
     }
-    
+
     /**
      * shifts the whole list of time intervals. Can be used only for train time
      * interval list.
-     * 
+     *
      * @param timeShift amount of time to be shifted
      */
     public void shift(int timeShift) {
         this.shiftFrom(0, timeShift);
     }
-    
+
     /**
-     * moves the whole list to specified starting point. Can be used only for train's time
+     * moves the whole list to specified starting point. Can be used only for train time
      * interval list.
-     * 
+     *
      * @param time new starting time
      */
     public void move(int time) {

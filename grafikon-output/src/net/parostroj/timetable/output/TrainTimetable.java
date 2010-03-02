@@ -1,6 +1,6 @@
 /*
  * TrainTimetable.java
- * 
+ *
  * Created on 8.9.2007, 16:30:05
  */
 package net.parostroj.timetable.output;
@@ -14,7 +14,7 @@ import net.parostroj.timetable.utils.*;
 
 /**
  * Time table for train.
- * 
+ *
  * @author jub
  */
 public class TrainTimetable {
@@ -54,12 +54,12 @@ public class TrainTimetable {
         length = templates.getTimetableFooterHeight() + templates.getTimetableHeaderHeight();
         length += templates.getTimetableLineHeight() * ((train.getTimeIntervalList().size() / 2) + 1);
         length += templates.getTimetableHeaderWeightLineHeight() * weightRows.getData().size();
-        
+
         // route
         if (train.getAttribute("route.info") != null && !((String)train.getAttribute("route.info")).trim().equals(""))
             length += templates.getTimetableHeaderRouteHeight();
 
-        // train's length information
+        // train length information
         if (lengthStr != null)
             length += templates.getTimetableHeaderRouteHeight();
 
@@ -221,7 +221,7 @@ public class TrainTimetable {
                     trapezoid = true;
                 }
             }
-            
+
             String lineClassStr = "&nbsp;";
             LineClass currentLineClass = lineInterval != null ? (LineClass) lineInterval.getOwnerAsLine().getAttribute("line.class") : null;
             if (lastLineClass != currentLineClass && currentLineClass != null) {
@@ -289,7 +289,7 @@ public class TrainTimetable {
             }
         }
     }
-    
+
     private void writeHeader(Formatter formatter) {
         List<TrainEWDataRow> rows = weightRows.getData();
         String weightRowTemplate = d3 ? templates.getTimetableHeaderWeightLineD3() : templates.getTimetableHeaderWeightLine();
@@ -360,7 +360,7 @@ public class TrainTimetable {
     private String createOneWeightLineOneCell(String weight) {
         return String.format(templates.getTimetableHeaderWeightLineOneCell(), weight);
     }
-    
+
     private String convertLastRunningTime(int time) {
         if (time != 0) {
             return TimeConverter.convertAllMinutesToText(time);

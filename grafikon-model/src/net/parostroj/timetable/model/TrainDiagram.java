@@ -34,7 +34,7 @@ public class TrainDiagram implements AttributesHolder, ObjectWithId {
     private List<TrainType> trainTypes;
     /** Attributes. */
     private Attributes attributes;
-    /** Trains' data. */
+    /** Trains data. */
     private TrainsData trainsData;
     /** List of engine classes. */
     private List<EngineClass> engineClasses;
@@ -170,7 +170,7 @@ public class TrainDiagram implements AttributesHolder, ObjectWithId {
         this.getCyclesIntern(cycle.getType()).remove(cycle);
         cycle.removeListener(listener);
     }
-    
+
     public TrainsCycle getCycleById(String id) {
         for (Map.Entry<TrainsCycleType, List<TrainsCycle>> entry : cycles.entrySet()) {
             for (TrainsCycle cycle : entry.getValue()) {
@@ -180,7 +180,7 @@ public class TrainDiagram implements AttributesHolder, ObjectWithId {
         }
         return null;
     }
-    
+
     public TrainsCycle getCycleByIdAndType(String id, TrainsCycleType type) {
         for (TrainsCycle cycle : getCyclesIntern(type)) {
             if (cycle.getId().equals(id))
@@ -292,7 +292,7 @@ public class TrainDiagram implements AttributesHolder, ObjectWithId {
     public void removeEngineClass(EngineClass engineClass) {
         engineClasses.remove(engineClass);
     }
-    
+
     public EngineClass getEngineClassById(String id) {
         for (EngineClass ec : engineClasses) {
             if (ec.getId().equals(id))
@@ -321,28 +321,28 @@ public class TrainDiagram implements AttributesHolder, ObjectWithId {
     public String getId() {
         return id;
     }
-    
+
     public void addListener(TrainDiagramListener listener) {
         listenerSupport.addListener(listener);
     }
-    
+
     public void removeListener(TrainDiagramListener listener) {
         listenerSupport.removeListener(listener);
     }
-    
+
     public void addListenerWithNested(TrainDiagramListenerWithNested listener) {
         listenerSupportAll.addListener(listener);
     }
-    
+
     public void removeListenerWithNested(TrainDiagramListenerWithNested listener) {
         listenerSupportAll.removeListener(listener);
     }
-    
+
     protected void fireNestedEvent(GTEvent<?> nestedEvent) {
         TrainDiagramEvent event = new TrainDiagramEvent(this, nestedEvent);
         this.fireEvent(event);
     }
-    
+
     protected void fireEvent(TrainDiagramEvent e) {
         listenerSupportAll.fireEvent(e);
         if (e.getNestedEvent() == null) {
@@ -355,7 +355,7 @@ public class TrainDiagram implements AttributesHolder, ObjectWithId {
     /**
      * creates new train.
      *
-     * @param id train's id
+     * @param id train id
      * @return a new train
      */
     public Train createTrain(String id) {
@@ -365,7 +365,7 @@ public class TrainDiagram implements AttributesHolder, ObjectWithId {
     /**
      * create new line.
      *
-     * @param id line's id
+     * @param id line id
      * @param length length
      * @param from from node
      * @param to to node

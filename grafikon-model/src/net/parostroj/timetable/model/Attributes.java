@@ -3,8 +3,8 @@ package net.parostroj.timetable.model;
 import java.util.HashMap;
 
 /**
- * Class for attributes (train's or node's).
- * 
+ * Class for attributes (train or node).
+ *
  * @author jub
  */
 public class Attributes extends HashMap<String, Object> {
@@ -17,7 +17,7 @@ public class Attributes extends HashMap<String, Object> {
 
     /**
      * Copy constructor (shallow copy).
-     * 
+     *
      * @param attributes copied attributes
      */
     public Attributes(Attributes attributes) {

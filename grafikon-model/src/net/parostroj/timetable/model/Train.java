@@ -50,7 +50,7 @@ public class Train implements AttributesHolder, ObjectWithId {
 
     /**
      * Constructor.
-     * 
+     *
      * @param id id
      * @param diagram train diagram
      */
@@ -211,7 +211,7 @@ public class Train implements AttributesHolder, ObjectWithId {
     }
 
     /**
-     * @return map with trains' cycle items
+     * @return map with trains cycle items
      */
     public Map<TrainsCycleType, List<TrainsCycleItem>> getCyclesMap() {
         EnumMap<TrainsCycleType, List<TrainsCycleItem>> modMap = new EnumMap<TrainsCycleType, List<TrainsCycleItem>>(TrainsCycleType.class);
@@ -223,7 +223,7 @@ public class Train implements AttributesHolder, ObjectWithId {
 
     /**
      * @param type type of the cycles
-     * @return list with trains' cycle items of specified type (list cannot be modified)
+     * @return list with trains cycle items of specified type (list cannot be modified)
      */
     public List<TrainsCycleItem> getCycles(TrainsCycleType type) {
         return Collections.unmodifiableList(this.getCyclesIntern(type));
@@ -231,7 +231,7 @@ public class Train implements AttributesHolder, ObjectWithId {
 
     /**
      * @param type type of the cycles
-     * @return list with trains' cycle items - for internal use only, the list can be modified
+     * @return list with trains cycle items - for internal use only, the list can be modified
      */
     private List<TrainsCycleItem> getCyclesIntern(TrainsCycleType type) {
         if (!cycles.containsKey(type)) {
@@ -241,7 +241,7 @@ public class Train implements AttributesHolder, ObjectWithId {
     }
 
     /**
-     * @param item train's cycle item to be added
+     * @param item train cycle item to be added
      */
     protected void addCycleItem(TrainsCycleItem item) {
         TrainsCycleType cycleType = item.getCycle().getType();
@@ -250,7 +250,7 @@ public class Train implements AttributesHolder, ObjectWithId {
     }
 
     /**
-     * @param item train's cycle item to be removed
+     * @param item train cycle item to be removed
      */
     protected void removeCycleItem(TrainsCycleItem item) {
         TrainsCycleType cycleType = item.getCycle().getType();
@@ -259,9 +259,9 @@ public class Train implements AttributesHolder, ObjectWithId {
     }
 
     /**
-     * @param type trains' cycle type
+     * @param type trains cycle type
      * @param interval time interval
-     * @return train's cycle item that covers given interval (if there are more than one interval,
+     * @return train cycle item that covers given interval (if there are more than one interval,
      * it returns the first one)
      */
     public TrainsCycleItem getCycleItemForInterval(TrainsCycleType type, TimeInterval interval) {
@@ -375,7 +375,7 @@ public class Train implements AttributesHolder, ObjectWithId {
 
     /**
      * returns first node of the train timetable.
-     * 
+     *
      * @return first node
      */
     public Node getStartNode() {
@@ -384,7 +384,7 @@ public class Train implements AttributesHolder, ObjectWithId {
 
     /**
      * returns last node of the train.
-     * 
+     *
      * @return last node
      */
     public Node getEndNode() {
@@ -393,7 +393,7 @@ public class Train implements AttributesHolder, ObjectWithId {
 
     /**
      * returns start time of the train.
-     * 
+     *
      * @return start time
      */
     public int getStartTime() {
@@ -402,7 +402,7 @@ public class Train implements AttributesHolder, ObjectWithId {
 
     /**
      * returns end time of the train.
-     * 
+     *
      * @return end time
      */
     public int getEndTime() {
@@ -410,7 +410,7 @@ public class Train implements AttributesHolder, ObjectWithId {
     }
 
     /**
-     * @param length technological time before train's start
+     * @param length technological time before train start
      */
     public void setTimeBefore(int length) {
         boolean fireEvent = true;
@@ -441,7 +441,7 @@ public class Train implements AttributesHolder, ObjectWithId {
     }
 
     /**
-     * @param length technological time after train's end
+     * @param length technological time after train end
      */
     public void setTimeAfter(int length) {
         boolean fireEvent = true;
@@ -472,28 +472,28 @@ public class Train implements AttributesHolder, ObjectWithId {
     }
 
     /**
-     * @return technological time before train's start
+     * @return technological time before train start
      */
     public int getTimeBefore() {
         return (timeBefore == null) ? 0 : timeBefore.getLength() + 1;
     }
 
     /**
-     * @return technological time after train's end
+     * @return technological time after train end
      */
     public int getTimeAfter() {
         return (timeAfter == null) ? 0 : timeAfter.getLength() + 1;
     }
 
     /**
-     * @return technological time interval before train's start
+     * @return technological time interval before train start
      */
     public TimeInterval getTimeIntervalBefore() {
         return timeBefore;
     }
 
     /**
-     * @return technological time interval after train's end
+     * @return technological time interval after train end
      */
     public TimeInterval getTimeIntervalAfter() {
         return timeAfter;
@@ -518,7 +518,7 @@ public class Train implements AttributesHolder, ObjectWithId {
     /**
      * shifts train with specified amount of time. The value can be
      * positive for shifting forwards or negative for shifting backwards.
-     * 
+     *
      * @param timeShift time
      */
     public void shift(int timeShift) {
@@ -531,7 +531,7 @@ public class Train implements AttributesHolder, ObjectWithId {
 
     /**
      * moves train to the new starting time.
-     * 
+     *
      * @param time starting time
      */
     public void move(int time) {
@@ -544,7 +544,7 @@ public class Train implements AttributesHolder, ObjectWithId {
 
     /**
      * changes time for stop for specified node.
-     * 
+     *
      * @param nodeInterval node interval
      * @param length length of the stop
      * @param info model info
@@ -592,7 +592,7 @@ public class Train implements AttributesHolder, ObjectWithId {
 
     /**
      * changes velocity of the train on the specified line.
-     * 
+     *
      * @param lineInterval line interval
      * @param speed velocity to be set
      * @param modelInfo model info
@@ -642,7 +642,7 @@ public class Train implements AttributesHolder, ObjectWithId {
 
     /**
      * changes node track.
-     * 
+     *
      * @param nodeInterval node interval
      * @param nodeTrack node track to be changed
      */
@@ -661,7 +661,7 @@ public class Train implements AttributesHolder, ObjectWithId {
 
     /**
      * changes line track.
-     * 
+     *
      * @param lineInterval line interval
      * @param lineTrack line track to be changed
      */
@@ -677,7 +677,7 @@ public class Train implements AttributesHolder, ObjectWithId {
 
     /**
      * Recalculates all line intervals.
-     * 
+     *
      * @param info model info
      */
     public void recalculate() {
@@ -705,7 +705,7 @@ public class Train implements AttributesHolder, ObjectWithId {
 
     /**
      * adds interval to the train.
-     * 
+     *
      * @param interval interval
      */
     public void addInterval(TimeInterval interval) {
@@ -754,7 +754,7 @@ public class Train implements AttributesHolder, ObjectWithId {
 
     /**
      * checks if all lines have given attribute.
-     * 
+     *
      * @param key key
      * @param value value
      * @return result of the check
@@ -772,7 +772,7 @@ public class Train implements AttributesHolder, ObjectWithId {
 
     /**
      * checks if all nodes have given attribute.
-     * 
+     *
      * @param key key
      * @param value value
      * @return result of the check
@@ -790,7 +790,7 @@ public class Train implements AttributesHolder, ObjectWithId {
 
     /**
      * checks if at least one line has given attribute.
-     * 
+     *
      * @param key key
      * @param value value
      * @return result of the check
@@ -808,7 +808,7 @@ public class Train implements AttributesHolder, ObjectWithId {
 
     /**
      * checks if at least one node has given attribute.
-     * 
+     *
      * @param key key
      * @param value value
      * @return result of the check
@@ -856,29 +856,29 @@ public class Train implements AttributesHolder, ObjectWithId {
             timeAfter.removeFromOwner();
         attached = false;
     }
-    
+
     /**
      * fires given train event for this train.
-     * 
+     *
      * @param event train event
      */
     void fireEvent(TrainEvent event) {
         listenerSupport.fireEvent(event);
     }
-    
+
     /**
      * returns if the train is covered by this type of the trains cycle.
-     * 
+     *
      * @param type trains cycle type
      * @return covered
      */
     public boolean isCovered(TrainsCycleType type) {
         return TrainsCycleHelper.getHelper().isTimeIntervalListCovered(this.getTimeIntervalList(), this.getCyclesIntern(type));
     }
-    
+
     /**
-     * returns if the train's interval is covered by this type of the trains cycle.
-     * 
+     * returns if the train interval is covered by this type of the trains cycle.
+     *
      * @param type trains cycle type
      * @param interval time interval
      * @return covered
@@ -897,10 +897,10 @@ public class Train implements AttributesHolder, ObjectWithId {
     public boolean isCovered(TrainsCycle cycle, TimeInterval interval) {
         return TrainsCycleHelper.getHelper().isTimeIntervalCovered(this.getTimeIntervalList(), cycle.getItems(), interval);
     }
-    
+
     /**
      * returns pair of nodes that indicates first uncovered interval.
-     * 
+     *
      * @param type trains cycle type
      * @return interval
      */
@@ -908,20 +908,20 @@ public class Train implements AttributesHolder, ObjectWithId {
         List<Tuple<TimeInterval>> tuples = TrainsCycleHelper.getHelper().getAllUncoveredParts(this.getTimeIntervalList(), this.getCyclesIntern(type));
         return tuples.size() == 0 ? null : tuples.get(0);
     }
-    
+
     /**
      * returns all uncovered parts.
-     * 
+     *
      * @param type trains cycle type
      * @return list of intervals
      */
     public List<Tuple<TimeInterval>> getAllUncoveredParts(TrainsCycleType type) {
         return TrainsCycleHelper.getHelper().getAllUncoveredParts(this.getTimeIntervalList(), this.getCyclesIntern(type));
     }
-    
+
     /**
      * returns all uncovered parts (as list of nodes).
-     * 
+     *
      * @param type trains cycle type
      * @return list of intervals (as list of nodes)
      */
@@ -938,10 +938,10 @@ public class Train implements AttributesHolder, ObjectWithId {
     public List<Pair<TimeInterval, Boolean>> getRouteCoverage(TrainsCycleType type) {
         return TrainsCycleHelper.getHelper().getTimeIntervalListCoverage(this.getTimeIntervalList(), this.getCyclesIntern(type));
     }
-    
+
     /**
      * returns list of nodes from from noded to to node.
-     * 
+     *
      * @param from from node
      * @param to to node
      * @return list of nodes in route

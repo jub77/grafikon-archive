@@ -27,17 +27,11 @@ import net.parostroj.timetable.utils.Tuple;
 public class EditLineDialog extends javax.swing.JDialog {
     
     private static final Logger LOGGER = Logger.getLogger(EditLineDialog.class.getName());
-    
     private ApplicationModel model;
-    
     private Line line;
-    
     private Map<LineTrack,Tuple<NodeTrack>> connections = new HashMap<LineTrack, Tuple<NodeTrack>>();
-    
     private static final NodeTrack noneTrack = new NodeTrack(null, ResourceLoader.getString("node.track.none"));
-    
     private boolean modified;
-    
     private static final LineClass noneLineClass = new LineClass(null, ResourceLoader.getString("line.class.none"));
     
     /** Creates new form EditLineDialog */

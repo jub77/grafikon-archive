@@ -1,8 +1,8 @@
 package net.parostroj.timetable.model;
 
 /**
- * Data about trains' names creation a sorting, computing of times.
- * 
+ * Data about trains names creation a sorting, computing of times.
+ *
  * @author jub
  */
 public class TrainsData {

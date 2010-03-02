@@ -35,7 +35,7 @@ public class TrainType implements ObjectWithId {
 
     /**
      * creates instance.
-     * 
+     *
      * @param id id
      */
     TrainType(String id, TrainDiagram diagram) {
@@ -143,14 +143,14 @@ public class TrainType implements ObjectWithId {
     }
 
     /**
-     * @return train's name template
+     * @return train name template
      */
     public TextTemplate getTrainNameTemplate() {
         return trainNameTemplate;
     }
 
     /**
-     * @param trainNameTemplate sets train's name template
+     * @param trainNameTemplate sets train name template
      */
     public void setTrainNameTemplate(TextTemplate trainNameTemplate) {
         TextTemplate oldTemplate = this.trainNameTemplate;
@@ -159,14 +159,14 @@ public class TrainType implements ObjectWithId {
     }
 
     /**
-     * @return train's complete name template
+     * @return train complete name template
      */
     public TextTemplate getTrainCompleteNameTemplate() {
         return trainCompleteNameTemplate;
     }
 
     /**
-     * @param trainCompleteNameTemplate sets template with complete train's name
+     * @param trainCompleteNameTemplate sets template with complete train name
      */
     public void setTrainCompleteNameTemplate(TextTemplate trainCompleteNameTemplate) {
         TextTemplate oldTemplate = this.trainCompleteNameTemplate;
@@ -175,10 +175,10 @@ public class TrainType implements ObjectWithId {
     }
 
     /**
-     * formats the train's name according to template.
-     * 
+     * formats the train name according to template.
+     *
      * @param train train
-     * @return formatted train's name
+     * @return formatted train name
      */
     public String formatTrainName(Train train) {
         TextTemplate template = (trainNameTemplate == null) ?
@@ -188,10 +188,10 @@ public class TrainType implements ObjectWithId {
     }
 
     /**
-     * formats the train's complete name according to template.
-     * 
+     * formats the train complete name according to template.
+     *
      * @param train train
-     * @return formatted complete train's name
+     * @return formatted complete train name
      */
     public String formatTrainCompleteName(Train train) {
         TextTemplate template = (trainCompleteNameTemplate == null) ?
@@ -199,7 +199,7 @@ public class TrainType implements ObjectWithId {
             trainCompleteNameTemplate;
         return template.evaluate(train, train.createTemplateBinding());
     }
-    
+
     /**
      * adds listener to train.
      * @param listener listener

@@ -18,25 +18,25 @@ import net.parostroj.timetable.utils.ResourceLoader;
 
 /**
  * View of train details.
- * 
+ *
  * @author  jub
  */
 public class TrainView extends javax.swing.JPanel implements ApplicationModelListener, StorableGuiData {
 
     private static final Logger LOG = Logger.getLogger(TrainView.class.getName());
-    
+
     private ApplicationModel model;
-    
+
     private Train train;
-    
+
     private EditTrainDialog editDialog;
-    
+
     /**
      * Creates new form TrainView.
      */
     public TrainView() {
         initComponents();
-        
+
         editDialog = new EditTrainDialog((java.awt.Frame)this.getTopLevelAncestor(), true);
     }
 
@@ -80,7 +80,7 @@ public class TrainView extends javax.swing.JPanel implements ApplicationModelLis
             tcm.addColumn(tc);
         }
     }
-    
+
     public void setModel(ApplicationModel model) {
         this.model = model;
         this.train = model.getSelectedTrain();
@@ -89,7 +89,7 @@ public class TrainView extends javax.swing.JPanel implements ApplicationModelLis
         ((TrainTableModel)trainTable.getModel()).setModel(model);
         editDialog.setModel(model);
     }
-    
+
 
     @Override
     public void modelChanged(ApplicationModelEvent event) {
@@ -100,14 +100,14 @@ public class TrainView extends javax.swing.JPanel implements ApplicationModelLis
             this.updateView();
         }
     }
-    
+
     private void updateView() {
         if (train == null) {
             trainTextField.setText(null);
             speedTextField.setText(null);
             techTimeTextField.setText(null);
             speedTextField.setEnabled(false);
-            
+
             editButton.setEnabled(false);
             copyButton.setEnabled(false);
         } else {
@@ -123,7 +123,7 @@ public class TrainView extends javax.swing.JPanel implements ApplicationModelLis
 
         trainTable.removeEditor();
         ((TrainTableModel)trainTable.getModel()).setTrain(train);
-        
+
         this.invalidate();
     }
 
@@ -139,7 +139,7 @@ public class TrainView extends javax.swing.JPanel implements ApplicationModelLis
         }
         return before.append(", ").append(after).toString();
     }
-    
+
     private String getConflicts(TimeInterval interval) {
         StringBuilder builder = new StringBuilder();
         for (TimeInterval overlap : interval.getOverlappingIntervals()) {
@@ -262,8 +262,8 @@ private void copyButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FI
     dialog.setLocationRelativeTo(this);
     dialog.setVisible(true);
 }//GEN-LAST:event_copyButtonActionPerformed
-    
-    
+
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton copyButton;
     private javax.swing.JButton editButton;
@@ -320,7 +320,7 @@ private void copyButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FI
                     }
                     shownColumns.add(ac);
                 } catch (NumberFormatException e) {
-                    LOG.warning("Cannot load columns' order for train view: " + cStr);
+                    LOG.warning("Cannot load columns order for train view: " + cStr);
                 }
             }
         }

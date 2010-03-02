@@ -8,7 +8,7 @@ import net.parostroj.timetable.gui.utils.ResourceLoader;
 import net.parostroj.timetable.utils.Triplet;
 
 /**
- * Events' viewer panel.
+ * Events viewer panel.
  *
  * @author jub
  */
@@ -222,7 +222,7 @@ public class EventsViewerPanel extends javax.swing.JPanel {
             eventTextArea.setText(viewString);
         } else
             eventTextArea.setText("");
-        
+
     }//GEN-LAST:event_eventsListValueChanged
 
 

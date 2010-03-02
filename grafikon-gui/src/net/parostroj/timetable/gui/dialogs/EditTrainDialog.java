@@ -15,21 +15,21 @@ import net.parostroj.timetable.model.TrainType;
 import net.parostroj.timetable.utils.ResourceLoader;
 
 /**
- * Dialog for editation of train's properties.
- * 
+ * Dialog for editation of train properties.
+ *
  * @author jub
  */
 public class EditTrainDialog extends javax.swing.JDialog {
-    
+
     private static final Logger LOG = Logger.getLogger(EditTrainDialog.class.getName());
 
     public ApplicationModel model;
-    
-    /** 
+
+    /**
      * Creates new form EditTrainDialog.
-     * 
-     * @param parent 
-     * @param modal 
+     *
+     * @param parent
+     * @param modal
      */
     public EditTrainDialog(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
@@ -37,7 +37,7 @@ public class EditTrainDialog extends javax.swing.JDialog {
     }
 
     /**
-     * fills the dialog with train's data.
+     * fills the dialog with train data.
      */
     public void getSelectedTrainData() {
         if (model != null && model.getSelectedTrain() != null)  {
@@ -55,12 +55,12 @@ public class EditTrainDialog extends javax.swing.JDialog {
                 emptyCheckBox.setEnabled(false);
                 emptyCheckBox.setSelected(false);
             }
-            
+
             numberTextField.setText(train.getNumber());
-            
+
             descriptionTextField.setText(train.getDescription());
             speedTextField.setText(Integer.toString(train.getTopSpeed()));
-            
+
             weightTextField.setText((String)train.getAttribute("weight.info"));
             routeTextField.setText((String)train.getAttribute("route.info"));
 
@@ -68,11 +68,11 @@ public class EditTrainDialog extends javax.swing.JDialog {
             timeAfterTextField.setText(Integer.toString(train.getTimeAfter() / 60));
         }
     }
-    
+
     public void setModel(ApplicationModel model) {
         this.model = model;
     }
-    
+
     /** This method is called from within the constructor to
      * initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is
@@ -340,7 +340,7 @@ private void okButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRS
 
     this.setVisible(false);
 }//GEN-LAST:event_okButtonActionPerformed
-    
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton cancelButton;
     private javax.swing.JTextField descriptionTextField;
@@ -357,5 +357,5 @@ private void okButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRS
     private javax.swing.JComboBox typeComboBox;
     private javax.swing.JTextField weightTextField;
     // End of variables declaration//GEN-END:variables
-    
+
 }

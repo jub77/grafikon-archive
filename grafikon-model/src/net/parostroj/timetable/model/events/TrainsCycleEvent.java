@@ -5,8 +5,8 @@ import net.parostroj.timetable.model.TrainsCycleItem;
 import net.parostroj.timetable.visitors.EventVisitor;
 
 /**
- * Trains' cycle event.
- * 
+ * Trains cycle event.
+ *
  * @author jub
  */
 public class TrainsCycleEvent extends GTEvent<TrainsCycle> {
