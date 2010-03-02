@@ -7,8 +7,8 @@ import net.parostroj.timetable.model.TrainsCycle;
 import net.parostroj.timetable.model.TrainsCycleItem;
 
 /**
- * Storage for trains' cycle item.
- * 
+ * Storage for trains cycle item.
+ *
  * @author jub
  */
 @XmlType(propOrder = {"train", "comment", "from", "to"})
@@ -64,7 +64,7 @@ public class LSTrainsCycleItem {
     public void setTrain(String train) {
         this.train = train;
     }
-    
+
     public TrainsCycleItem createTrainsCycleItem(TrainsCycle cycle, TrainDiagram diagram) {
         Train modelTrain = diagram.getTrainById(train);
         TrainsCycleItem item = new TrainsCycleItem(cycle, modelTrain,

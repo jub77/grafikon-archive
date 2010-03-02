@@ -4,8 +4,8 @@ import javax.xml.bind.annotation.XmlType;
 import net.parostroj.timetable.model.Track;
 
 /**
- * Abstract class for tracks' storage.
- * 
+ * Abstract class for tracks storage.
+ *
  * @author jub
  */
 @XmlType(propOrder = {"id", "number", "attributes"})
@@ -47,7 +47,7 @@ abstract public class LSTrack {
     public void setNumber(String number) {
         this.number = number;
     }
-    
+
     protected void addValuesTrack(Track track) {
         track.setAttributes(attributes.createAttributes());
         track.setNumber(number);

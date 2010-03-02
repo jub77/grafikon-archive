@@ -28,7 +28,7 @@ public class FloatingDialogsList extends ArrayList<FloatingDialog> implements St
 
     public void addToMenuItem(final JMenuItem menuItem) {
         for (final FloatingDialog dialog : this) {
-            // use title for menu item's text
+            // use title for menu item text
             JMenuItem fdItem = new JMenuItem();
             fdItem.setAction(new AbstractAction(dialog.getTitle()) {
 

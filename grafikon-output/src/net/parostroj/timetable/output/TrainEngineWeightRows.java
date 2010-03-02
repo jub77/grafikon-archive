@@ -9,8 +9,8 @@ import net.parostroj.timetable.model.*;
 import net.parostroj.timetable.utils.*;
 
 /**
- * Creates information about train's allowed weight and engine. 
- * 
+ * Creates information about train allowed weight and engine.
+ *
  * @author jub
  */
 public class TrainEngineWeightRows {

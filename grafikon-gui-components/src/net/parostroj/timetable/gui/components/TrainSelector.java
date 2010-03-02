@@ -4,21 +4,21 @@ import net.parostroj.timetable.model.TimeInterval;
 
 /**
  * Selects train after clicking in the graphical timetable view.
- * 
+ *
  * @author jub
  */
 public interface TrainSelector {
     /**
-     * selects trains' interval.
-     * 
-     * @param interval train's interval to be selected
+     * selects train interval.
+     *
+     * @param interval train interval to be selected
      */
     public void selectTrainInterval(TimeInterval interval);
-    
+
     /**
-     * returns selected train's interval.
-     * 
-     * @return selected train's interval
+     * returns selected train interval.
+     *
+     * @return selected train interval
      */
     public TimeInterval getSelectedTrainInterval();
 }

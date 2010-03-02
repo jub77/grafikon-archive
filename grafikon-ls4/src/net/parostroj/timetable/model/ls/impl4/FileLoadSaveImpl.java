@@ -13,7 +13,7 @@ import net.parostroj.timetable.model.ls.ModelVersion;
 
 /**
  * Implementation of FileLoadSave for model versions 3.x.
- * 
+ *
  * @author jub
  */
 public class FileLoadSaveImpl implements FileLoadSave {
@@ -170,14 +170,14 @@ public class FileLoadSaveImpl implements FileLoadSave {
                 this.save(zipOutput, this.createEntryName(DATA_ENGINE_CLASSES, "xml", cnt++), new LSEngineClass(engineClass));
             }
             cnt = 0;
-            // save trains' cycles
+            // save trains cycles
             Map<TrainsCycleType, List<TrainsCycle>> cyclesMap = diagram.getCyclesMap();
             for (Map.Entry<TrainsCycleType, List<TrainsCycle>> entry : cyclesMap.entrySet()) {
                 for (TrainsCycle cycle : entry.getValue()) {
                     this.save(zipOutput, this.createEntryName(DATA_TRAINS_CYCLES, "xml", cnt++), new LSTrainsCycle(cycle));
                 }
             }
-            
+
             // save images
             cnt = 0;
             FileLoadSaveImages saveImages = new FileLoadSaveImages(DATA_IMAGES);

@@ -17,11 +17,11 @@ import net.parostroj.timetable.model.*;
  * @author jub
  */
 public class SettingsDialog extends javax.swing.JDialog {
-    
+
     private static final Logger LOG = Logger.getLogger(SettingsDialog.class.getName());
     private boolean diagramChanged;
     private TrainDiagram diagram;
-    
+
     /** Creates new form SettingsDialog */
     public SettingsDialog(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
@@ -32,35 +32,35 @@ public class SettingsDialog extends javax.swing.JDialog {
         sortComboBox.addItem(ResourceLoader.getString("modelinfo.sort.number"));
         sortComboBox.addItem(ResourceLoader.getString("modelinfo.sort.string"));
         sortComboBox.setPrototypeDisplayValue("nnnnnnnnnnnnn");
-        
+
         completeNameTemplateTextField.setColumns(50);
-        
+
         pack();
     }
-    
+
     public void setTrainDiagram(TrainDiagram diagram) {
         this.diagram = diagram;
         this.diagramChanged = false;
-        
+
         for (Scale scale : Scale.getPredefined()) {
             scaleComboBox.addItem(scale);
         }
-        
+
         // set some values for speed
         for (double d = 4.0; d <= 6.0 ;) {
             ratioComboBox.addItem(Double.toString(d));
             d += 0.5;
         }
-        
+
         this.updateValues();
     }
-    
+
     private void updateValues() {
         if (diagram != null) {
             // set original values ...
             scaleComboBox.setSelectedItem(diagram.getAttribute("scale"));
             ratioComboBox.setSelectedItem(((Double)diagram.getAttribute("time.scale")).toString());
-            
+
             // sorting
             TrainsData trainsData = diagram.getTrainsData();
             SortPatternGroup firstGroup = trainsData.getTrainSortPattern().getGroups().get(0);
@@ -352,18 +352,18 @@ public class SettingsDialog extends javax.swing.JDialog {
     }// </editor-fold>//GEN-END:initComponents
 
     private void okButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_okButtonActionPerformed
-        // get templates' values
+        // get templates values
         TrainsData trainsData = diagram.getTrainsData();
         String completeName = completeNameTemplateTextField.getText();
         String name = nameTemplateTextField.getText();
-        
+
         if ("".equals(name)|| "".equals(completeName)) {
             JOptionPane.showMessageDialog(this.getParent(), ResourceLoader.getString("dialog.error.emptytemplates"),
                     ResourceLoader.getString("dialog.error.title"), JOptionPane.ERROR_MESSAGE);
             LOG.log(Level.FINE, "Empty templates.");
             return;
         }
-        
+
         // set scale
         Scale s = (Scale)scaleComboBox.getSelectedItem();
         // set ratio
@@ -379,11 +379,11 @@ public class SettingsDialog extends javax.swing.JDialog {
         if (s != null)
             diagram.setAttribute("scale", s);
         diagram.setAttribute("time.scale", sp);
-        
+
         // set templates
         trainsData.setTrainCompleteNameTemplate(TextTemplate.createTextTemplate(completeName, Language.MVEL));
         trainsData.setTrainNameTemplate(TextTemplate.createTextTemplate(name, Language.MVEL));
-        
+
         // set sorting
         SortPattern sPattern = null;
         if (sortComboBox.getSelectedIndex() == 0) {
@@ -395,7 +395,7 @@ public class SettingsDialog extends javax.swing.JDialog {
             sPattern.getGroups().add(new SortPatternGroup(1, SortPatternGroup.Type.STRING));
         }
         trainsData.setTrainSortPattern(sPattern);
-        
+
         // set transfer time
         try {
             Integer difference = Integer.valueOf(stationTransferTextField.getText());
@@ -405,7 +405,7 @@ public class SettingsDialog extends javax.swing.JDialog {
             LOG.warning("Cannot parse station transfer time: " + stationTransferTextField.getText());
         }
 
-        // get back values for stations' lengths
+        // get back values for stations lengths
         diagram.setAttribute("station.length.in.axles", Boolean.valueOf(lengthInAxlesCheckBox.isSelected()));
         if (lengthInAxlesCheckBox.isSelected())
             diagram.removeAttribute("station.length.unit");
@@ -438,11 +438,11 @@ public class SettingsDialog extends javax.swing.JDialog {
             train.clearCachedData();
 
         this.updateValues();
-        
+
         this.setVisible(false);
         this.diagramChanged = true;
     }//GEN-LAST:event_okButtonActionPerformed
-    
+
     private void cancelButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelButtonActionPerformed
         this.updateValues();
         this.setVisible(false);
@@ -454,7 +454,7 @@ public class SettingsDialog extends javax.swing.JDialog {
         boolean customUnitEnabled = !lengthInAxlesCheckBox.isSelected();
         stationLengthUnitTextField.setEnabled(customUnitEnabled);
     }//GEN-LAST:event_lengthInAxlesCheckBoxActionPerformed
-    
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton cancelButton;
     private javax.swing.JTextField completeNameTemplateTextField;
@@ -474,5 +474,5 @@ public class SettingsDialog extends javax.swing.JDialog {
     private javax.swing.JTextField stationLengthUnitTextField;
     private javax.swing.JTextField stationTransferTextField;
     // End of variables declaration//GEN-END:variables
-    
+
 }
